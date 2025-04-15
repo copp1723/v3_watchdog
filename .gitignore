@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+*.xlsx
+*.csv
+*.pdf
+.streamlit/
+uploads/
+*.log
+
+# Virtual environments
+venv/
+.venv/
