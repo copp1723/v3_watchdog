@@ -10,9 +10,14 @@ import re
 import traceback
 import streamlit as st
 import pandas as pd
+import numpy as np
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
+import altair as alt
+
+# Import chart utilities
+from src.chart_utils import extract_chart_data_from_llm_response, build_chart_data
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -132,86 +137,126 @@ def format_markdown_with_highlights(text: str, phrases: Optional[List[str]] = No
     return formatted_text
 
 class InsightOutputFormatter:
-    """Formats LLM output to match the expected insight schema."""
-
+    """Formats and validates insight responses from LLM."""
+    
     def __init__(self):
-        self.schema = {
-            'summary': str,
-            'chart_data': dict,
-            'recommendation': str,
-            'risk_flag': bool
-        }
-        self.defaults = {
-            'summary': 'No data available',
-            'chart_data': {},
-            'recommendation': 'No data available',
-            'risk_flag': False
-        }
-
-    def format_output(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Initialize the formatter."""
+        self.required_fields = ["summary"]
+        self.optional_fields = ["value_insights", "actionable_flags", "confidence", "is_mock"]
+    
+    def format_response(self, response_text: str) -> Dict[str, Any]:
         """
-        Validate and format the data according to the schema.
-
+        Format the raw response text into a structured insight dict.
+        
         Args:
-            data: Raw data dictionary from LLM
-
+            response_text: The raw response from the LLM
+            
         Returns:
-            Formatted and validated dictionary
-        """
-        formatted = {}
-        for key, expected_type in self.schema.items():
-            value = data.get(key)
-            if value is None or not isinstance(value, expected_type):
-                logger.warning(f"Field '{key}' missing or invalid type. Using default.")
-                formatted[key] = self.defaults[key]
-            else:
-                formatted[key] = value
-        return formatted
-
-    def _parse_json_output(self, output: str) -> Dict[str, Any]:
-        """
-        Attempt to parse JSON output, with fallback for errors.
-
-        Args:
-            output: String output from LLM, potentially JSON.
-
-        Returns:
-            Parsed dictionary or default structure on error.
+            A structured insight dictionary
         """
         try:
-            # Attempt to find JSON block within ```json ... ``` markers
-            match = re.search(r'```json\s*({.*?})\s*```', output, re.DOTALL)
-            if match:
-                json_str = match.group(1)
-                data = json.loads(json_str)
-            else:
-                # Fallback: try parsing the whole string as JSON
-                data = json.loads(output)
-            
-            # Basic validation: ensure it's a dictionary
-            if not isinstance(data, dict):
-                raise ValueError("Parsed JSON is not a dictionary.")
+            # Try to parse as JSON first
+            try:
+                response = json.loads(response_text)
+                print("[DEBUG] Response successfully parsed as JSON")
+            except json.JSONDecodeError:
+                # If not valid JSON, try to extract JSON from markdown
+                print("[DEBUG] Not valid JSON, trying to extract from text")
+                response = self._extract_json_from_text(response_text)
                 
-            return data
-        except json.JSONDecodeError:
-            logger.warning("Failed to parse LLM output as JSON. Using fallback.")
-            return {'summary': output} # Use the raw output as summary
+            # Validate and fill in missing fields
+            return self._validate_and_complete(response)
+            
         except Exception as e:
-            logger.error(f"Error processing LLM output: {e}\nTraceback: {traceback.format_exc()}")
-            return self.defaults
-
-    def process_llm_output(self, output: str) -> Dict[str, Any]:
+            print(f"[ERROR] Error formatting response: {str(e)}")
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            
+            # Return a fallback response
+            return {
+                "summary": "Failed to format insight response",
+                "value_insights": [
+                    "The system received a response that could not be properly formatted.",
+                    f"Error: {str(e)}"
+                ],
+                "actionable_flags": [],
+                "confidence": "low",
+                "raw_response": response_text[:500] + "..." if len(response_text) > 500 else response_text
+            }
+    
+    def _extract_json_from_text(self, text: str) -> Dict[str, Any]:
         """
-        Process raw LLM string output, parse if JSON, and format.
-
+        Extract JSON from a text that may contain markdown or other formatting.
+        
         Args:
-            output: Raw string output from the LLM.
-
+            text: The text that might contain JSON
+            
         Returns:
-            Formatted insight dictionary.
+            The extracted JSON as a dictionary
         """
-        parsed_data = self._parse_json_output(output)
-        return self.format_output(parsed_data)
+        # Look for JSON between ``` blocks (common in markdown)
+        import re
+        json_blocks = re.findall(r'```(?:json)?\s*([\s\S]*?)```', text)
+        
+        if json_blocks:
+            for block in json_blocks:
+                try:
+                    return json.loads(block.strip())
+                except:
+                    continue
+        
+        # Try to find JSON between { and } (the outermost curly braces)
+        try:
+            start_idx = text.find('{')
+            end_idx = text.rfind('}')
+            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                json_str = text[start_idx:end_idx+1]
+                return json.loads(json_str)
+        except:
+            pass
+        
+        # If no JSON found, construct a basic response from the text
+        return {
+            "summary": text[:200] + "..." if len(text) > 200 else text,
+            "value_insights": [text],
+            "actionable_flags": [],
+            "confidence": "low"
+        }
+    
+    def _validate_and_complete(self, response: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Validate response has required fields and fill in any missing optional fields.
+        
+        Args:
+            response: The parsed response dictionary
+            
+        Returns:
+            A validated and completed response dictionary
+        """
+        validated = {}
+        
+        # Check required fields
+        for field in self.required_fields:
+            if field not in response or not response[field]:
+                print(f"[WARN] Required field '{field}' missing or empty in response")
+                validated[field] = f"Missing {field}"
+            else:
+                validated[field] = response[field]
+        
+        # Fill in optional fields
+        for field in self.optional_fields:
+            if field not in response or response[field] is None:
+                if field == "value_insights" or field == "actionable_flags":
+                    validated[field] = []
+                elif field == "confidence":
+                    validated[field] = "medium"
+                elif field == "is_mock":
+                    validated[field] = False
+                else:
+                    validated[field] = None
+            else:
+                validated[field] = response[field]
+        
+        return validated
 
 def format_insight_for_display(insight: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -225,72 +270,66 @@ def format_insight_for_display(insight: Dict[str, Any]) -> Dict[str, Any]:
         Formatted insight data dictionary.
     """
     formatter = InsightOutputFormatter()
-    return formatter.format_output(insight)
+    return formatter.format_response(insight['summary'])
 
-def render_insight_card(insight_data: Dict[str, Any], show_buttons: bool = True) -> None:
-    """Render an insight card with the provided data."""
-    # Initialize session state if not exists
-    if 'insight_card_renders' not in st.session_state:
-        st.session_state['insight_card_renders'] = 0
-    if 'insight_button_clicks' not in st.session_state:
-        st.session_state['insight_button_clicks'] = {
-            'follow_up': 0,
-            'regenerate': 0
-        }
-
-    # Unique key prefix for widgets in this card instance
-    render_count = st.session_state['insight_card_renders']
-    key_prefix = f"insight_{render_count}"
-    st.session_state['insight_card_renders'] += 1
-
-    # Create container for the card
+def render_insight_card(insight: Dict[str, Any], index: int = 0, show_buttons: bool = True) -> None:
+    """
+    Render a structured insight as a card in the UI.
+    
+    Args:
+        insight: The insight dictionary to render
+        index: The index of this insight in the conversation (for button keys)
+        show_buttons: Whether to show interaction buttons
+    """
+    # Ensure insight is properly formatted
+    if not isinstance(insight, dict) or "summary" not in insight:
+        st.error("Invalid insight data format")
+        return
+    
+    # Extract key fields with defaults
+    summary = insight.get("summary", "No summary available")
+    value_insights = insight.get("value_insights", [])
+    actionable_flags = insight.get("actionable_flags", [])
+    confidence = insight.get("confidence", "medium").lower()
+    is_mock = insight.get("is_mock", False)
+    
+    # Render the insight card
     with st.container():
-        # Extract metadata from summary
-        metadata = extract_metadata(insight_data.get('summary', ''))
-
-        # Display summary with highlights
-        summary_text = insight_data.get('summary')
-        if summary_text:
-            formatted_summary = format_markdown_with_highlights(summary_text, metadata.highlight_phrases)
-            st.markdown(formatted_summary)
+        # Header with confidence indicator
+        if confidence == "high":
+            st.markdown(f"#### 🟢 {summary}")
+        elif confidence == "medium":
+            st.markdown(f"#### 🟡 {summary}")
         else:
-            st.markdown("No summary available.")
-
-        # Display chart if present
-        chart_info = insight_data.get('chart_data')
-        if isinstance(chart_info, dict):
-            chart_data = chart_info.get('data')
-            chart_type = chart_info.get('type')
-            
-            # Check if data is suitable for charting before trying
-            if isinstance(chart_data, (pd.DataFrame, dict)) and chart_type in ['bar', 'line']:
-                try:
-                    if chart_type == 'bar':
-                        st.bar_chart(chart_data)
-                    elif chart_type == 'line':
-                        st.line_chart(chart_data)
-                except Exception as e:
-                    logger.error(f"Error rendering chart ({chart_type}): {e}")
-                    st.warning("Could not render chart data.")
-            elif chart_info: # If chart_info exists but data/type is invalid
-                logger.warning(f"Invalid chart data or type provided: {chart_info}")
-                st.warning("Chart data is invalid or type is unsupported.")
-
-        # Display recommendation if present
-        recommendation = insight_data.get('recommendation')
-        if recommendation:
-            st.info(recommendation)
-
-        # Display risk flag if present and True
-        if insight_data.get('risk_flag', False):
-            st.warning('⚠️ Risk flag: This insight requires attention')
-
-        # Add buttons if requested
+            st.markdown(f"#### 🔴 {summary}")
+        
+        # Value insights
+        if value_insights:
+            st.markdown("**Key insights:**")
+            for insight_text in value_insights:
+                st.markdown(f"- {insight_text}")
+        
+        # Actionable flags
+        if actionable_flags:
+            st.markdown("**Action items:**")
+            for flag in actionable_flags:
+                st.markdown(f"- {flag}")
+        
+        # Metadata
+        if is_mock:
+            st.caption("*This is a mock response for testing*")
+        
+        # Interaction buttons
         if show_buttons:
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns([1, 1, 3])
             with col1:
-                if st.button('🔍 Follow-up', key=f"{key_prefix}_follow_up"):
-                    st.session_state['insight_button_clicks']['follow_up'] += 1
+                if st.button(f"🔄 Regenerate", key=f"regenerate_{index}"):
+                    st.session_state.regenerate_insight = True
+                    st.session_state.regenerate_index = index
+                    st.rerun()
             with col2:
-                if st.button('🔁 Regenerate', key=f"{key_prefix}_regenerate"):
-                    st.session_state['insight_button_clicks']['regenerate'] += 1
+                if st.button(f"📋 Copy", key=f"copy_{index}"):
+                    # Can't directly interact with clipboard, so show instructions
+                    st.info("Copy functionality requires clipboard API integration")
+        
+        st.markdown("---")

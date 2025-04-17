@@ -15,7 +15,7 @@ import seaborn as sns
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import the insight_validator module
-from src.validators.insight_validator import (
+from ..src.validators.insight_validator import (
     flag_all_issues,
     summarize_flags,
     generate_flag_summary

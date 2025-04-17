@@ -1,8 +1,5 @@
 """
 Example script demonstrating the Flag Panel UI component for Watchdog AI.
-
-This script creates a simple Streamlit app that demonstrates the flag panel
-component for visualizing data quality issues in dealership data.
 """
 
 import os
@@ -14,9 +11,8 @@ import streamlit as st
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import the flag_panel module
-from src.ui.components.flag_panel import render_flag_summary, render_flag_metrics
-from src.validators.insight_validator import flag_all_issues, summarize_flags
-
+from ..src.ui.components.flag_panel import render_flag_summary, render_flag_metrics
+from ..src.validators.insight_validator import flag_all_issues, summarize_flags
 
 def main():
     """Main function to demonstrate the flag panel UI component."""
@@ -56,7 +52,7 @@ def main():
     
     # Show the original data
     st.subheader("Original Dataset")
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
     
     # Add a separator
     st.write("---")
@@ -74,7 +70,7 @@ def main():
         display_df = st.session_state.get('cleaned_data', cleaned_df)
         
         st.subheader("Data Ready for Insight Engine")
-        st.dataframe(display_df)
+        st.dataframe(display_df, use_container_width=True)
         
         # Show some analytics options
         st.subheader("Ready for Analysis")
@@ -110,7 +106,7 @@ def main():
                     makes = display_df['Make'].value_counts()
                     ax.pie(makes, labels=makes.index, autopct='%1.1f%%')
                     ax.set_title('Sales by Make')
-                    st.pyplot(fig)
+                    st.pyplot(fig, use_container_width=True)
                 
                 with col2:
                     # Placeholder chart 2
@@ -119,8 +115,7 @@ def main():
                     y = np.array([3, 5, 4, 6])
                     ax.bar(x, y)
                     ax.set_title('Monthly Sales Trend')
-                    st.pyplot(fig)
-
+                    st.pyplot(fig, use_container_width=True)
 
 if __name__ == "__main__":
     # Initialize session state if needed

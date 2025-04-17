@@ -346,6 +346,73 @@ def highlight_flagged_rows(df: pd.DataFrame) -> pd.DataFrame:
     return styled_df
 
 
+class InsightValidator:
+    """
+    A class for validating and flagging issues in automotive dealer data.
+    
+    This class provides methods to analyze DataFrame data and identify common
+    dealership issues like negative gross, missing lead sources, and duplicate VINs.
+    """
+    
+    def __init__(self):
+        """Initialize the InsightValidator."""
+        pass
+    
+    def validate(self, df: pd.DataFrame, 
+                 gross_col: str = 'Gross_Profit',
+                 lead_source_col: str = 'Lead_Source', 
+                 vin_col: str = 'VIN') -> pd.DataFrame:
+        """
+        Apply all validation flags to the DataFrame.
+        
+        Args:
+            df: The input DataFrame
+            gross_col: The name of the column containing gross profit information
+            lead_source_col: The name of the column containing lead source information
+            vin_col: The name of the column containing VIN information
+            
+        Returns:
+            DataFrame with all flag columns added
+        """
+        return flag_all_issues(df, gross_col, lead_source_col, vin_col)
+    
+    def get_summary(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Get a summary of flagged issues in the DataFrame.
+        
+        Args:
+            df: The input DataFrame with flag columns
+            
+        Returns:
+            A dictionary with issue counts and percentages
+        """
+        return summarize_flags(df)
+    
+    def get_summary_markdown(self, df: pd.DataFrame) -> str:
+        """
+        Generate a markdown summary of flagged issues.
+        
+        Args:
+            df: The input DataFrame with flag columns
+            
+        Returns:
+            A markdown string summarizing the issues found
+        """
+        return generate_flag_summary(df)
+    
+    def highlight_issues(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Create a styled DataFrame with highlighted issues.
+        
+        Args:
+            df: The input DataFrame with flag columns
+            
+        Returns:
+            A styled DataFrame with highlighted issues
+        """
+        return highlight_flagged_rows(df)
+
+
 if __name__ == "__main__":
     # Sample dirty DataFrame for testing
     data = {
@@ -356,20 +423,23 @@ if __name__ == "__main__":
     
     df = pd.DataFrame(data)
     
+    # Create an instance of InsightValidator
+    validator = InsightValidator()
+    
     # Apply all flags
-    flagged_df = flag_all_issues(df)
+    flagged_df = validator.validate(df)
     
     # Print the flagged DataFrame
     print("Flagged DataFrame:")
     print(flagged_df)
     
     # Get the summary
-    summary = summarize_flags(flagged_df)
+    summary = validator.get_summary(flagged_df)
     print("\nSummary:")
     for key, value in summary.items():
         print(f"{key}: {value}")
     
     # Generate markdown summary
-    md_summary = generate_flag_summary(flagged_df)
+    md_summary = validator.get_summary_markdown(flagged_df)
     print("\nMarkdown Summary:")
     print(md_summary)

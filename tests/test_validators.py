@@ -13,7 +13,7 @@ import unittest
 # Add parent directory to path so we can import the validators package
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.validators.validation_profile import (
+from ..src.validators.validation_profile import (
     ValidationProfile,
     ValidationRule,
     get_available_profiles,
@@ -21,7 +21,7 @@ from src.validators.validation_profile import (
     create_default_profile
 )
 
-from src.validators.insight_validator import (
+from ..src.validators.insight_validator import (
     flag_all_issues,
     summarize_flags,
     flag_negative_gross,
@@ -30,9 +30,16 @@ from src.validators.insight_validator import (
     flag_missing_vins
 )
 
-from src.validators.validator_service import (
+from ..src.validators.validator_service import (
     ValidatorService
 )
+
+from ..src.utils.validation import (
+    normalize_and_alias_columns,
+    InputValidator,
+    CANONICAL_COLUMNS # Import canonical columns for testing
+)
+from ..src.utils.errors import ValidationError # Import ValidationError for testing
 
 
 class TestValidationProfile(unittest.TestCase):
@@ -192,6 +199,74 @@ class TestInsightValidator(unittest.TestCase):
         self.assertIn("missing_lead_source_count", summary)
         self.assertIn("duplicate_vins_count", summary)
         self.assertIn("missing_vins_count", summary)
+
+
+class TestNormalizationAndSchema(unittest.TestCase):
+    """Tests for column normalization and schema validation errors."""
+    def setUp(self):
+        self.validator = InputValidator()
+        self.required_cols = [ # Define some required columns for testing
+            "LeadSource", "VehicleVIN", "Total Gross", "Sale_Date", "SellingPrice"
+        ]
+
+    def test_normalize_and_alias_success(self):
+        """Test successful normalization with aliased columns."""
+        data = {
+            'lead source': ['Web'],
+            'VIN': ['123'],
+            'TotalGross': [1000],
+            'Sale Date': ['2024-01-01'],
+            'Price': [20000]
+        }
+        df = pd.DataFrame(data)
+        validated_df = self.validator.validate_dataframe(df, required_columns=self.required_cols)
+        
+        # Check if columns were correctly renamed to canonical names
+        expected_columns = ["LeadSource", "VehicleVIN", "Total Gross", "Sale_Date", "SellingPrice"]
+        self.assertListEqual(sorted(list(validated_df.columns)), sorted(expected_columns))
+
+    def test_missing_required_column_after_normalization(self):
+        """Test that validation fails if a required column is truly missing."""
+        data = {
+            'lead source': ['Web'],
+            # Missing VIN
+            'TotalGross': [1000],
+            'Sale Date': ['2024-01-01'],
+            'Price': [20000]
+        }
+        df = pd.DataFrame(data)
+
+        with self.assertRaises(ValidationError) as cm:
+            self.validator.validate_dataframe(df, required_columns=self.required_cols)
+        
+        # Check the enhanced error message details
+        error_details = cm.exception.details
+        self.assertIn('missing_canonical', error_details)
+        self.assertIn('found_canonical', error_details)
+        self.assertIn('original_columns', error_details)
+        
+        self.assertEqual(error_details['missing_canonical'], ['VehicleVIN'])
+        self.assertListEqual(sorted(error_details['found_canonical']), sorted(["LeadSource", "Total Gross", "Sale_Date", "SellingPrice"]))
+        self.assertListEqual(list(df.columns), error_details['original_columns'])
+        
+    def test_duplicate_normalized_columns(self):
+        """Test handling when multiple original columns normalize to the same canonical name."""
+        data = {
+            'VIN': ['123'],
+            'Vehicle VIN': ['456'], # Normalizes to VehicleVIN
+            'LeadSource': ['Web']
+        }
+        df = pd.DataFrame(data)
+        # Only require VehicleVIN and LeadSource
+        required_subset = ["VehicleVIN", "LeadSource"]
+        validated_df = self.validator.validate_dataframe(df, required_columns=required_subset)
+        
+        # Check that only one column was mapped to VehicleVIN (the first one encountered, 'VIN')
+        # and the other original column was dropped by the rename
+        expected_columns = ["VehicleVIN", "LeadSource"]
+        self.assertListEqual(sorted(list(validated_df.columns)), sorted(expected_columns))
+        # Ensure the data from the first column ('VIN') is kept
+        self.assertEqual(validated_df["VehicleVIN"].iloc[0], '123')
 
 
 class TestValidatorService(unittest.TestCase):

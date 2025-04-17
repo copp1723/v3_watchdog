@@ -5,7 +5,7 @@ Unit tests for the digest bot module.
 import pytest
 import pandas as pd
 from datetime import datetime, timedelta
-from src.digest_bot import DigestBot
+from ..src.digest_bot import DigestBot
 
 # --- Fixtures ---
 

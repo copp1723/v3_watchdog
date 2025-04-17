@@ -42,14 +42,14 @@ class FollowUpPrompt:
 class PromptGenerator:
     """Generates contextual follow-up prompts based on insight content."""
     
-    def __init__(self, schema: Dict[str, str]):
+    def __init__(self, schema: Dict[str, str] = None):
         """
         Initialize the prompt generator with a schema.
         
         Args:
-            schema: Dictionary mapping entity types to their descriptions
+            schema: Dictionary mapping entity types to their descriptions (optional)
         """
-        self.schema = schema
+        self.schema = schema or {}  # Use empty dict if schema is None
         self.comparison_templates = [
             "How does {entity} compare to {timeframe}?",
             "What's the trend in {entity} over the last {timeframe}?",
@@ -368,6 +368,93 @@ class PromptGenerator:
         stored = st.session_state.get('suggested_prompts', [])
         return [FollowUpPrompt.from_dict(p) for p in stored]
 
+    def generate_prompt(self, system_prompt: str, user_query: str, validation_context: Dict[str, Any] = None) -> str:
+        """
+        Generate a formatted prompt for LLM consumption.
+        
+        Args:
+            system_prompt: The system instruction prompt text
+            user_query: The user's question
+            validation_context: Dictionary with context information (optional)
+            
+        Returns:
+            Complete formatted prompt for the LLM
+        """
+        # Default validation context if not provided
+        if validation_context is None:
+            validation_context = {}
+            
+        # Build context section
+        context_parts = []
+        
+        # Add data shape if available
+        if 'data_shape' in validation_context:
+            rows, cols = validation_context['data_shape']
+            context_parts.append(f"Dataset contains {rows} rows and {cols} columns.")
+        
+        # Add column information if available
+        if 'columns' in validation_context:
+            columns = validation_context['columns']
+            context_parts.append(f"Available columns:\n{', '.join(columns)}")
+        
+        # Add data type information if available
+        if 'data_types' in validation_context:
+            data_types = validation_context['data_types']
+            context_parts.append("Column data types:")
+            for col, dtype in data_types.items():
+                context_parts.append(f"- {col}: {dtype}")
+        
+        # Add basic statistics if available
+        if 'basic_stats' in validation_context:
+            context_parts.append("Basic statistics for numeric columns:")
+            stats = validation_context['basic_stats']
+            for col, metrics in stats.items():
+                if isinstance(metrics, dict):
+                    stats_str = "\n  ".join([f"{k}: {v}" for k, v in metrics.items() if k in ['mean', 'min', 'max', 'count']])
+                    context_parts.append(f"- {col}:\n  {stats_str}")
+        
+        # Add lead source breakdown if available
+        if 'lead_source_breakdown' in validation_context:
+            context_parts.append("\nLead Source Breakdown:")
+            for source, count in validation_context['lead_source_breakdown'].items():
+                context_parts.append(f"- {source}: {count} deals")
+        
+        # Format the context section with more line breaks for readability
+        context_section = "\n\n".join(context_parts)
+        
+        # Add structured output format guidance
+        response_format_guidance = """
+\nRESPONSE FORMAT GUIDANCE:
+Your response should follow a structured format like:
+{
+  "summary": "A concise 1-2 sentence overview of the key finding",
+  "value_insights": [
+    "Specific insight point with relevant metrics and business impact",
+    "Another specific insight with supporting data"
+  ],
+  "actionable_flags": [
+    "Recommended action based on the analysis",
+    "Another suggestion for business improvement"
+  ],
+  "confidence": "high/medium/low"
+}
+
+Ensure each insight uses clear, concise markdown formatting with bullet points where appropriate.
+"""
+        
+        # Combine all parts
+        full_prompt = f"""
+{system_prompt}
+
+CONTEXT INFORMATION:
+{context_section}
+{response_format_guidance}
+
+USER QUERY:
+{user_query}
+"""
+        return full_prompt
+
 def render_follow_up_suggestions(prompts: List[FollowUpPrompt]) -> None:
     """
     Render follow-up suggestions in the UI.
@@ -383,7 +470,7 @@ def render_follow_up_suggestions(prompts: List[FollowUpPrompt]) -> None:
     for prompt in prompts:
         if st.button(prompt.text):
             st.session_state['current_prompt'] = prompt.text
-            st.experimental_rerun()
+            st.rerun()
 
 def generate_llm_prompt(selected_prompt: str, context_vars: Dict[str, str], previous_insights: List[Dict[str, Any]] = None) -> str:
     """

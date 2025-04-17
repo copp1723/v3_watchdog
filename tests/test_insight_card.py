@@ -6,7 +6,7 @@ import pytest
 import pandas as pd
 import streamlit as st
 from unittest.mock import patch, MagicMock
-from src.insight_card import (
+from ..src.insight_card import (
     extract_metadata,
     format_markdown_with_highlights,
     InsightMetadata,
@@ -72,17 +72,14 @@ def sample_response():
 
 def test_empty_response():
     """Test handling of empty response."""
-    from src.insight_card import render_insight_card
     render_insight_card({})  # Should not raise an exception
 
 def test_missing_summary():
     """Test handling of response without summary."""
-    from src.insight_card import render_insight_card
     render_insight_card({'table': pd.DataFrame()})  # Should not raise an exception
 
 def test_malformed_table():
     """Test handling of malformed table data."""
-    from src.insight_card import render_insight_card
     render_insight_card({
         'summary': "Test summary",
         'table': "not a dataframe"  # Should be ignored
@@ -90,7 +87,6 @@ def test_malformed_table():
 
 def test_malformed_chart_data():
     """Test handling of malformed chart data."""
-    from src.insight_card import render_insight_card
     render_insight_card({
         'summary': "Test summary",
         'chart_data': {'type': 'invalid'}  # Should be ignored

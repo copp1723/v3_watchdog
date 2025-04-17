@@ -1,18 +1,16 @@
 """
 Data Upload Component for Watchdog AI.
-
-This module provides UI components for uploading and processing data files.
-It integrates with the validation system to ensure data quality before processing.
+Provides UI components for uploading and processing data files.
 """
 
 import streamlit as st
 import pandas as pd
 import os
-from typing import Optional, Dict, Any, Tuple, Callable
+from typing import Optional, Dict, Any
+from datetime import datetime
+import logging
 
-# Remove the import for process_uploaded_file since we're no longer using it
-# from validators.validator_service import process_uploaded_file
-
+logger = logging.getLogger(__name__)
 
 def render_validation_summary(summary: Dict[str, Any]):
     """Render a validation summary with metrics and charts."""
@@ -80,14 +78,20 @@ def render_file_upload() -> Optional[Any]:
     
     return uploaded_file
 
-
 def render_sample_data_option() -> Optional[Any]:
     """
     Render a component to load sample data for demonstration purposes.
+    Only shown in development/mock mode.
     
     Returns:
-        A file-like object containing the sample data if the sample option was selected, None otherwise
+        A file-like object containing the sample data if selected, None otherwise
     """
+    # Only show sample data option in mock/development mode
+    use_mock = os.getenv("USE_MOCK", "true").lower() in ["true", "1", "yes"]
+    
+    if not use_mock:
+        return None  # Don't show sample data in production mode
+        
     st.write("---")
     st.caption("Don't have a file? Try our sample data:")
     
@@ -120,16 +124,15 @@ def render_sample_data_option() -> Optional[Any]:
     
     return None
 
-
 def render_data_upload(simplified: bool = False) -> Optional[Any]:
     """
     Render a complete data upload interface with file upload and sample data options.
     
     Args:
-        simplified: If True, uses a simplified UI without labels and emojis
+        simplified: If True, uses a simplified UI without extra labels
     
     Returns:
-        The uploaded file object if a file was uploaded or sample data was selected, None otherwise
+        The uploaded file object if a file was uploaded or sample data was selected
     """
     # Create a container for the file upload section
     with st.container():
@@ -140,38 +143,15 @@ def render_data_upload(simplified: bool = False) -> Optional[Any]:
         # Render file upload component
         uploaded_file = render_file_upload()
         
-        # If no file was uploaded, offer sample data
-        if uploaded_file is None:
-            sample_file = render_sample_data_option()
-            if sample_file is not None:
-                return sample_file
+        # Store the uploaded file in session state for access elsewhere
+        if uploaded_file is not None:
+            st.session_state.uploaded_file = uploaded_file
+            return uploaded_file
         
-        return uploaded_file
-
-
-if __name__ == "__main__":
-    # Sample code for testing
-    import streamlit as st
-    
-    st.set_page_config(page_title="Data Upload Demo", layout="wide")
-    st.title("Watchdog AI - Data Upload Component Demo")
-    
-    # Render the file upload component
-    uploaded_file = render_data_upload()
-    
-    # Display uploaded file if available
-    if uploaded_file is not None:
-        st.success(f"File uploaded: {uploaded_file.name}")
+        # If no file was uploaded, offer sample data (only in dev/mock mode)
+        sample_file = render_sample_data_option()
+        if sample_file is not None:
+            st.session_state.uploaded_file = sample_file
+            return sample_file
         
-        # Read the file
-        if uploaded_file.name.endswith('.csv'):
-            df = pd.read_csv(uploaded_file)
-        elif uploaded_file.name.endswith(('.xlsx', '.xls')):
-            df = pd.read_excel(uploaded_file)
-        else:
-            st.error("Unsupported file type")
-            df = None
-            
-        if df is not None:
-            st.write(f"Rows: {len(df)}, Columns: {len(df.columns)}")
-            st.dataframe(df.head(), use_container_width=True)
+        return None

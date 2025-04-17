@@ -12,7 +12,7 @@ import os
 from typing import Dict, Any, List, Tuple
 
 # Import the module to test
-from src.validators.insight_validator import (
+from ..src.validators.insight_validator import (
     flag_negative_gross,
     flag_missing_lead_source,
     flag_duplicate_vins,

@@ -1,0 +1,34 @@
+{
+  "templates": [
+    {
+      "id": "avg_gross_profit",
+      "prompt": "What is the average gross profit per deal?",
+      "description": "Calculates the overall average gross profit."
+    },
+    {
+      "id": "top_lead_source_deals",
+      "prompt": "Which LeadSource generated the most deals?",
+      "description": "Identifies the lead source with the highest volume."
+    },
+    {
+      "id": "negative_gross_summary",
+      "prompt": "Summarize deals with negative gross profit.",
+      "description": "Highlights potentially problematic deals with losses."
+    },
+    {
+      "id": "sales_by_year",
+      "prompt": "What is the distribution of sales by Vehicle Year?",
+      "description": "Shows sales volume based on the age of the vehicle."
+    },
+    {
+      "id": "top_sales_rep_gross",
+      "prompt": "Which SalesRepName had the highest total gross profit?",
+      "description": "Identifies the top performing salesperson by profit."
+    },
+    {
+      "id": "missing_vin_check",
+      "prompt": "Are there deals missing VIN numbers?",
+      "description": "Checks for data quality issues related to VINs."
+    }
+  ]
+} 

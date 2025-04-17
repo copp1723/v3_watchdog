@@ -1,0 +1,31 @@
+{
+  "template_id": "service_revenue_analysis",
+  "name": "Service Department Revenue Analysis",
+  "description": "Analyzes service department revenue trends, sources, and opportunities for growth",
+  "required_columns": ["ServiceDate", "ServiceTotal"],
+  "optional_columns": ["ServiceType", "LaborTotal", "PartsTotal", "TechnicianName", "VIN", "CustomerID", "IsWarranty"],
+  "prompt_template": "Based on the provided service department data, analyze the revenue performance and trends.\n\n1. Calculate total and average service revenue per repair order\n2. Identify trends in service revenue over time (increasing, decreasing, or stable)\n3. If available, break down revenue between labor and parts\n4. Analyze revenue by service type to identify high-value service opportunities\n5. Calculate warranty vs. customer-pay revenue ratios if data available\n\nPlease provide your analysis with specific data points, along with actionable recommendations for improving service department revenue.",
+  "expected_response_format": {
+    "summary": "Brief summary of service revenue performance",
+    "chart_data": {
+      "type": "line|bar",
+      "data": "service revenue trend data",
+      "title": "Service Revenue Trends"
+    },
+    "recommendation": "Actionable suggestions for growing service revenue",
+    "risk_flag": "Boolean indicating if there are concerning trends"
+  },
+  "example_response": {
+    "summary": "Service department revenue has increased by 15% year-over-year, with an average repair order value of $385. Labor contributes 62% of total revenue with parts at 38%. Maintenance services represent 45% of repair orders but only 30% of revenue, while diagnostic and repair services generate 55% of total revenue. Warranty work represents 22% of repair orders but only 18% of revenue.",
+    "chart_data": {
+      "type": "bar",
+      "data": {
+        "x": ["Maintenance", "Diagnostic", "Repair", "Warranty", "Recall"],
+        "y": [30, 25, 30, 18, 7]
+      },
+      "title": "Service Revenue Distribution by Type (%)"
+    },
+    "recommendation": "Focus on upselling higher-margin services during maintenance visits, which represent a significant portion of repair orders. Consider implementing service advisor incentives for increasing average repair order values. Review labor rates for warranty work to ensure proper compensation.",
+    "risk_flag": false
+  }
+}

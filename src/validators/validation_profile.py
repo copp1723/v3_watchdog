@@ -29,6 +29,22 @@ class ValidationRuleType(str, Enum):
     ANOMALOUS_PRICE = "anomalous_price"
     INVALID_DATE = "invalid_date"
     MISSING_SALESPERSON = "missing_salesperson"
+    
+    # --- New Automotive Rules ---
+    MILEAGE_DISCREPANCY = "mileage_discrepancy"
+    NEW_USED_LOGIC = "new_used_logic"
+    TITLE_ISSUE = "title_issue"
+    MISSING_VEHICLE_INFO = "missing_vehicle_info"
+    DUPLICATE_STOCK_NUMBER = "duplicate_stock_number"
+    
+    # --- New Finance Rules (Placeholders) ---
+    APR_OUT_OF_RANGE = "apr_out_of_range"
+    LOAN_TERM_OUT_OF_RANGE = "loan_term_out_of_range"
+    MISSING_LENDER = "missing_lender"
+
+    # --- New Service Rules (Placeholders) ---
+    WARRANTY_CLAIM_INVALID = "warranty_claim_invalid"
+    MISSING_TECHNICIAN = "missing_technician"
 
 
 class ValidationRule(BaseModel):
@@ -58,7 +74,7 @@ class ValidationRule(BaseModel):
     @validator('threshold_operator')
     def validate_operator(cls, v):
         if v is not None:
-            valid_operators = ["==", "\!=", ">", "<", ">=", "<="]
+            valid_operators = ["==", "!=", ">", "<", ">=", "<="]
             if v not in valid_operators:
                 raise ValueError(f"Operator must be one of {valid_operators}")
         return v
@@ -140,6 +156,7 @@ class ValidationProfile(BaseModel):
 
 def create_default_rules() -> List[ValidationRule]:
     """Create a list of default validation rules."""
+    # TODO: Add unit tests for these rules
     return [
         ValidationRule(
             id="negative_gross",
@@ -237,7 +254,134 @@ def create_default_rules() -> List[ValidationRule]:
             severity="Low",
             category="Personnel",
             column_mapping={"salesperson": "Salesperson"}
+        ),
+        
+        # --- New Automotive Rules Definitions ---
+        ValidationRule(
+            id="mileage_discrepancy",
+            name="Mileage-Year Discrepancy",
+            description="Flags vehicles where reported mileage seems inconsistent with the vehicle year (e.g., very high for new, very low for old).",
+            enabled=False, # Disabled by default
+            severity="Low",
+            category="Vehicle Data",
+            threshold_value=None, # Logic might compare mileage ranges based on year
+            threshold_unit=None,
+            threshold_operator=None,
+            column_mapping={"mileage": "Mileage", "year": "VehicleYear"}
+        ),
+        ValidationRule(
+            id="new_used_logic",
+            name="New/Used Status Logic",
+            description='Flags inconsistencies like "New" vehicles with high mileage or "Used" vehicles with zero/missing mileage.',
+            enabled=False, # Disabled by default
+            severity="Medium",
+            category="Vehicle Data",
+            threshold_value=100, # Example threshold for "New" mileage
+            threshold_unit="miles",
+            threshold_operator="<=",
+            column_mapping={"status": "NewUsedStatus", "mileage": "Mileage"}
+        ),
+        ValidationRule(
+            id="title_issue",
+            name="Potential Title Issue",
+            description="Flags vehicles with reported title statuses like Salvage, Flood, Lemon, etc.",
+            enabled=False, # Disabled by default
+            severity="High",
+            category="Vehicle Data",
+            threshold_value=None,
+            threshold_unit=None,
+            threshold_operator=None,
+            column_mapping={"title_status": "TitleStatus"}
+        ),
+        ValidationRule(
+            id="missing_vehicle_info",
+            name="Missing Key Vehicle Info",
+            description="Flags records missing essential vehicle identifiers like Make, Model, or Year.",
+            enabled=False, # Disabled by default
+            severity="Medium",
+            category="Data Quality",
+            threshold_value=None,
+            threshold_unit=None,
+            threshold_operator=None,
+            column_mapping={"make": "VehicleMake", "model": "VehicleModel", "year": "VehicleYear"}
+        ),
+        ValidationRule(
+            id="duplicate_stock_number",
+            name="Duplicate Stock Number",
+            description="Flags records with the same stock number but different VINs, indicating potential inventory errors.",
+            enabled=False, # Disabled by default
+            severity="Medium",
+            category="Inventory",
+            threshold_value=None,
+            threshold_unit=None,
+            threshold_operator=None,
+            column_mapping={"stock_number": "VehicleStockNumber", "vin": "VehicleVIN"}
+        ),
+        
+        # --- New Finance Rule Definitions (Placeholders) ---
+        ValidationRule(
+            id="apr_out_of_range",
+            name="APR Out of Range",
+            description="Flags finance deals with Annual Percentage Rates (APR) outside a defined reasonable range.",
+            enabled=False, # Disabled by default
+            severity="Medium",
+            category="Finance",
+            threshold_value=25.0, # Example upper threshold
+            threshold_unit="%",
+            threshold_operator="<=", # Checks if APR <= threshold
+            column_mapping={"apr": "APR"}
+        ),
+        ValidationRule(
+            id="loan_term_out_of_range",
+            name="Loan Term Out of Range",
+            description="Flags finance deals with loan terms outside typical ranges (e.g., <12 or >96 months).",
+            enabled=False, # Disabled by default
+            severity="Low",
+            category="Finance",
+            threshold_value=96.0, # Example upper threshold
+            threshold_unit="months",
+            threshold_operator="<=",
+            column_mapping={"term": "LoanTerm"}
+        ),
+        ValidationRule(
+            id="missing_lender",
+            name="Missing Lender Info",
+            description="Flags financed deals where the lender information is missing.",
+            enabled=False, # Disabled by default
+            severity="Medium",
+            category="Finance",
+            threshold_value=None,
+            threshold_unit=None,
+            threshold_operator=None,
+            column_mapping={"lender": "LenderName"}
+        ),
+        
+        # --- New Service Rule Definitions (Placeholders) ---
+        ValidationRule(
+            id="warranty_claim_invalid",
+            name="Invalid Warranty Claim",
+            description="Flags warranty claims submitted after the likely warranty expiration based on date/mileage.",
+            enabled=False, # Disabled by default
+            severity="Medium",
+            category="Service",
+            threshold_value=None,
+            threshold_unit=None,
+            threshold_operator=None,
+            column_mapping={"claim_date": "ClaimDate", "service_date": "ServiceDate", "mileage": "MileageAtService"}
+        ),
+        ValidationRule(
+            id="missing_technician",
+            name="Missing Technician ID",
+            description="Flags repair orders where the Technician ID is missing.",
+            enabled=False, # Disabled by default
+            severity="Low",
+            category="Service",
+            threshold_value=None,
+            threshold_unit=None,
+            threshold_operator=None,
+            column_mapping={"tech_id": "TechnicianID"}
         )
+        # TODO: Add more rules based on docs/validation_ideas.md
     ]
 
 
@@ -353,12 +497,29 @@ def apply_validation_rule(df: pd.DataFrame, rule: ValidationRule) -> Tuple[pd.Da
     Returns:
         Tuple of (DataFrame with added flag column, count of flagged rows)
     """
+    print(f"[DEBUG] Applying rule: {rule.id} ('{rule.name}')") # Log start
+    
+    # Failsafe: Check all mapped columns exist
+    for logical_name, actual_column in rule.column_mapping.items():
+        if actual_column not in df.columns:
+            print(f"[WARN] Column '{actual_column}' not found for rule '{rule.id}'. Skipping rule.") # Log skip
+            flag_column = f"flag_{rule.id}"
+            # Ensure flag column exists even if rule skipped, initialized to False
+            if flag_column not in df.columns:
+                 df[flag_column] = False
+            return df, 0
+    
     if not rule.enabled:
+        print(f"[DEBUG] Rule '{rule.id}' is disabled. Skipping.") # Log skip
         return df, 0
     
     result_df = df.copy()
     flag_column = f"flag_{rule.id}"
     
+    # Initialize flag column to False if it doesn't exist
+    if flag_column not in result_df.columns:
+        result_df[flag_column] = False
+        
     # Map standard column names to actual DataFrame columns
     column_mapping = rule.column_mapping
     
@@ -394,9 +555,9 @@ def apply_validation_rule(df: pd.DataFrame, rule: ValidationRule) -> Tuple[pd.Da
             elif rule.threshold_operator == "<":
                 result_df[flag_column] = result_df[gross_col] >= rule.threshold_value
             elif rule.threshold_operator == "==":
-                result_df[flag_column] = result_df[gross_col] \!= rule.threshold_value
-            elif rule.threshold_operator == "\!=":
                 result_df[flag_column] = result_df[gross_col] == rule.threshold_value
+            elif rule.threshold_operator == "!=":
+                result_df[flag_column] = result_df[gross_col] != rule.threshold_value
             else:
                 # Default behavior
                 result_df[flag_column] = result_df[gross_col] < 0
@@ -593,9 +754,147 @@ def apply_validation_rule(df: pd.DataFrame, rule: ValidationRule) -> Tuple[pd.Da
             (result_df[salesperson_col].astype(str).str.strip() == '')
         )
     
+    # --- New Automotive Rule Logic ---
+    elif rule.id == "mileage_discrepancy":
+        mileage_col = column_mapping.get("mileage", "Mileage")
+        year_col = column_mapping.get("year", "VehicleYear")
+        if mileage_col in result_df.columns and year_col in result_df.columns:
+            result_df[mileage_col] = pd.to_numeric(result_df[mileage_col], errors='coerce')
+            result_df[year_col] = pd.to_numeric(result_df[year_col], errors='coerce')
+            current_year = datetime.datetime.now().year
+            
+            # Basic Logic: Flag if mileage > 25k * (current_year - vehicle_year + 1) OR < 100 for cars older than 1 year
+            # This is a very basic example, more sophisticated logic could be used
+            max_expected_mileage = 25000 * (current_year - result_df[year_col] + 1)
+            result_df[flag_column] = (
+                (result_df[mileage_col] > max_expected_mileage) |
+                ((result_df[mileage_col] < 100) & (result_df[year_col] < current_year)) |
+                result_df[mileage_col].isna() |
+                result_df[year_col].isna()
+            )
+        else:
+            result_df[flag_column] = False # Mark as false if columns missing
+            
+    elif rule.id == "new_used_logic":
+        status_col = column_mapping.get("status", "NewUsedStatus")
+        mileage_col = column_mapping.get("mileage", "Mileage")
+        if status_col in result_df.columns and mileage_col in result_df.columns:
+            result_df[mileage_col] = pd.to_numeric(result_df[mileage_col], errors='coerce')
+            mileage_threshold = rule.threshold_value if rule.threshold_value is not None else 100
+            
+            is_new = result_df[status_col].astype(str).str.lower() == 'new'
+            is_used = result_df[status_col].astype(str).str.lower() == 'used'
+            
+            result_df[flag_column] = (
+                (is_new & (result_df[mileage_col] > mileage_threshold)) | # New with high miles
+                (is_used & (result_df[mileage_col].isna() | (result_df[mileage_col] <= 0))) # Used with zero/missing miles
+            )
+        else:
+            result_df[flag_column] = False
+            
+    elif rule.id == "title_issue":
+        title_col = column_mapping.get("title_status", "TitleStatus")
+        if title_col in result_df.columns:
+            problematic_titles = ['salvage', 'flood', 'lemon', 'rebuilt']
+            result_df[flag_column] = result_df[title_col].astype(str).str.lower().isin(problematic_titles)
+        else:
+            result_df[flag_column] = False
+            
+    elif rule.id == "missing_vehicle_info":
+        make_col = column_mapping.get("make", "VehicleMake")
+        model_col = column_mapping.get("model", "VehicleModel")
+        year_col = column_mapping.get("year", "VehicleYear")
+        result_df[flag_column] = False # Start with False
+        for col in [make_col, model_col, year_col]:
+             if col in result_df.columns:
+                 result_df[flag_column] |= (result_df[col].isna() | (result_df[col] == '') | (result_df[col].astype(str).str.strip() == ''))
+             else:
+                 result_df[flag_column] = True # Flag if a required mapped column doesn't exist
+                 break
+                 
+    elif rule.id == "duplicate_stock_number":
+        stock_col = column_mapping.get("stock_number", "VehicleStockNumber")
+        vin_col = column_mapping.get("vin", "VehicleVIN") # Need VIN to differentiate
+        if stock_col in result_df.columns and vin_col in result_df.columns:
+            # Flag rows where the stock number is duplicated *and* has more than one unique VIN associated
+            stock_vin_counts = result_df.groupby(stock_col)[vin_col].nunique()
+            duplicated_stocks = stock_vin_counts[stock_vin_counts > 1].index
+            result_df[flag_column] = result_df[stock_col].isin(duplicated_stocks)
+        else:
+             result_df[flag_column] = False
+
+    # --- New Finance Rule Logic ---
+    elif rule.id == "apr_out_of_range":
+        apr_col = column_mapping.get("apr", "APR")
+        if apr_col in result_df.columns:
+            result_df[apr_col] = pd.to_numeric(result_df[apr_col].astype(str).str.replace('%', '', regex=False), errors='coerce')
+            lower_threshold = 0.0 # Example lower bound
+            upper_threshold = rule.threshold_value if rule.threshold_value is not None else 25.0
+            result_df[flag_column] = (result_df[apr_col] < lower_threshold) | (result_df[apr_col] > upper_threshold)
+        else:
+             result_df[flag_column] = False
+             
+    elif rule.id == "loan_term_out_of_range":
+        term_col = column_mapping.get("term", "LoanTerm")
+        if term_col in result_df.columns:
+             result_df[term_col] = pd.to_numeric(result_df[term_col], errors='coerce')
+             lower_threshold = 12.0 # Example lower bound
+             upper_threshold = rule.threshold_value if rule.threshold_value is not None else 96.0
+             result_df[flag_column] = (result_df[term_col] < lower_threshold) | (result_df[term_col] > upper_threshold)
+        else:
+             result_df[flag_column] = False
+             
+    elif rule.id == "missing_lender":
+        lender_col = column_mapping.get("lender", "LenderName")
+        # Assume financing if APR exists and is > 0? Or needs a 'DealType' column?
+        # Simple check for now: flag if lender is missing
+        if lender_col in result_df.columns:
+            result_df[flag_column] = (result_df[lender_col].isna() | (result_df[lender_col] == '') | (result_df[lender_col].astype(str).str.strip() == ''))
+        else:
+            result_df[flag_column] = False
+
+    # --- New Service Rule Logic ---
+    elif rule.id == "warranty_claim_invalid":
+        # Basic placeholder logic - needs refinement based on actual warranty terms data
+        claim_date_col = column_mapping.get("claim_date", "ClaimDate")
+        service_date_col = column_mapping.get("service_date", "ServiceDate") # Assumes warranty starts at service date?
+        mileage_col = column_mapping.get("mileage", "MileageAtService")
+        # Example: 3 years / 36k miles warranty from service date
+        if claim_date_col in result_df.columns and service_date_col in result_df.columns and mileage_col in result_df.columns:
+            result_df[claim_date_col] = pd.to_datetime(result_df[claim_date_col], errors='coerce')
+            result_df[service_date_col] = pd.to_datetime(result_df[service_date_col], errors='coerce')
+            result_df[mileage_col] = pd.to_numeric(result_df[mileage_col], errors='coerce')
+            
+            warranty_end_date = result_df[service_date_col] + pd.DateOffset(years=3)
+            warranty_mileage_limit = 36000
+            
+            result_df[flag_column] = (
+                (result_df[claim_date_col] > warranty_end_date) |
+                (result_df[mileage_col] > warranty_mileage_limit) |
+                result_df[claim_date_col].isna() |
+                result_df[service_date_col].isna() |
+                result_df[mileage_col].isna()
+            )
+        else:
+            result_df[flag_column] = False
+            
+    elif rule.id == "missing_technician":
+        tech_col = column_mapping.get("tech_id", "TechnicianID")
+        if tech_col in result_df.columns:
+             result_df[flag_column] = (result_df[tech_col].isna() | (result_df[tech_col] == '') | (result_df[tech_col].astype(str).str.strip() == ''))
+        else:
+            result_df[flag_column] = False
+            
+            
     # Count flagged rows
-    flagged_count = int(result_df[flag_column].sum())
-    
+    # Ensure flag_column exists before summing
+    flagged_count = 0
+    if flag_column in result_df.columns:
+        flagged_count = int(result_df[flag_column].sum())
+        print(f"[DEBUG] Rule '{rule.id}' flagged {flagged_count} rows.") # Log count
+    else:
+        print(f"[WARN] Flag column '{flag_column}' not found after rule '{rule.id}' execution.")
+        
     return result_df, flagged_count
 
 
@@ -610,14 +909,20 @@ def apply_validation_profile(df: pd.DataFrame, profile: ValidationProfile) -> Tu
     Returns:
         Tuple of (DataFrame with added flag columns, dictionary with flag counts)
     """
+    print(f"[DEBUG] Starting validation profile application for profile: {profile.id}") # Log start
     result_df = df.copy()
     flag_counts = {}
     
+    enabled_rules = profile.get_enabled_rules()
+    print(f"[DEBUG] Enabled rules found in profile '{profile.id}': {[rule.id for rule in enabled_rules]}") # Log enabled rules
+    
     # Apply each enabled rule
-    for rule in profile.get_enabled_rules():
+    print("[DEBUG] Entering loop to apply enabled rules...") # Log before loop
+    for rule in enabled_rules: # Use the variable
         result_df, count = apply_validation_rule(result_df, rule)
         flag_counts[rule.id] = count
     
+    print("[DEBUG] Finished applying all enabled rules.") # Log after loop
     return result_df, flag_counts
 
 
@@ -658,7 +963,7 @@ def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callabl
             )
             
             # Update current profile based on selection
-            if selected_profile_name \!= current_profile_name:
+            if selected_profile_name != current_profile_name:
                 selected_profile = next((p for p in profiles if p.name == selected_profile_name), None)
                 if selected_profile:
                     st.session_state.current_profile = selected_profile
@@ -731,7 +1036,7 @@ def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callabl
                             os.remove(profile_path)
                         
                         # Remove from profiles list
-                        profiles = [p for p in profiles if p.id \!= st.session_state.current_profile.id]
+                        profiles = [p for p in profiles if p.id != st.session_state.current_profile.id]
                         
                         # Reset current profile to default
                         default_profile = next((p for p in profiles if p.is_default), profiles[0] if profiles else None)
@@ -771,7 +1076,7 @@ def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callabl
                             
                             # Enable/disable toggle
                             enabled = st.checkbox("Enable this rule", value=rule.enabled, key=f"enable_{rule.id}")
-                            if enabled \!= rule.enabled:
+                            if enabled != rule.enabled:
                                 rule.enabled = enabled
                                 profile.updated_at = datetime.datetime.now().isoformat()
                                 profile.save(profiles_dir)
@@ -791,7 +1096,7 @@ def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callabl
                                         key=f"threshold_{rule.id}"
                                     )
                                     
-                                    if threshold \!= rule.threshold_value:
+                                    if threshold != rule.threshold_value:
                                         rule.threshold_value = threshold
                                         profile.updated_at = datetime.datetime.now().isoformat()
                                         profile.save(profiles_dir)
@@ -799,7 +1104,7 @@ def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callabl
                                 with col2:
                                     # Operator selection
                                     if rule.threshold_operator:
-                                        operators = ["==", "\!=", ">", "<", ">=", "<="]
+                                        operators = ["==", "!=", ">", "<", ">=", "<="]
                                         op_index = operators.index(rule.threshold_operator) if rule.threshold_operator in operators else 0
                                         operator = st.selectbox(
                                             "Operator",
@@ -808,7 +1113,7 @@ def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callabl
                                             key=f"operator_{rule.id}"
                                         )
                                         
-                                        if operator \!= rule.threshold_operator:
+                                        if operator != rule.threshold_operator:
                                             rule.threshold_operator = operator
                                             profile.updated_at = datetime.datetime.now().isoformat()
                                             profile.save(profiles_dir)
@@ -825,10 +1130,9 @@ def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callabl
                                         key=f"col_map_{rule.id}_{std_col}"
                                     )
                                     
-                                    if col_mapping \!= dataset_col:
+                                    if col_mapping != dataset_col:
                                         rule.column_mapping[std_col] = col_mapping
                                         profile.updated_at = datetime.datetime.now().isoformat()
                                         profile.save(profiles_dir)
     
     return st.session_state.current_profile
-EOL < /dev/null

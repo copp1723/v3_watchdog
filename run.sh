@@ -1,18 +1,41 @@
 #!/bin/bash
 
-# Run script for Watchdog AI V3
-# This script starts the Streamlit application and handles environment setup
+# run.sh - Run the Watchdog AI Streamlit app
 
-# Create necessary directories
-mkdir -p profiles
+# Make the script executable if it's not already
+chmod +x "$0"
 
-# Check if streamlit is installed
-if ! command -v streamlit &> /dev/null
-then
-    echo "Streamlit is not installed. Installing now..."
-    pip install streamlit pandas numpy matplotlib altair
+# Activate virtual environment if it exists
+if [ -d "venv" ]; then
+    source venv/bin/activate
+elif [ -d ".venv" ]; then
+    source .venv/bin/activate
 fi
 
-# Run the application
-echo "Starting Watchdog AI V3..."
+# Set Python path to include the project root for imports
+export PYTHONPATH="$(pwd):$(pwd)/src"
+echo "PYTHONPATH: $PYTHONPATH"
+
+# Load environment variables from .env file if it exists
+if [ -f ".env" ]; then
+    echo "Loading environment variables from .env file"
+    set -a
+    source .env
+    set +a
+fi
+
+# Check if the user wants to run tests
+if [ "$1" = "test" ]; then
+    echo "Running import test..."
+    python test_imports.py
+    exit 0
+fi
+
+# Print LLM configuration
+echo "LLM Provider: ${LLM_PROVIDER:-openai}"
+echo "Using Mock: ${USE_MOCK:-true}"
+echo "[DEBUG] USE_MOCK is set to: $USE_MOCK"
+
+# Run the Streamlit application
+echo "Starting Streamlit app..."
 streamlit run src/app.py

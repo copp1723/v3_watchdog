@@ -1,5 +1,5 @@
 """
-V3 Watchdog AI - Insight Generation and Analysis Tools
+Watchdog AI - Data Analysis and Insight Generation Platform
 """
 
-__version__ = "0.1.0"
+__version__ = '0.1.0'

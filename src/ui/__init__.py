@@ -6,14 +6,45 @@ interactive dashboards and visualizations with Watchdog AI.
 """
 
 # Import UI components for easy access
-from .components.flag_panel import (
+from .components import (
+    # Classes
+    ChatInterface,
+    InsightGenerator,
+    
+    # Functions
+    render_system_connect,
+    render_data_upload,
+    render_validation_summary,
     render_flag_summary,
     render_flag_metrics,
-    highlight_flagged_rows
+    render_dashboard_from_insight,
+    render_kpi_metrics,
+    render_sales_dashboard,
+    render_inventory_dashboard,
+    render_interactive_chart
 )
 
-# Import the new data upload component
-from .components.data_upload import (
-    render_file_upload,
-    render_sample_data_option
-)
+# Import pages
+from .pages import modern_analyst_ui
+
+# Define __all__ to control wildcard imports
+__all__ = [
+    # Classes
+    'ChatInterface',
+    'InsightGenerator',
+    
+    # Functions
+    'render_system_connect',
+    'render_data_upload',
+    'render_validation_summary',
+    'render_flag_summary',
+    'render_flag_metrics',
+    'render_dashboard_from_insight',
+    'render_kpi_metrics',
+    'render_sales_dashboard',
+    'render_inventory_dashboard',
+    'render_interactive_chart',
+    
+    # Pages
+    'modern_analyst_ui'
+]

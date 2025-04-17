@@ -6,7 +6,7 @@ import pytest
 import streamlit as st
 import pandas as pd
 import json
-from src.llm_engine import LLMEngine
+from ..src.llm_engine import LLMEngine
 
 @pytest.fixture
 def llm_engine():

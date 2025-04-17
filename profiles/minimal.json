@@ -1,0 +1,139 @@
+{
+  "id": "minimal",
+  "name": "Minimal Profile",
+  "description": "Minimal validation profile with only essential rules enabled.",
+  "created_at": "2025-04-15T10:20:47.022443",
+  "updated_at": "2025-04-15T10:20:47.022443",
+  "rules": [
+    {
+      "id": "negative_gross",
+      "name": "Negative Gross Profit",
+      "description": "Flags transactions with negative gross profit, which may indicate pricing errors or issues with cost allocation.",
+      "enabled": true,
+      "severity": "High",
+      "category": "Financial",
+      "threshold_value": 0.0,
+      "threshold_unit": "$",
+      "threshold_operator": ">=",
+      "column_mapping": {
+        "gross_profit": "Gross_Profit"
+      }
+    },
+    {
+      "id": "missing_lead_source",
+      "name": "Missing Lead Source",
+      "description": "Flags records where lead source information is missing, which prevents accurate marketing ROI analysis.",
+      "enabled": false,
+      "severity": "Medium",
+      "category": "Marketing",
+      "threshold_value": null,
+      "threshold_unit": null,
+      "threshold_operator": null,
+      "column_mapping": {
+        "lead_source": "Lead_Source"
+      }
+    },
+    {
+      "id": "duplicate_vin",
+      "name": "Duplicate VIN",
+      "description": "Flags records with duplicate VIN numbers, which may indicate data entry errors or multiple transactions on the same vehicle.",
+      "enabled": true,
+      "severity": "Medium",
+      "category": "Inventory",
+      "threshold_value": null,
+      "threshold_unit": null,
+      "threshold_operator": null,
+      "column_mapping": {
+        "vin": "VIN"
+      }
+    },
+    {
+      "id": "missing_vin",
+      "name": "Missing/Invalid VIN",
+      "description": "Flags records with missing or improperly formatted VIN numbers, which complicates inventory tracking and reporting.",
+      "enabled": false,
+      "severity": "High",
+      "category": "Inventory",
+      "threshold_value": null,
+      "threshold_unit": null,
+      "threshold_operator": null,
+      "column_mapping": {
+        "vin": "VIN"
+      }
+    },
+    {
+      "id": "low_gross",
+      "name": "Low Gross Profit",
+      "description": "Flags transactions with unusually low gross profit, which may indicate pricing issues or missed profit opportunities.",
+      "enabled": false,
+      "severity": "Medium",
+      "category": "Financial",
+      "threshold_value": 500.0,
+      "threshold_unit": "$",
+      "threshold_operator": ">=",
+      "column_mapping": {
+        "gross_profit": "Gross_Profit"
+      }
+    },
+    {
+      "id": "incomplete_sale",
+      "name": "Incomplete Sale Record",
+      "description": "Flags sales records with missing critical information like price, cost, or date.",
+      "enabled": false,
+      "severity": "Medium",
+      "category": "Data Quality",
+      "threshold_value": null,
+      "threshold_unit": null,
+      "threshold_operator": null,
+      "column_mapping": {
+        "sale_price": "Sale_Price",
+        "cost": "Cost",
+        "sale_date": "Sale_Date"
+      }
+    },
+    {
+      "id": "anomalous_price",
+      "name": "Anomalous Sale Price",
+      "description": "Flags sales with prices that deviate significantly from typical values for the model.",
+      "enabled": false,
+      "severity": "Low",
+      "category": "Financial",
+      "threshold_value": 2.0,
+      "threshold_unit": "std",
+      "threshold_operator": ">",
+      "column_mapping": {
+        "sale_price": "Sale_Price",
+        "model": "Model"
+      }
+    },
+    {
+      "id": "invalid_date",
+      "name": "Invalid Sale Date",
+      "description": "Flags records with invalid or future sale dates.",
+      "enabled": false,
+      "severity": "Medium",
+      "category": "Data Quality",
+      "threshold_value": null,
+      "threshold_unit": null,
+      "threshold_operator": null,
+      "column_mapping": {
+        "sale_date": "Sale_Date"
+      }
+    },
+    {
+      "id": "missing_salesperson",
+      "name": "Missing Salesperson",
+      "description": "Flags records where the salesperson information is missing.",
+      "enabled": false,
+      "severity": "Low",
+      "category": "Personnel",
+      "threshold_value": null,
+      "threshold_unit": null,
+      "threshold_operator": null,
+      "column_mapping": {
+        "salesperson": "Salesperson"
+      }
+    }
+  ],
+  "is_default": false
+}

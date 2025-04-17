@@ -6,7 +6,7 @@ import pytest
 import streamlit as st
 import pandas as pd
 import json
-from src.insight_conversation import ConversationManager
+from ..src.insight_conversation import ConversationManager
 
 @pytest.fixture
 def conversation_manager():
@@ -107,7 +107,7 @@ def test_regenerate_insight_invalid_index(conversation_manager):
 
 def test_render_conversation_history_empty():
     """Test rendering conversation history when empty."""
-    from src.insight_conversation import render_conversation_history
+    from ..src.insight_conversation import render_conversation_history
     st.session_state['conversation_history'] = []
     
     # This test just ensures it doesn't crash with empty history
@@ -115,7 +115,7 @@ def test_render_conversation_history_empty():
 
 def test_render_conversation_history_with_data(sample_conversation_history):
     """Test rendering conversation history with data."""
-    from src.insight_conversation import render_conversation_history
+    from ..src.insight_conversation import render_conversation_history
     st.session_state['conversation_history'] = sample_conversation_history
     
     # This test just ensures it doesn't crash with data

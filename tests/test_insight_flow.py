@@ -4,7 +4,7 @@ Unit tests for the insight flow module.
 
 import pytest
 import pandas as pd
-from src.insight_flow import (
+from ..src.insight_flow import (
     PromptGenerator,
     FollowUpPrompt,
     generate_llm_prompt

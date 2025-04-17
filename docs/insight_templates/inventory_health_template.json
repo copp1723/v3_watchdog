@@ -1,0 +1,31 @@
+{
+  "template_id": "inventory_health",
+  "name": "Inventory Health Analysis",
+  "description": "Analyzes the current inventory status, aging, and turn rate to identify potential issues",
+  "required_columns": ["VIN", "DaysInInventory"],
+  "optional_columns": ["VehicleMake", "VehicleModel", "VehicleYear", "AcquisitionDate", "AcquisitionCost", "ListPrice"],
+  "prompt_template": "Based on the provided dealership inventory data, analyze the overall health of the current inventory.\n\n1. Calculate the average days in inventory across the entire stock\n2. Identify aged inventory (vehicles in stock >60 days, >90 days)\n3. Analyze inventory turn rate overall and by vehicle category if data available\n4. Identify any specific makes/models that are moving slower than others\n5. Calculate the ratio of fresh inventory (<30 days) to aged inventory\n\nPlease provide your analysis with specific data points, along with actionable recommendations for improving inventory health and turn rate.",
+  "expected_response_format": {
+    "summary": "Brief summary of inventory health",
+    "chart_data": {
+      "type": "bar|pie",
+      "data": "inventory age distribution data",
+      "title": "Inventory Age Distribution"
+    },
+    "recommendation": "Actionable suggestions for improving inventory turnover",
+    "risk_flag": "Boolean indicating if there are concerning inventory issues"
+  },
+  "example_response": {
+    "summary": "The dealership's inventory health shows concerning trends with an average days-in-inventory of 78 days, well above the industry benchmark of 60 days. 34% of the current inventory has been on the lot for over 90 days, representing approximately $1.45M in aged inventory. SUVs are turning at an acceptable 45-day average, but sedans and luxury vehicles are significantly underperforming with averages of 95 and 112 days respectively.",
+    "chart_data": {
+      "type": "pie",
+      "data": {
+        "labels": ["<30 days", "30-60 days", "61-90 days", ">90 days"],
+        "values": [22, 24, 20, 34]
+      },
+      "title": "Inventory Age Distribution (%)"
+    },
+    "recommendation": "Implement a targeted marketing campaign for aged inventory, particularly focusing on sedans and luxury vehicles. Consider price adjustments for vehicles over 90 days old. Review purchasing practices to ensure better alignment with current market demand, especially for slower-moving vehicle categories.",
+    "risk_flag": true
+  }
+}

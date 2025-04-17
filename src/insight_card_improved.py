@@ -1,8 +1,7 @@
 """
-Improved formatter for structuring AI insight outputs in Watchdog AI.
+Enhanced formatter for structuring AI insight outputs in Watchdog AI.
 
-Provides schema validation, mode-based formatting, and fallback logic.
-Includes Altair chart integration and mock indicators.
+Provides improved schema validation, markdown formatting, and output parsing.
 """
 
 import json
@@ -137,265 +136,340 @@ def format_markdown_with_highlights(text: str, phrases: Optional[List[str]] = No
 
     return formatted_text
 
-class InsightOutputFormatter:
-    """Formats LLM output to match the expected insight schema."""
-
+class EnhancedInsightOutputFormatter:
+    """Enhanced formatter for insight responses with improved markdown support."""
+    
     def __init__(self):
-        self.schema = {
-            'summary': str,
-            'chart_data': dict,
-            'recommendation': str,
-            'risk_flag': bool
-        }
-        self.defaults = {
-            'summary': 'No data available',
-            'chart_data': {},
-            'recommendation': 'No data available',
-            'risk_flag': False
-        }
-
-    def format_output(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Initialize the formatter."""
+        self.required_fields = ["summary"]
+        self.optional_fields = ["value_insights", "actionable_flags", "confidence", "is_mock"]
+    
+    def format_response(self, response_text: str) -> Dict[str, Any]:
         """
-        Validate and format the data according to the schema.
-
+        Format the raw response text into a structured insight dict with improved formatting.
+        
         Args:
-            data: Raw data dictionary from LLM
-
+            response_text: The raw response from the LLM
+            
         Returns:
-            Formatted and validated dictionary
-        """
-        formatted = {}
-        for key, expected_type in self.schema.items():
-            value = data.get(key)
-            if value is None or not isinstance(value, expected_type):
-                logger.warning(f"Field '{key}' missing or invalid type. Using default.")
-                formatted[key] = self.defaults[key]
-            else:
-                formatted[key] = value
-                
-        # Preserve the is_mock flag if it exists
-        if 'is_mock' in data:
-            formatted['is_mock'] = data['is_mock']
-                
-        return formatted
-
-    def _parse_json_output(self, output: str) -> Dict[str, Any]:
-        """
-        Attempt to parse JSON output, with fallback for errors.
-
-        Args:
-            output: String output from LLM, potentially JSON.
-
-        Returns:
-            Parsed dictionary or default structure on error.
+            A structured insight dictionary with markdown formatting
         """
         try:
-            # Attempt to find JSON block within ```json ... ``` markers
-            match = re.search(r'```json\s*({.*?})\s*```', output, re.DOTALL)
-            if match:
-                json_str = match.group(1)
-                data = json.loads(json_str)
-            else:
-                # Fallback: try parsing the whole string as JSON
-                data = json.loads(output)
-            
-            # Basic validation: ensure it's a dictionary
-            if not isinstance(data, dict):
-                raise ValueError("Parsed JSON is not a dictionary.")
+            # Try to parse as JSON first
+            try:
+                response = json.loads(response_text)
+                print("[DEBUG] Response successfully parsed as JSON")
+            except json.JSONDecodeError:
+                # If not valid JSON, try to extract JSON from markdown
+                print("[DEBUG] Not valid JSON, trying to extract from text")
+                response = self._extract_json_from_text(response_text)
                 
-            return data
-        except json.JSONDecodeError:
-            logger.warning("Failed to parse LLM output as JSON. Using fallback.")
-            return {'summary': output} # Use the raw output as summary
+            # Validate and fill in missing fields
+            validated = self._validate_and_complete(response)
+            
+            # Apply markdown formatting to the insight components
+            formatted = self._apply_markdown_formatting(validated)
+            
+            return formatted
+            
         except Exception as e:
-            logger.error(f"Error processing LLM output: {e}\nTraceback: {traceback.format_exc()}")
-            return self.defaults
-
-    def process_llm_output(self, output: str) -> Dict[str, Any]:
+            print(f"[ERROR] Error formatting response: {str(e)}")
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            
+            # Return a fallback response
+            return {
+                "summary": "Failed to format insight response",
+                "value_insights": [
+                    "The system received a response that could not be properly formatted.",
+                    f"Error: {str(e)}"
+                ],
+                "actionable_flags": [],
+                "confidence": "low",
+                "raw_response": response_text[:500] + "..." if len(response_text) > 500 else response_text
+            }
+    
+    def _extract_json_from_text(self, text: str) -> Dict[str, Any]:
         """
-        Process raw LLM string output, parse if JSON, and format.
-
+        Extract JSON from a text that may contain markdown or other formatting.
+        
         Args:
-            output: Raw string output from the LLM.
-
+            text: The text that might contain JSON
+            
         Returns:
-            Formatted insight dictionary.
+            The extracted JSON as a dictionary
         """
-        parsed_data = self._parse_json_output(output)
-        return self.format_output(parsed_data)
+        # Look for JSON between ``` blocks (common in markdown)
+        import re
+        json_blocks = re.findall(r'```(?:json)?\s*([\s\S]*?)```', text)
+        
+        if json_blocks:
+            for block in json_blocks:
+                try:
+                    return json.loads(block.strip())
+                except:
+                    continue
+        
+        # Try to find JSON between { and } (the outermost curly braces)
+        try:
+            start_idx = text.find('{')
+            end_idx = text.rfind('}')
+            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                json_str = text[start_idx:end_idx+1]
+                return json.loads(json_str)
+        except:
+            pass
+        
+        # If no JSON found, try to parse as a structured text response
+        try:
+            return self._parse_structured_text(text)
+        except:
+            # If all parsing fails, construct a basic response from the text
+            return {
+                "summary": text[:200] + "..." if len(text) > 200 else text,
+                "value_insights": [text],
+                "actionable_flags": [],
+                "confidence": "low"
+            }
+    
+    def _parse_structured_text(self, text: str) -> Dict[str, Any]:
+        """
+        Parse non-JSON text that follows a structured format.
+        
+        Args:
+            text: The structured text to parse
+            
+        Returns:
+            A dictionary representation of the structured text
+        """
+        result = {
+            "summary": "",
+            "value_insights": [],
+            "actionable_flags": [],
+            "confidence": "medium"
+        }
+        
+        # Split by double newlines to get sections
+        sections = text.split('\n\n')
+        
+        # Process each section
+        current_section = None
+        for section in sections:
+            section = section.strip()
+            if not section:
+                continue
+                
+            # Check for section headers
+            if section.lower().startswith('summary:'):
+                result['summary'] = section[8:].strip()
+                current_section = 'summary'
+            elif any(section.lower().startswith(header) for header in ['key insights:', 'insights:', 'value insights:']):
+                current_section = 'value_insights'
+            elif any(section.lower().startswith(header) for header in ['action items:', 'recommendations:', 'actionable flags:']):
+                current_section = 'actionable_flags'
+            elif section.lower().startswith('confidence:'):
+                confidence_text = section[11:].strip().lower()
+                if any(level in confidence_text for level in ['high', 'medium', 'low']):
+                    for level in ['high', 'medium', 'low']:
+                        if level in confidence_text:
+                            result['confidence'] = level
+                            break
+                current_section = None
+            # If we're in a list section, process bullet points
+            elif current_section in ['value_insights', 'actionable_flags']:
+                # Split by newlines and process each line
+                for line in section.split('\n'):
+                    line = line.strip()
+                    # Check if it's a bullet point (-, *, •)
+                    if line.startswith(('-', '*', '•')):
+                        item = line[1:].strip()
+                        result[current_section].append(item)
+                    elif line:  # If not a bullet point but not empty, add it anyway
+                        result[current_section].append(line)
+        
+        return result
+    
+    def _validate_and_complete(self, response: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Validate response has required fields and fill in any missing optional fields.
+        
+        Args:
+            response: The parsed response dictionary
+            
+        Returns:
+            A validated and completed response dictionary
+        """
+        validated = {}
+        
+        # Check required fields
+        for field in self.required_fields:
+            if field not in response or not response[field]:
+                print(f"[WARN] Required field '{field}' missing or empty in response")
+                validated[field] = f"Missing {field}"
+            else:
+                validated[field] = response[field]
+        
+        # Fill in optional fields
+        for field in self.optional_fields:
+            if field not in response or response[field] is None:
+                if field == "value_insights" or field == "actionable_flags":
+                    validated[field] = []
+                elif field == "confidence":
+                    validated[field] = "medium"
+                elif field == "is_mock":
+                    validated[field] = False
+                else:
+                    validated[field] = None
+            else:
+                validated[field] = response[field]
+        
+        return validated
+    
+    def _apply_markdown_formatting(self, insight: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Apply markdown formatting to insight components.
+        
+        Args:
+            insight: The validated insight dictionary
+            
+        Returns:
+            Insight dictionary with markdown formatting applied
+        """
+        formatted = insight.copy()
+        
+        # Extract metrics and important terms for highlighting
+        summary_metadata = extract_metadata(formatted['summary'])
+        highlight_phrases = summary_metadata.highlight_phrases
+        
+        # Format summary with bold highlights
+        formatted['summary'] = format_markdown_with_highlights(formatted['summary'], highlight_phrases)
+        
+        # Format value insights
+        formatted_insights = []
+        for item in formatted['value_insights']:
+            # Add bold for metrics and key terms
+            item_metadata = extract_metadata(item)
+            formatted_item = format_markdown_with_highlights(item, item_metadata.highlight_phrases)
+            
+            # Add markdown bullet point if not already present
+            if not formatted_item.startswith(('- ', '* ', '• ')):
+                formatted_item = f"• {formatted_item}"
+                
+            formatted_insights.append(formatted_item)
+        
+        formatted['value_insights'] = formatted_insights
+        
+        # Format actionable flags
+        formatted_flags = []
+        for flag in formatted['actionable_flags']:
+            # Add markdown bullet point if not already present
+            if not flag.startswith(('- ', '* ', '• ')):
+                flag = f"→ {flag}"
+            formatted_flags.append(flag)
+        
+        formatted['actionable_flags'] = formatted_flags
+        
+        return formatted
 
 def format_insight_for_display(insight: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Wrapper function to format insight data using InsightOutputFormatter.
-    Ensures consistent formatting before rendering.
+    Wrapper function to format insight data using EnhancedInsightOutputFormatter.
+    Ensures consistent formatting before rendering with improved markdown.
 
     Args:
         insight: Potentially raw insight data dictionary.
 
     Returns:
-        Formatted insight data dictionary.
+        Formatted insight data dictionary with markdown enhancements.
     """
-    formatter = InsightOutputFormatter()
-    return formatter.format_output(insight)
+    formatter = EnhancedInsightOutputFormatter()
+    
+    # Handle different input formats
+    if isinstance(insight, str):
+        return formatter.format_response(insight)
+    elif isinstance(insight, dict) and 'response' in insight:
+        # For conversation history format
+        if isinstance(insight['response'], str):
+            return formatter.format_response(insight['response'])
+        else:
+            return insight['response']  # Already formatted
+    elif isinstance(insight, dict) and 'summary' in insight:
+        # Already in the expected format
+        return insight
+    else:
+        # Try to format as a raw response
+        return formatter.format_response(json.dumps(insight))
 
-def create_altair_chart(chart_data: Dict[str, Any]) -> Optional[alt.Chart]:
+def render_enhanced_insight_card(insight: Dict[str, Any], index: int = 0, show_buttons: bool = True) -> None:
     """
-    Create an Altair chart based on chart data.
+    Render a structured insight as a card in the UI with enhanced formatting.
     
     Args:
-        chart_data: Chart data dictionary with type, data and title
-        
-    Returns:
-        Altair chart object or None if chart creation fails
+        insight: The insight dictionary to render
+        index: The index of this insight in the conversation (for button keys)
+        show_buttons: Whether to show interaction buttons
     """
-    try:
-        chart_type = chart_data.get('type', 'bar')
-        title = chart_data.get('title', 'Data Analysis')
-        data = chart_data.get('data', {})
-        x_label = chart_data.get('x_axis_label', 'Category') # Default X label
-        y_label = chart_data.get('y_axis_label', 'Value')    # Default Y label
-        
-        # Create DataFrame based on chart type
-        if chart_type in ['bar', 'line']:
-            # For bar and line charts, expect x and y arrays
-            x_values = data.get('x', [])
-            y_values = data.get('y', [])
-            
-            # Ensure x and y are of equal length
-            min_len = min(len(x_values), len(y_values))
-            if min_len == 0:
-                return None
-                
-            df = pd.DataFrame({
-                'x': x_values[:min_len],
-                'y': y_values[:min_len]
-            })
-            
-            # Create chart
-            if chart_type == 'bar':
-                chart = alt.Chart(df).mark_bar().encode(
-                    x=alt.X('x:N', title=x_label), # Use dynamic label
-                    y=alt.Y('y:Q', title=y_label), # Use dynamic label
-                    tooltip=['x', 'y']
-                ).properties(
-                    title=title
-                )
-            else:  # line chart
-                chart = alt.Chart(df).mark_line(point=True).encode(
-                    x=alt.X('x:N', title=x_label), # Use dynamic label
-                    y=alt.Y('y:Q', title=y_label), # Use dynamic label
-                    tooltip=['x', 'y']
-                ).properties(
-                    title=title
-                )
-        
-        elif chart_type == 'pie':
-            # For pie charts, expect labels and values
-            labels = data.get('labels', [])
-            values = data.get('values', [])
-            
-            # Ensure labels and values are of equal length
-            min_len = min(len(labels), len(values))
-            if min_len == 0:
-                return None
-                
-            df = pd.DataFrame({
-                'category': labels[:min_len],
-                'value': values[:min_len]
-            })
-            
-            # Create pie chart
-            chart = alt.Chart(df).mark_arc().encode(
-                theta=alt.Theta('value:Q', title=y_label), # Use Y label for theta
-                color=alt.Color('category:N', title=x_label), # Use X label for color legend
-                tooltip=['category', 'value']
-            ).properties(
-                title=title
-            )
-        
-        else:
-            # Unsupported chart type
-            return None
-        
-        return chart
+    # Ensure insight is properly formatted
+    if not isinstance(insight, dict) or "summary" not in insight:
+        st.error("Invalid insight data format")
+        return
     
-    except Exception as e:
-        logger.error(f"Error creating Altair chart: {e}")
-        return None
-
-def render_insight_card(insight_data: Dict[str, Any], show_buttons: bool = False, card_index: int = 0) -> None:
-    """Render an insight card with the provided data using the styled design."""
-    # Unique key prefix for widgets in this card instance
-    key_prefix = f"insight_{card_index}" # Use index for uniqueness
-
-    # Format the insight data if needed
-    if not isinstance(insight_data, dict):
-        insight_data = {}
-
-    # Create container for the card with styling
+    # Extract key fields with defaults
+    summary = insight.get("summary", "No summary available")
+    value_insights = insight.get("value_insights", [])
+    actionable_flags = insight.get("actionable_flags", [])
+    confidence = insight.get("confidence", "medium").lower()
+    is_mock = insight.get("is_mock", False)
+    
+    # Render the insight card with enhanced styling
     with st.container():
-        # Add a mock indicator badge if this is a mock response
-        if insight_data.get('is_mock', False):
-            st.caption("*Mock insight* - LLM integration not active")
+        # Use a card-like container with padding and border
+        with st.container():
+            # Header with confidence indicator and improved styling
+            if confidence == "high":
+                st.markdown(f"<h4 style='color: #2e7d32; border-left: 4px solid #2e7d32; padding-left: 10px;'>🟢 {summary}</h4>", unsafe_allow_html=True)
+            elif confidence == "medium":
+                st.markdown(f"<h4 style='color: #f9a825; border-left: 4px solid #f9a825; padding-left: 10px;'>🟡 {summary}</h4>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<h4 style='color: #c62828; border-left: 4px solid #c62828; padding-left: 10px;'>🔴 {summary}</h4>", unsafe_allow_html=True)
+            
+            # Draw a light separator line
+            st.markdown("<hr style='margin: 0.5em 0; opacity: 0.3;'>", unsafe_allow_html=True)
+            
+            # Value insights with improved formatting
+            if value_insights:
+                st.markdown("##### Key Insights:")
+                for insight_text in value_insights:
+                    st.markdown(insight_text)
+            
+            # Actionable flags with improved formatting
+            if actionable_flags:
+                st.markdown("##### Action Items:")
+                for flag in actionable_flags:
+                    st.markdown(flag)
+            
+            # Metadata with subtle styling
+            if is_mock:
+                st.markdown("<div style='color: #666; font-size: 0.8em; margin-top: 1em;'>*This is a mock response for testing*</div>", unsafe_allow_html=True)
+            
+            # Interaction buttons with improved styling
+            if show_buttons:
+                col1, col2, col3 = st.columns([1, 1, 3])
+                with col1:
+                    if st.button(f"🔄 Regenerate", key=f"regenerate_{index}"):
+                        st.session_state.regenerate_insight = True
+                        st.session_state.regenerate_index = index
+                        st.rerun()
+                with col2:
+                    if st.button(f"📋 Copy", key=f"copy_{index}"):
+                        # Can't directly interact with clipboard, so show instructions
+                        st.info("Copy functionality requires clipboard API integration")
+                with col3:
+                    if st.button(f"📊 Visualize Data", key=f"visualize_{index}"):
+                        st.session_state.visualize_insight = True
+                        st.session_state.visualize_index = index
+                        st.rerun()
+            
+            st.markdown("---")
 
-        # Extract metadata from summary
-        metadata = extract_metadata(insight_data.get('summary', ''))
-
-        # We don't show the summary text here as it's already in the AI bubble
-        
-        # Display chart if available
-        chart_data = insight_data.get("chart_data")
-        if chart_data and isinstance(chart_data, dict) and chart_data.get("data"):
-            try:
-                # Add a little space before the chart
-                st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
-                
-                # Create a visually appealing card for the chart
-                st.markdown("""
-                <div style="background-color: #28222225; border-radius: 8px; padding: 16px; margin-top: 12px; margin-bottom: 12px; border: 1px solid #38383840;">
-                """, unsafe_allow_html=True)
-                
-                chart_title = chart_data.get("title", "Chart")
-                # Style the chart title
-                st.markdown(f"<h4 style='margin-top: 0; margin-bottom: 12px; color: #f4f4f4;'>{chart_title}</h4>", unsafe_allow_html=True)
-                
-                chart = create_altair_chart(chart_data)
-                if chart:
-                    st.altair_chart(chart, use_container_width=True)
-                else:
-                    st.warning("Could not generate chart from data.")
-                
-                # Close the chart card div
-                st.markdown("</div>", unsafe_allow_html=True)
-            except Exception as e:
-                logger.error(f"Error rendering chart: {e}\n{traceback.format_exc()}")
-                st.error("An error occurred while rendering the chart.")
-
-        # Display recommendation if present in a styled box
-        recommendation = insight_data.get('recommendation')
-        if recommendation:
-            st.markdown(f"""
-            <div style="background-color: #2d405930; border-left: 4px solid #4d7c93; color: #e0e0e0; 
-                        padding: 12px; margin-top: 16px; margin-bottom: 16px; border-radius: 0 4px 4px 0;">
-                <strong>Recommendation:</strong><br>
-                {recommendation}
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Display risk flag if present and True with a more modern style
-        if insight_data.get('risk_flag', False):
-            st.markdown(f"""
-            <div style="background-color: #e4525835; border-left: 4px solid #e45258; color: #e0e0e0; 
-                        padding: 12px; margin-top: 16px; margin-bottom: 16px; border-radius: 0 4px 4px 0;">
-                <strong>Risk Alert:</strong><br>
-                This insight requires immediate attention
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Removed buttons section (show_buttons=False by default now too)
-        # if show_buttons:
-        #    button_cols = st.columns(4)
-        #    with button_cols[0]:
-        #        if st.button('Follow-up', key=f"{key_prefix}_follow_up"):
-        #             st.session_state['next_prompt'] = f"Tell me more about: {summary_text}"
-        #             st.rerun()
+# For backwards compatibility
+render_insight_card = render_enhanced_insight_card
