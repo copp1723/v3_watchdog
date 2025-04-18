@@ -37,3 +37,8 @@ asyncio>=3.4.3
 nest_asyncio>=1.6.0
 pytest-asyncio>=0.23.0  # For testing async code
 pytest-playwright>=0.4.0  # For testing browser automation
+
+# CI Dependencies
+sentry-sdk>=1.26.0
+redis>=5.0.0
+pyyaml>=6.0
