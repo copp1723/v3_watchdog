@@ -16,6 +16,8 @@ from typing import Dict, Any, List, Optional, Set, Tuple, Union, Callable
 from pydantic import BaseModel, Field, validator
 import streamlit as st
 
+from .base_validator import BaseRule, BaseProfile, BaseValidator, BaseValidatorFactory
+
 
 class ValidationRuleType(str, Enum):
     """Types of validation rules available in the system."""
@@ -47,29 +49,12 @@ class ValidationRuleType(str, Enum):
     MISSING_TECHNICIAN = "missing_technician"
 
 
-class ValidationRule(BaseModel):
+class ValidationRule(BaseRule):
     """Definition of a validation rule with its parameters."""
-    id: str = Field(..., description="Unique identifier for the rule")
-    name: str = Field(..., description="Display name for the rule")
-    description: str = Field(..., description="Detailed description of what the rule checks")
-    enabled: bool = Field(True, description="Whether the rule is enabled")
-    severity: str = Field("Medium", description="Severity level (High, Medium, Low)")
-    category: str = Field("Data Quality", description="Category for grouping rules")
-    
     # Threshold parameters (optional, depends on rule type)
     threshold_value: Optional[float] = Field(None, description="Threshold value for numeric rules")
     threshold_unit: Optional[str] = Field(None, description="Unit for the threshold (e.g., ', '%')")
     threshold_operator: Optional[str] = Field(None, description="Operator for comparison (e.g., '>=', '<=')")
-    
-    # Column mapping
-    column_mapping: Dict[str, str] = Field(default_factory=dict, description="Mapping of standard column names to dataset column names")
-    
-    @validator('severity')
-    def validate_severity(cls, v):
-        valid_severities = ["High", "Medium", "Low"]
-        if v not in valid_severities:
-            raise ValueError(f"Severity must be one of {valid_severities}")
-        return v
     
     @validator('threshold_operator')
     def validate_operator(cls, v):
@@ -80,18 +65,12 @@ class ValidationRule(BaseModel):
         return v
 
 
-class ValidationProfile(BaseModel):
+class ValidationProfile(BaseProfile):
     """
     A validation profile containing a set of validation rules and their configurations.
     Profiles can be saved, loaded, and applied to customize the validation process.
     """
-    id: str = Field(..., description="Unique identifier for the profile")
-    name: str = Field(..., description="Display name for the profile")
-    description: str = Field("", description="Description of the profile")
-    created_at: str = Field(..., description="Creation timestamp")
-    updated_at: str = Field(..., description="Last update timestamp")
     rules: List[ValidationRule] = Field(default_factory=list, description="List of validation rules in this profile")
-    is_default: bool = Field(False, description="Whether this is the default profile")
     
     def get_enabled_rules(self) -> List[ValidationRule]:
         """Get only the enabled rules from this profile."""
@@ -104,10 +83,6 @@ class ValidationProfile(BaseModel):
                 return rule
         return None
     
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert the profile to a dictionary."""
-        return self.dict()
-    
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ValidationProfile":
         """Create a profile from a dictionary."""
@@ -118,271 +93,28 @@ class ValidationProfile(BaseModel):
                 for rule in data["rules"]
             ]
         return cls(**data)
-    
-    def save(self, directory: str) -> str:
-        """
-        Save the profile to a JSON file.
-        
-        Args:
-            directory: Directory to save the profile to
-            
-        Returns:
-            Path to the saved profile file
-        """
-        os.makedirs(directory, exist_ok=True)
-        file_path = os.path.join(directory, f"{self.id}.json")
-        
-        with open(file_path, 'w') as f:
-            json.dump(self.to_dict(), f, indent=2)
-        
-        return file_path
-    
-    @classmethod
-    def load(cls, file_path: str) -> "ValidationProfile":
-        """
-        Load a profile from a JSON file.
-        
-        Args:
-            file_path: Path to the profile JSON file
-            
-        Returns:
-            Loaded ValidationProfile object
-        """
-        with open(file_path, 'r') as f:
-            data = json.load(f)
-        
-        return cls.from_dict(data)
 
 
 def create_default_rules() -> List[ValidationRule]:
     """Create a list of default validation rules."""
-    # TODO: Add unit tests for these rules
-    return [
-        ValidationRule(
-            id="negative_gross",
-            name="Negative Gross Profit",
-            description="Flags transactions with negative gross profit, which may indicate pricing errors or issues with cost allocation.",
-            enabled=True,
-            severity="High",
-            category="Financial",
-            threshold_value=0,
-            threshold_unit="$",
-            threshold_operator=">=",
-            column_mapping={"gross_profit": "Gross_Profit"}
-        ),
-        ValidationRule(
-            id="missing_lead_source",
-            name="Missing Lead Source",
-            description="Flags records where lead source information is missing, which prevents accurate marketing ROI analysis.",
-            enabled=True,
-            severity="Medium",
-            category="Marketing",
-            column_mapping={"lead_source": "Lead_Source"}
-        ),
-        ValidationRule(
-            id="duplicate_vin",
-            name="Duplicate VIN",
-            description="Flags records with duplicate VIN numbers, which may indicate data entry errors or multiple transactions on the same vehicle.",
-            enabled=True,
-            severity="Medium",
-            category="Inventory",
-            column_mapping={"vin": "VIN"}
-        ),
-        ValidationRule(
-            id="missing_vin",
-            name="Missing/Invalid VIN",
-            description="Flags records with missing or improperly formatted VIN numbers, which complicates inventory tracking and reporting.",
-            enabled=True,
-            severity="High",
-            category="Inventory",
-            column_mapping={"vin": "VIN"}
-        ),
-        ValidationRule(
-            id="low_gross",
-            name="Low Gross Profit",
-            description="Flags transactions with unusually low gross profit, which may indicate pricing issues or missed profit opportunities.",
-            enabled=False,
-            severity="Medium",
-            category="Financial",
-            threshold_value=500,
-            threshold_unit="$",
-            threshold_operator=">=",
-            column_mapping={"gross_profit": "Gross_Profit"}
-        ),
-        ValidationRule(
-            id="incomplete_sale",
-            name="Incomplete Sale Record",
-            description="Flags sales records with missing critical information like price, cost, or date.",
-            enabled=False,
-            severity="Medium",
-            category="Data Quality",
-            column_mapping={
-                "sale_price": "Sale_Price",
-                "cost": "Cost",
-                "sale_date": "Sale_Date"
-            }
-        ),
-        ValidationRule(
-            id="anomalous_price",
-            name="Anomalous Sale Price",
-            description="Flags sales with prices that deviate significantly from typical values for the model.",
-            enabled=False,
-            severity="Low",
-            category="Financial",
-            threshold_value=2.0,
-            threshold_unit="std",
-            threshold_operator=">",
-            column_mapping={
-                "sale_price": "Sale_Price",
-                "model": "Model"
-            }
-        ),
-        ValidationRule(
-            id="invalid_date",
-            name="Invalid Sale Date",
-            description="Flags records with invalid or future sale dates.",
-            enabled=False,
-            severity="Medium",
-            category="Data Quality",
-            column_mapping={"sale_date": "Sale_Date"}
-        ),
-        ValidationRule(
-            id="missing_salesperson",
-            name="Missing Salesperson",
-            description="Flags records where the salesperson information is missing.",
-            enabled=False,
-            severity="Low",
-            category="Personnel",
-            column_mapping={"salesperson": "Salesperson"}
-        ),
+    # Import the domain-specific rule creators from the profiles
+    try:
+        from .profiles.financial_profile import create_financial_rules
+        from .profiles.inventory_profile import create_inventory_rules
+        from .profiles.customer_profile import create_customer_rules
         
-        # --- New Automotive Rules Definitions ---
-        ValidationRule(
-            id="mileage_discrepancy",
-            name="Mileage-Year Discrepancy",
-            description="Flags vehicles where reported mileage seems inconsistent with the vehicle year (e.g., very high for new, very low for old).",
-            enabled=False, # Disabled by default
-            severity="Low",
-            category="Vehicle Data",
-            threshold_value=None, # Logic might compare mileage ranges based on year
-            threshold_unit=None,
-            threshold_operator=None,
-            column_mapping={"mileage": "Mileage", "year": "VehicleYear"}
-        ),
-        ValidationRule(
-            id="new_used_logic",
-            name="New/Used Status Logic",
-            description='Flags inconsistencies like "New" vehicles with high mileage or "Used" vehicles with zero/missing mileage.',
-            enabled=False, # Disabled by default
-            severity="Medium",
-            category="Vehicle Data",
-            threshold_value=100, # Example threshold for "New" mileage
-            threshold_unit="miles",
-            threshold_operator="<=",
-            column_mapping={"status": "NewUsedStatus", "mileage": "Mileage"}
-        ),
-        ValidationRule(
-            id="title_issue",
-            name="Potential Title Issue",
-            description="Flags vehicles with reported title statuses like Salvage, Flood, Lemon, etc.",
-            enabled=False, # Disabled by default
-            severity="High",
-            category="Vehicle Data",
-            threshold_value=None,
-            threshold_unit=None,
-            threshold_operator=None,
-            column_mapping={"title_status": "TitleStatus"}
-        ),
-        ValidationRule(
-            id="missing_vehicle_info",
-            name="Missing Key Vehicle Info",
-            description="Flags records missing essential vehicle identifiers like Make, Model, or Year.",
-            enabled=False, # Disabled by default
-            severity="Medium",
-            category="Data Quality",
-            threshold_value=None,
-            threshold_unit=None,
-            threshold_operator=None,
-            column_mapping={"make": "VehicleMake", "model": "VehicleModel", "year": "VehicleYear"}
-        ),
-        ValidationRule(
-            id="duplicate_stock_number",
-            name="Duplicate Stock Number",
-            description="Flags records with the same stock number but different VINs, indicating potential inventory errors.",
-            enabled=False, # Disabled by default
-            severity="Medium",
-            category="Inventory",
-            threshold_value=None,
-            threshold_unit=None,
-            threshold_operator=None,
-            column_mapping={"stock_number": "VehicleStockNumber", "vin": "VehicleVIN"}
-        ),
+        # Combine all rules from domain-specific profiles
+        all_rules = []
+        all_rules.extend(create_financial_rules())
+        all_rules.extend(create_inventory_rules())
+        all_rules.extend(create_customer_rules())
         
-        # --- New Finance Rule Definitions (Placeholders) ---
-        ValidationRule(
-            id="apr_out_of_range",
-            name="APR Out of Range",
-            description="Flags finance deals with Annual Percentage Rates (APR) outside a defined reasonable range.",
-            enabled=False, # Disabled by default
-            severity="Medium",
-            category="Finance",
-            threshold_value=25.0, # Example upper threshold
-            threshold_unit="%",
-            threshold_operator="<=", # Checks if APR <= threshold
-            column_mapping={"apr": "APR"}
-        ),
-        ValidationRule(
-            id="loan_term_out_of_range",
-            name="Loan Term Out of Range",
-            description="Flags finance deals with loan terms outside typical ranges (e.g., <12 or >96 months).",
-            enabled=False, # Disabled by default
-            severity="Low",
-            category="Finance",
-            threshold_value=96.0, # Example upper threshold
-            threshold_unit="months",
-            threshold_operator="<=",
-            column_mapping={"term": "LoanTerm"}
-        ),
-        ValidationRule(
-            id="missing_lender",
-            name="Missing Lender Info",
-            description="Flags financed deals where the lender information is missing.",
-            enabled=False, # Disabled by default
-            severity="Medium",
-            category="Finance",
-            threshold_value=None,
-            threshold_unit=None,
-            threshold_operator=None,
-            column_mapping={"lender": "LenderName"}
-        ),
-        
-        # --- New Service Rule Definitions (Placeholders) ---
-        ValidationRule(
-            id="warranty_claim_invalid",
-            name="Invalid Warranty Claim",
-            description="Flags warranty claims submitted after the likely warranty expiration based on date/mileage.",
-            enabled=False, # Disabled by default
-            severity="Medium",
-            category="Service",
-            threshold_value=None,
-            threshold_unit=None,
-            threshold_operator=None,
-            column_mapping={"claim_date": "ClaimDate", "service_date": "ServiceDate", "mileage": "MileageAtService"}
-        ),
-        ValidationRule(
-            id="missing_technician",
-            name="Missing Technician ID",
-            description="Flags repair orders where the Technician ID is missing.",
-            enabled=False, # Disabled by default
-            severity="Low",
-            category="Service",
-            threshold_value=None,
-            threshold_unit=None,
-            threshold_operator=None,
-            column_mapping={"tech_id": "TechnicianID"}
-        )
-        # TODO: Add more rules based on docs/validation_ideas.md
-    ]
+        return all_rules
+    except ImportError as e:
+        # Fallback to legacy rule creation if modules aren't available
+        print(f"Warning: Could not import profile modules: {e}. Using legacy rule definitions.")
+        from .legacy_rules import create_legacy_rules
+        return create_legacy_rules()
 
 
 def create_default_profile() -> ValidationProfile:
@@ -404,22 +136,46 @@ def create_minimal_profile() -> ValidationProfile:
     """Create a minimal validation profile with only essential rules enabled."""
     timestamp = datetime.datetime.now().isoformat()
     
-    rules = create_default_rules()
-    
-    # Only enable essential rules
-    essential_rule_ids = {"negative_gross", "duplicate_vin"}
-    for rule in rules:
-        rule.enabled = rule.id in essential_rule_ids
-    
-    return ValidationProfile(
-        id="minimal",
-        name="Minimal Profile",
-        description="Minimal validation profile with only essential rules enabled.",
-        created_at=timestamp,
-        updated_at=timestamp,
-        rules=rules,
-        is_default=False
-    )
+    try:
+        # Try to use the modular approach
+        from .profiles.financial_profile import create_financial_rules
+        from .profiles.inventory_profile import create_inventory_rules
+        
+        # Only include financial and inventory rules (no customer rules)
+        rules = []
+        rules.extend(create_financial_rules())
+        rules.extend(create_inventory_rules())
+        
+        # Only enable essential rules
+        essential_rule_ids = {"negative_gross", "duplicate_vin"}
+        for rule in rules:
+            rule.enabled = rule.id in essential_rule_ids
+        
+        return ValidationProfile(
+            id="minimal",
+            name="Minimal Profile",
+            description="Minimal validation profile with only essential rules enabled.",
+            created_at=timestamp,
+            updated_at=timestamp,
+            rules=rules,
+            is_default=False
+        )
+    except ImportError:
+        # Fallback to the legacy approach
+        rules = create_default_rules()
+        essential_rule_ids = {"negative_gross", "duplicate_vin"}
+        for rule in rules:
+            rule.enabled = rule.id in essential_rule_ids
+        
+        return ValidationProfile(
+            id="minimal",
+            name="Minimal Profile",
+            description="Minimal validation profile with only essential rules enabled.",
+            created_at=timestamp,
+            updated_at=timestamp,
+            rules=rules,
+            is_default=False
+        )
 
 
 def create_comprehensive_profile() -> ValidationProfile:
@@ -443,6 +199,120 @@ def create_comprehensive_profile() -> ValidationProfile:
     )
 
 
+def create_domain_specific_profiles() -> List[ValidationProfile]:
+    """
+    Create domain-specific validation profiles.
+    
+    Returns:
+        List of domain-specific ValidationProfile objects
+    """
+    try:
+        # Import profile creators
+        from .profiles.financial_profile import create_financial_profile
+        from .profiles.inventory_profile import create_inventory_profile
+        from .profiles.customer_profile import create_customer_profile
+        
+        # Create profiles
+        return [
+            create_financial_profile(),
+            create_inventory_profile(),
+            create_customer_profile()
+        ]
+    except ImportError as e:
+        print(f"Warning: Could not create domain-specific profiles: {e}")
+        return []
+
+
+class ValidatorFactory(BaseValidatorFactory):
+    """
+    Factory class for creating validators from profiles.
+    """
+    def __init__(self, profiles_dir: str = "profiles"):
+        """Initialize the validator factory."""
+        self.profiles_dir = profiles_dir
+        os.makedirs(self.profiles_dir, exist_ok=True)
+    
+    @staticmethod
+    def create_validator(profile: ValidationProfile) -> BaseValidator:
+        """
+        Create a validator from a profile.
+        
+        Args:
+            profile: The profile to use
+            
+        Returns:
+            Validator instance
+        """
+        return ProfileValidator(profile)
+    
+    def create_validator_from_id(self, profile_id: str) -> BaseValidator:
+        """
+        Create a validator from a profile ID.
+        
+        Args:
+            profile_id: ID of the profile to use
+            
+        Returns:
+            Validator instance
+        """
+        profiles = self.get_available_profiles()
+        for profile in profiles:
+            if profile.id == profile_id:
+                return ProfileValidator(profile)
+        
+        # If profile not found, use default
+        default_profile = self.get_default_profile()
+        return ProfileValidator(default_profile)
+    
+    def get_available_profiles(self) -> List[ValidationProfile]:
+        """
+        Get a list of all available validation profiles.
+        
+        Returns:
+            List of ValidationProfile objects
+        """
+        profiles = []
+        
+        # Load profiles from files
+        for filename in os.listdir(self.profiles_dir):
+            if filename.endswith('.json'):
+                try:
+                    file_path = os.path.join(self.profiles_dir, filename)
+                    profile = ValidationProfile.load(file_path)
+                    profiles.append(profile)
+                except Exception as e:
+                    print(f"Error loading profile {filename}: {str(e)}")
+        
+        return profiles
+    
+    def get_default_profile(self) -> ValidationProfile:
+        """
+        Get the default validation profile.
+        
+        Returns:
+            Default ValidationProfile
+        """
+        profiles = self.get_available_profiles()
+        default_profile = next((p for p in profiles if p.is_default), None)
+        if default_profile:
+            return default_profile
+            
+        # No default profile found, create one
+        default_profile = create_default_profile()
+        default_profile.save(self.profiles_dir)
+        return default_profile
+    
+    @staticmethod
+    def get_available_validators() -> List[str]:
+        """
+        Get the list of available validators.
+        
+        Returns:
+            List of validator IDs/names
+        """
+        return ["profile_validator"]  # Currently only one validator type
+
+
 def get_available_profiles(profiles_dir: str) -> List[ValidationProfile]:
     """
     Get a list of all available validation profiles.
@@ -453,32 +323,28 @@ def get_available_profiles(profiles_dir: str) -> List[ValidationProfile]:
     Returns:
         List of ValidationProfile objects
     """
-    profiles = []
+    factory = ValidatorFactory(profiles_dir)
+    profiles = factory.get_available_profiles()
     
-    # Ensure directory exists
-    os.makedirs(profiles_dir, exist_ok=True)
-    
-    # Load profiles from files
-    for filename in os.listdir(profiles_dir):
-        if filename.endswith('.json'):
-            try:
-                file_path = os.path.join(profiles_dir, filename)
-                profile = ValidationProfile.load(file_path)
-                profiles.append(profile)
-            except Exception as e:
-                print(f"Error loading profile {filename}: {str(e)}")
-    
-    # If no profiles found, add default profiles
+    # If no profiles were loaded from files, add default profiles and domain-specific profiles
     if not profiles:
         default_profile = create_default_profile()
         minimal_profile = create_minimal_profile()
         comprehensive_profile = create_comprehensive_profile()
         
+        # Save the profiles
         default_profile.save(profiles_dir)
         minimal_profile.save(profiles_dir)
         comprehensive_profile.save(profiles_dir)
         
+        # Add to the list
         profiles = [default_profile, minimal_profile, comprehensive_profile]
+        
+        # Add domain-specific profiles
+        domain_profiles = create_domain_specific_profiles()
+        for profile in domain_profiles:
+            profile.save(profiles_dir)
+            profiles.append(profile)
     
     # Sort profiles (default first, then alphabetically)
     profiles.sort(key=lambda p: (0 if p.is_default else 1, p.name))
@@ -898,6 +764,72 @@ def apply_validation_rule(df: pd.DataFrame, rule: ValidationRule) -> Tuple[pd.Da
     return result_df, flagged_count
 
 
+class ProfileValidator(BaseValidator):
+    """
+    Validator implementation using ValidationProfile.
+    """
+    def __init__(self, profile: ValidationProfile):
+        """
+        Initialize the validator with a profile.
+        
+        Args:
+            profile: The validation profile to use
+        """
+        self.profile = profile
+    
+    def validate(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, Any]]:
+        """
+        Validate the provided DataFrame using the profile's rules.
+        
+        Args:
+            df: DataFrame to validate
+            
+        Returns:
+            Tuple of (validated DataFrame, validation results)
+        """
+        print(f"[DEBUG] Starting validation profile application for profile: {self.profile.id}") # Log start
+        result_df = df.copy()
+        flag_counts = {}
+        
+        enabled_rules = self.profile.get_enabled_rules()
+        print(f"[DEBUG] Enabled rules found in profile '{self.profile.id}': {[rule.id for rule in enabled_rules]}") # Log enabled rules
+        
+        # Apply each enabled rule
+        print("[DEBUG] Entering loop to apply enabled rules...") # Log before loop
+        for rule in enabled_rules:
+            result_df, count = apply_validation_rule(result_df, rule)
+            flag_counts[rule.id] = count
+        
+        print("[DEBUG] Finished applying all enabled rules.") # Log after loop
+        return result_df, flag_counts
+    
+    def get_rules(self) -> List[ValidationRule]:
+        """
+        Get the list of validation rules.
+        
+        Returns:
+            List of validation rules
+        """
+        return self.profile.rules
+    
+    def get_name(self) -> str:
+        """
+        Get the name of the validator.
+        
+        Returns:
+            Name of the validator
+        """
+        return self.profile.name
+    
+    def get_description(self) -> str:
+        """
+        Get the description of the validator.
+        
+        Returns:
+            Description of the validator
+        """
+        return self.profile.description
+
 def apply_validation_profile(df: pd.DataFrame, profile: ValidationProfile) -> Tuple[pd.DataFrame, Dict[str, int]]:
     """
     Apply a validation profile to a DataFrame.
@@ -909,21 +841,8 @@ def apply_validation_profile(df: pd.DataFrame, profile: ValidationProfile) -> Tu
     Returns:
         Tuple of (DataFrame with added flag columns, dictionary with flag counts)
     """
-    print(f"[DEBUG] Starting validation profile application for profile: {profile.id}") # Log start
-    result_df = df.copy()
-    flag_counts = {}
-    
-    enabled_rules = profile.get_enabled_rules()
-    print(f"[DEBUG] Enabled rules found in profile '{profile.id}': {[rule.id for rule in enabled_rules]}") # Log enabled rules
-    
-    # Apply each enabled rule
-    print("[DEBUG] Entering loop to apply enabled rules...") # Log before loop
-    for rule in enabled_rules: # Use the variable
-        result_df, count = apply_validation_rule(result_df, rule)
-        flag_counts[rule.id] = count
-    
-    print("[DEBUG] Finished applying all enabled rules.") # Log after loop
-    return result_df, flag_counts
+    validator = ProfileValidator(profile)
+    return validator.validate(df)
 
 
 def render_profile_editor(profiles_dir: str, on_profile_change: Optional[Callable[[ValidationProfile], None]] = None) -> ValidationProfile:
