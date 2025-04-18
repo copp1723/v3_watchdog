@@ -15,11 +15,71 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from dataclasses import dataclass
 
 from .constants import SECURITY
 from .logging_config import log_error, log_info, log_warning
 
 logger = logging.getLogger(__name__)
+
+@dataclass
+class NovaCredential:
+    """Represents a set of vendor credentials."""
+    vendor_id: str
+    username: Optional[str] = None
+    password: Optional[str] = None
+    api_key: Optional[str] = None
+    client_id: Optional[str] = None
+    client_secret: Optional[str] = None
+    dealer_code: Optional[str] = None
+    dealer_id: Optional[str] = None
+    environment: Optional[str] = None
+    metadata: Dict[str, Any] = None
+    created_at: datetime = None
+    updated_at: datetime = None
+
+    def __post_init__(self):
+        """Initialize timestamps if not provided."""
+        if self.created_at is None:
+            self.created_at = datetime.now()
+        if self.updated_at is None:
+            self.updated_at = self.created_at
+        if self.metadata is None:
+            self.metadata = {}
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert credential to dictionary format."""
+        return {
+            "vendor_id": self.vendor_id,
+            "username": self.username,
+            "password": self.password,
+            "api_key": self.api_key,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "dealer_code": self.dealer_code,
+            "dealer_id": self.dealer_id,
+            "environment": self.environment,
+            "metadata": self.metadata,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'NovaCredential':
+        """Create credential from dictionary format."""
+        # Convert ISO format strings back to datetime objects
+        if "created_at" in data and data["created_at"]:
+            data["created_at"] = datetime.fromisoformat(data["created_at"])
+        if "updated_at" in data and data["updated_at"]:
+            data["updated_at"] = datetime.fromisoformat(data["updated_at"])
+        return cls(**data)
+
+    def update(self, updates: Dict[str, Any]) -> None:
+        """Update credential fields."""
+        for key, value in updates.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        self.updated_at = datetime.now()
 
 # Vendor configurations
 VENDOR_CONFIGS = {
@@ -56,11 +116,14 @@ class CredentialManager:
                 "system",
                 "credential_init"
             )
+        # Ensure master_key is bytes
+        if isinstance(master_key, str):
+            master_key_bytes = master_key.encode()
+        else:
+            master_key_bytes = master_key
         
         # Derive encryption keys
-        self.keys = self._derive_keys(
-            master_key if isinstance(master_key, bytes) else master_key.encode()
-        )
+        self.keys = self._derive_keys(master_key_bytes)
         
         # Set up storage paths
         self.storage_path = os.path.join(os.path.dirname(__file__), "storage", "credentials")
@@ -163,7 +226,14 @@ class CredentialManager:
                 if creds:
                     # Store with new keys
                     self.keys = new_keys
-                    self.store_credentials(vendor_id, creds)
+                    # Update the credentials object with new data
+                    # Inflate credentials to NovaCredential, update, and store
+                    cred_obj = NovaCredential.from_dict(creds)
+                    # Prepare new credential dict
+                    new_creds = cred_obj.to_dict()
+                    # Store with new keys
+                    self.keys = new_keys
+                    self.store_credentials(vendor_id, new_creds)
             
             # Update rotation timestamp
             self.last_rotation = datetime.now()
@@ -302,14 +372,16 @@ class CredentialManager:
                 return False
             
             # Update credentials
-            current_creds.update(updates)
+            current_creds_obj = NovaCredential.from_dict(current_creds)
+            current_creds_obj.update(updates)
+            updated_dict = current_creds_obj.to_dict()
             
             # Validate updated credentials
-            if not self._validate_credentials(vendor_id, current_creds):
+            if not self._validate_credentials(vendor_id, updated_dict):
                 return False
             
             # Store updated credentials
-            return self.store_credentials(vendor_id, current_creds)
+            return self.store_credentials(vendor_id, updated_dict)
             
         except Exception as e:
             log_error(e, vendor_id, "update_credentials")
