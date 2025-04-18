@@ -1,0 +1,39 @@
+# Watchdog AI Normalization Rules
+# This file defines mapping rules for normalizing common term variations
+# Format: 'canonical_form: [list, of, variations]'
+
+# Lead Sources
+lead_sources:
+  Auto Trader: ['autotrader', 'auto trader', 'auto-trader', 'at.com', 'AutoTrader']
+  Cars.com: ['cars.com', 'carscom', 'cars com', 'cars', 'CARS.COM']
+  CarGurus: ['cargurus', 'car gurus', 'car-gurus', 'cg', 'CARGURUS']
+  Facebook: ['fb', 'facebook marketplace', 'fb marketplace', 'facebook mp', 'FaceBook']
+  Google: ['google ads', 'google adwords', 'google search', 'g search', 'GOOGLE']
+  Website: ['web', 'dealer website', 'dealership website', 'our website', 'site', 'web lead']
+  TrueCar: ['truecar', 'true car', 'true-car', 'TRUECAR']
+  Referral: ['refer', 'customer referral', 'friend referral', 'family referral', 'referral - family/friend']
+  Walk-in: ['walk in', 'walkin', 'walk-in', 'no lead', 'walk up']
+  Phone: ['phone-in', 'call-in', 'phone call', 'inbound call', 'phone up']
+  Dealer: ['dealer trade', 'dealer transfer', 'dealer direct', 'dealer']
+  
+# Personnel Titles
+personnel:
+  Sales Rep: ['sales_rep', 'salesrep', 'sales representative', 'salesperson', 'sales person', 'sales consultant']
+  Sales Manager: ['sales_manager', 'salesmanager', 'sales supervisor', 'senior sales', 'gsm']
+  Finance Manager: ['finance_manager', 'financemanager', 'f&i', 'f&i manager', 'finance director']
+  General Manager: ['general_manager', 'generalmanager', 'gm', 'dealer manager', 'dealership manager']
+  Internet Manager: ['internet_manager', 'internetmanager', 'bdc manager', 'digital manager', 'online sales manager']
+
+# Vehicle Types
+vehicle_types:
+  New: ['new vehicle', 'new car', 'new inventory', 'new unit', 'new_vehicle']
+  Used: ['used vehicle', 'used car', 'used inventory', 'used unit', 'used_vehicle', 'pre-owned', 'preowned', 'pre owned']
+  Certified: ['certified vehicle', 'certified pre-owned', 'cpo', 'certified', 'certified_preowned']
+
+# Departments
+departments:
+  Sales: ['sales department', 'new car sales', 'used car sales', 'vehicle sales', 'sales_dept']
+  Service: ['service department', 'vehicle service', 'auto service', 'maintenance', 'service_dept']
+  Parts: ['parts department', 'parts and accessories', 'accessories', 'parts_dept']
+  Finance: ['finance department', 'f&i department', 'business office', 'finance_dept']
+  BDC: ['business development center', 'business development', 'internet department', 'bdc_dept']

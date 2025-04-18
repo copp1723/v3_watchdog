@@ -209,14 +209,12 @@ def test_main_with_data_flow(sample_csv_data, mock_conversation_manager):
          patch('streamlit.text_input') as mock_input, \
          patch('streamlit.button') as mock_button, \
          patch('streamlit.write') as mock_write:
-        
         mock_input.return_value = "Test prompt"
         mock_button.return_value = True
-        
-            main()
-            
-        # Verify that the conversation manager was called
-        mock_conversation_manager.generate_insight.assert_called_once()
-        
-        # Verify that the response was written
-        mock_write.assert_called()
+        main()
+    
+    # Verify that the conversation manager was called
+    mock_conversation_manager.generate_insight.assert_called_once()
+    
+    # Verify that the response was written
+    mock_write.assert_called()

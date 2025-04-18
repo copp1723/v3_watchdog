@@ -9,7 +9,7 @@ import pandas as pd
 import os
 from PIL import Image
 
-from ..components.data_upload_enhanced import DataUploadManager
+from ..components.data_upload import DataUploadManager
 from ..components.flag_panel import render_flag_summary
 from ..components.dashboard import (
     render_dashboard_from_insight,
