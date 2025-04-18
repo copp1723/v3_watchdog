@@ -1,0 +1,61 @@
+3rname: CI Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10']
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        # Assuming dev requirements are in a separate file or included in requirements.txt
+        # If you have a dev-requirements.txt, uncomment the next line
+        # pip install -r dev-requirements.txt
+        pip install pytest pip-audit
+
+    - name: Run Unit Tests with Coverage
+      run: |
+        coverage run -m pytest tests/unit # Assuming unit tests are in tests/unit
+
+    - name: Generate Coverage Report
+      run: |
+        coverage report
+        # Optional: Generate XML report for coverage services/badges
+        # coverage xml
+
+    - name: Run End-to-End Tests
+      run: |
+        pytest tests/e2e/test_full_flow.py
+
+    - name: Run pip-audit
+      run: |
+        pip-audit --output=report.json --fail-on=vuln
+
+    # Optional: Upload audit report as artifact
+    # - name: Upload audit report
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: pip-audit-report-${{ matrix.python-version }}
+    #     path: report.json
