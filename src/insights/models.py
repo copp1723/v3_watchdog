@@ -57,3 +57,10 @@ class FeedbackEntry:
         if "created_at" in data and isinstance(data["created_at"], str):
             data["created_at"] = datetime.fromisoformat(data["created_at"])
         return cls(**data)
+
+# TEMPORARY: FeedbackStats stub for CI unblocking
+# TODO: Properly deprecate or implement in #1234
+class FeedbackStats:
+    """Legacy stats container (temporary fix)"""
+    def __init__(self):
+        self.data = {}
