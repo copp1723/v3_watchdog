@@ -12,26 +12,13 @@ class DigestBot:
     """Generates automated briefings from a collection of insights."""
     
     def __init__(self, insights: List[Dict[str, Any]], max_insights: int = 5):
-        """
-        Initialize the DigestBot with a list of insights.
-        
-        Args:
-            insights: List of insight dictionaries to summarize
-            max_insights: Maximum number of insights to include in the digest (default: 5)
-        """
+        """Initialize the DigestBot with a list of insights."""
         self.insights = insights
         self.max_insights = max_insights
-        
-        # Default title for the digest
         self.digest_title = f"Morning Briefing - {datetime.datetime.now().strftime('%Y-%m-%d')}"
-    
+
     def filter_top_insights(self) -> List[Dict[str, Any]]:
-        """
-        Filter and prioritize the top insights based on risk_flag and timestamp.
-        
-        Returns:
-            List of top insights, limited to max_insights
-        """
+        """Filter and prioritize the top insights based on risk_flag and timestamp."""
         if not self.insights:
             return []
         
@@ -44,41 +31,26 @@ class DigestBot:
         
         # Return the top N insights
         return sorted_insights[:self.max_insights]
-    
+
     def format_slack_message(self, insights: List[Dict[str, Any]]) -> str:
-        """
-        Format the top insights as a Slack message.
-        
-        Args:
-            insights: List of top insights to include
-            
-        Returns:
-            Formatted Slack message string
-        """
+        """Format the top insights as a Slack message."""
         if not insights:
-            return f"*${self.digest_title}*
-
-No insights available for this briefing."
+            return f"*{self.digest_title}*\n\nNo insights available for this briefing."
         
-        message = f"*${self.digest_title}*
-
-"
-        message += f"Here are the top {len(insights)} insights for today:\n\n"
+        message = [f"*{self.digest_title}*\n"]
+        message.append(f"Here are the top {len(insights)} insights for today:\n")
         
         for i, insight in enumerate(insights, 1):
             summary = insight.get('summary', 'No summary available.')
             recommendation = insight.get('recommendation', 'No recommendation provided.')
             risk_flag = insight.get('risk_flag', False)
             
-            message += f"*{i}. {'🚨 ' if risk_flag else ''}Insight:*
-"
-            message += f"  - {summary[:150]}{'...' if len(summary) > 150 else ''}
-"
-            message += f"  - *Recommendation:* {recommendation[:100]}{'...' if len(recommendation) > 100 else ''}
-\n"
+            message.append(f"*{i}. {'🚨 ' if risk_flag else ''}Insight:*")
+            message.append(f"  - {summary[:150]}{'...' if len(summary) > 150 else ''}")
+            message.append(f"  - *Recommendation:* {recommendation[:100]}{'...' if len(recommendation) > 100 else ''}\n")
         
-        message += "Check the dashboard for full details and follow-up questions."
-        return message
+        message.append("Check the dashboard for full details and follow-up questions.")
+        return "\n".join(message)
     
     def format_email_content(self, insights: List[Dict[str, Any]]) -> str:
         """
@@ -264,4 +236,4 @@ def render_digest_bot_ui(history: List[Dict[str, Any]]):
     
     # Render preview if available
     if 'digest_bot' in st.session_state and 'output_format' in st.session_state:
-        st.session_state['digest_bot'].render_digest_preview(st.session_state['output_format']) 
+        st.session_state['digest_bot'].render_digest_preview(st.session_state['output_format'])

@@ -10,7 +10,71 @@ from typing import Optional, Dict, Any
 from datetime import datetime
 import logging
 
+from src.utils.data_io import load_data, validate_data
+from src.utils.errors import ValidationError
+
 logger = logging.getLogger(__name__)
+
+class DataUploadManager:
+    """Handles data upload and validation."""
+    
+    def __init__(self):
+        """Initialize the data upload manager."""
+        self._initialize_session_state()
+    
+    def _initialize_session_state(self) -> None:
+        """Initialize session state variables."""
+        if 'validated_data' not in st.session_state:
+            st.session_state.validated_data = None
+        if 'validation_summary' not in st.session_state:
+            st.session_state.validation_summary = None
+        if 'upload_timestamp' not in st.session_state:
+            st.session_state.upload_timestamp = None
+    
+    def render_upload_widget(self) -> None:
+        """Render the file upload widget."""
+        uploaded_file = st.file_uploader(
+            "Upload your CSV or Excel file",
+            type=["csv", "xlsx", "xls"],
+            help="Upload a CSV or Excel file with your dealership data"
+        )
+        
+        if uploaded_file is not None:
+            try:
+                with st.spinner("Validating data..."):
+                    df = load_data(uploaded_file)
+                    validation_result = validate_data(df)
+                    
+                st.session_state.validated_data = df
+                st.session_state.validation_summary = validation_result
+                st.session_state.upload_timestamp = datetime.now()
+                
+                st.success(f"✅ File uploaded and validated successfully: {uploaded_file.name}")
+                self.render_validation_results()
+                
+            except ValidationError as e:
+                st.error(f"❌ Validation error: {str(e)}")
+                st.session_state.validated_data = None
+                st.session_state.validation_summary = {"status": "error", "message": str(e)}
+            except Exception as e:
+                logger.exception("Error processing uploaded file")
+                st.error(f"❌ Error processing your file: {str(e)}")
+                st.session_state.validated_data = None
+                st.session_state.validation_summary = {"status": "error", "message": str(e)}
+    
+    def render_validation_results(self) -> None:
+        """Render validation results."""
+        if st.session_state.validation_summary:
+            with st.expander("Data Validation Results", expanded=True):
+                render_validation_summary(st.session_state.validation_summary)
+    
+    def has_valid_data(self) -> bool:
+        """Check if valid data is available."""
+        return st.session_state.validated_data is not None and isinstance(st.session_state.validated_data, pd.DataFrame)
+    
+    def get_data(self) -> Optional[pd.DataFrame]:
+        """Get the validated data."""
+        return st.session_state.validated_data if self.has_valid_data() else None
 
 def render_validation_summary(summary: Dict[str, Any]):
     """Render a validation summary with metrics and charts."""

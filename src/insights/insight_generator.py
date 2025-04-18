@@ -6,10 +6,14 @@ import pandas as pd
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 import logging
+import redis
 from .intent_manager import intent_manager
-from .models import InsightResult
+from .models import InsightResult, FeedbackEntry
 
 logger = logging.getLogger(__name__)
+
+# Initialize Redis client
+redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 
 class InsightGenerator:
     """Generates insights using intent-based analysis."""

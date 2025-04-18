@@ -15,9 +15,87 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from dataclasses import dataclass
 
 from .constants import SECURITY
 from .logging_config import log_error, log_info, log_warning
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class NovaCredential:
+    """Represents a set of vendor credentials."""
+    vendor_id: str
+    username: Optional[str] = None
+    password: Optional[str] = None
+    api_key: Optional[str] = None
+    client_id: Optional[str] = None
+    client_secret: Optional[str] = None
+    dealer_code: Optional[str] = None
+    dealer_id: Optional[str] = None
+    environment: Optional[str] = None
+    metadata: Dict[str, Any] = None
+    created_at: datetime = None
+    updated_at: datetime = None
+
+    def __post_init__(self):
+        """Initialize timestamps if not provided."""
+        if self.created_at is None:
+            self.created_at = datetime.now()
+        if self.updated_at is None:
+            self.updated_at = self.created_at
+        if self.metadata is None:
+            self.metadata = {}
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert credential to dictionary format."""
+        return {
+            "vendor_id": self.vendor_id,
+            "username": self.username,
+            "password": self.password,
+            "api_key": self.api_key,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "dealer_code": self.dealer_code,
+            "dealer_id": self.dealer_id,
+            "environment": self.environment,
+            "metadata": self.metadata,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'NovaCredential':
+        """Create credential from dictionary format."""
+        # Convert ISO format strings back to datetime objects
+        if "created_at" in data and data["created_at"]:
+            data["created_at"] = datetime.fromisoformat(data["created_at"])
+        if "updated_at" in data and data["updated_at"]:
+            data["updated_at"] = datetime.fromisoformat(data["updated_at"])
+        return cls(**data)
+
+    def update(self, updates: Dict[str, Any]) -> None:
+        """Update credential fields."""
+        for key, value in updates.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        self.updated_at = datetime.now()
+
+# Vendor configurations
+VENDOR_CONFIGS = {
+    'vinsolutions': {
+        'required_fields': ['username', 'password', 'api_key'],
+        'optional_fields': ['dealer_id'],
+        'auth_url': 'https://api.vinsolutions.com/auth',
+        'base_url': 'https://api.vinsolutions.com/v1'
+    },
+    'dealersocket': {
+        'required_fields': ['client_id', 'client_secret', 'dealer_code'],
+        'optional_fields': ['environment'],
+        'auth_url': 'https://auth.dealersocket.com/oauth/token',
+        'base_url': 'https://api.dealersocket.com/v2'
+    }
+}
 
 class CredentialManager:
     """Manages secure storage and retrieval of vendor credentials."""
@@ -38,11 +116,14 @@ class CredentialManager:
                 "system",
                 "credential_init"
             )
+        # Ensure master_key is bytes
+        if isinstance(master_key, str):
+            master_key_bytes = master_key.encode()
+        else:
+            master_key_bytes = master_key
         
         # Derive encryption keys
-        self.keys = self._derive_keys(
-            master_key if isinstance(master_key, bytes) else master_key.encode()
-        )
+        self.keys = self._derive_keys(master_key_bytes)
         
         # Set up storage paths
         self.storage_path = os.path.join(os.path.dirname(__file__), "storage", "credentials")
@@ -145,7 +226,14 @@ class CredentialManager:
                 if creds:
                     # Store with new keys
                     self.keys = new_keys
-                    self.store_credentials(vendor_id, creds)
+                    # Update the credentials object with new data
+                    # Inflate credentials to NovaCredential, update, and store
+                    cred_obj = NovaCredential.from_dict(creds)
+                    # Prepare new credential dict
+                    new_creds = cred_obj.to_dict()
+                    # Store with new keys
+                    self.keys = new_keys
+                    self.store_credentials(vendor_id, new_creds)
             
             # Update rotation timestamp
             self.last_rotation = datetime.now()
@@ -284,14 +372,16 @@ class CredentialManager:
                 return False
             
             # Update credentials
-            current_creds.update(updates)
+            current_creds_obj = NovaCredential.from_dict(current_creds)
+            current_creds_obj.update(updates)
+            updated_dict = current_creds_obj.to_dict()
             
             # Validate updated credentials
-            if not self._validate_credentials(vendor_id, current_creds):
+            if not self._validate_credentials(vendor_id, updated_dict):
                 return False
             
             # Store updated credentials
-            return self.store_credentials(vendor_id, current_creds)
+            return self.store_credentials(vendor_id, updated_dict)
             
         except Exception as e:
             log_error(e, vendor_id, "update_credentials")
@@ -390,519 +480,3 @@ class CredentialManager:
                 return False
         
         return True
-
-class NovaCredential:
-    """
-    Secure credential management for Nova Act systems.
-    Handles encryption, storage, and retrieval of sensitive credentials.
-    """
-    
-    def __init__(self, 
-                storage_path: str = "config/credentials.enc", 
-                master_key: Optional[str] = None,
-                auto_save: bool = True):
-        """
-        Initialize the credential manager.
-        
-        Args:
-            storage_path: Path to store encrypted credentials
-            master_key: Master key for encryption (if None, will check environment)
-            auto_save: Whether to automatically save credentials after changes
-        """
-        self.logger = logging.getLogger("NovaCredential")
-        self.storage_path = storage_path
-        self.auto_save = auto_save
-        self._credentials = {}
-        self._metadata = {
-            "last_modified": datetime.now().isoformat(),
-            "credential_count": 0,
-            "version": "1.0"
-        }
-        
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(storage_path), exist_ok=True)
-        
-        # Initialize encryption key
-        self._initialize_encryption(master_key)
-        
-        # Load credentials if file exists
-        if os.path.exists(storage_path):
-            self.load()
-    
-    def _initialize_encryption(self, master_key: Optional[str] = None):
-        """Initialize encryption with the master key."""
-        # Try to get key from parameter, environment, or generate a new one
-        if master_key:
-            self.master_key = master_key
-        elif "NOVA_MASTER_KEY" in os.environ:
-            self.master_key = os.environ["NOVA_MASTER_KEY"]
-        else:
-            # For development only - in production, a key should be provided
-            self.logger.warning("No master key provided. Generating a temporary one.")
-            self.master_key = base64.urlsafe_b64encode(os.urandom(32)).decode()
-        
-        # Derive a key from the master key
-        salt = b'NovaCredentialSalt'  # In production, this should be unique and stored
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=salt,
-            iterations=100000,
-        )
-        key = base64.urlsafe_b64encode(kdf.derive(self.master_key.encode()))
-        self.cipher = Fernet(key)
-    
-    def add_credential(self, 
-                     system_id: str, 
-                     username: str, 
-                     password: str, 
-                     metadata: Dict[str, Any] = None) -> bool:
-        """
-        Add or update credentials for a system.
-        
-        Args:
-            system_id: Identifier for the system (e.g., 'salesforce', 'aws')
-            username: Username for the system
-            password: Password for the system
-            metadata: Additional metadata about this credential
-            
-        Returns:
-            bool: True if successful
-        """
-        # Create credential entry
-        credential = {
-            "username": username,
-            "password": password,
-            "created": datetime.now().isoformat(),
-            "last_modified": datetime.now().isoformat(),
-            "last_used": None,
-            "metadata": metadata or {}
-        }
-        
-        # Store in the credentials dictionary
-        self._credentials[system_id] = credential
-        
-        # Update metadata
-        self._metadata["last_modified"] = datetime.now().isoformat()
-        self._metadata["credential_count"] = len(self._credentials)
-        
-        # Save if auto_save is enabled
-        if self.auto_save:
-            return self.save()
-        
-        return True
-    
-    def get_credential(self, system_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Retrieve credentials for a system.
-        
-        Args:
-            system_id: Identifier for the system
-            
-        Returns:
-            Dict containing the credentials or None if not found
-        """
-        if system_id not in self._credentials:
-            return None
-        
-        # Update last used timestamp
-        self._credentials[system_id]["last_used"] = datetime.now().isoformat()
-        
-        # Return a copy to prevent accidental modification
-        credential = dict(self._credentials[system_id])
-        
-        return credential
-    
-    def delete_credential(self, system_id: str) -> bool:
-        """
-        Delete credentials for a system.
-        
-        Args:
-            system_id: Identifier for the system
-            
-        Returns:
-            bool: True if deleted, False if not found
-        """
-        if system_id not in self._credentials:
-            return False
-        
-        # Remove from dictionary
-        del self._credentials[system_id]
-        
-        # Update metadata
-        self._metadata["last_modified"] = datetime.now().isoformat()
-        self._metadata["credential_count"] = len(self._credentials)
-        
-        # Save if auto_save is enabled
-        if self.auto_save:
-            return self.save()
-        
-        return True
-    
-    def list_credentials(self) -> List[Dict[str, Any]]:
-        """
-        List all stored credentials (without passwords).
-        
-        Returns:
-            List of credential info dictionaries
-        """
-        result = []
-        
-        for system_id, credential in self._credentials.items():
-            # Create a sanitized version without the password
-            sanitized = {
-                "system_id": system_id,
-                "username": credential["username"],
-                "created": credential["created"],
-                "last_modified": credential["last_modified"],
-                "last_used": credential["last_used"],
-                "metadata": credential["metadata"]
-            }
-            result.append(sanitized)
-        
-        return result
-    
-    def save(self) -> bool:
-        """
-        Save credentials to encrypted storage.
-        
-        Returns:
-            bool: True if successful
-        """
-        try:
-            # Prepare data for encryption
-            data = {
-                "metadata": self._metadata,
-                "credentials": self._credentials
-            }
-            
-            # Convert to JSON and encrypt
-            json_data = json.dumps(data)
-            encrypted_data = self.cipher.encrypt(json_data.encode())
-            
-            # Write to file
-            with open(self.storage_path, "wb") as f:
-                f.write(encrypted_data)
-            
-            self.logger.info(f"Saved {len(self._credentials)} credentials to {self.storage_path}")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to save credentials: {str(e)}")
-            return False
-    
-    def load(self) -> bool:
-        """
-        Load credentials from encrypted storage.
-        
-        Returns:
-            bool: True if successful
-        """
-        try:
-            # Check if file exists
-            if not os.path.exists(self.storage_path):
-                self.logger.warning(f"Credentials file not found: {self.storage_path}")
-                return False
-            
-            # Read and decrypt
-            with open(self.storage_path, "rb") as f:
-                encrypted_data = f.read()
-            
-            # Decrypt and parse JSON
-            json_data = self.cipher.decrypt(encrypted_data).decode()
-            data = json.loads(json_data)
-            
-            # Extract data
-            self._metadata = data.get("metadata", {})
-            self._credentials = data.get("credentials", {})
-            
-            self.logger.info(f"Loaded {len(self._credentials)} credentials from {self.storage_path}")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to load credentials: {str(e)}")
-            return False
-    
-    def verify_credential(self, system_id: str, test_func: callable = None) -> Dict[str, Any]:
-        """
-        Verify if a credential is valid by testing it.
-        
-        Args:
-            system_id: Identifier for the system
-            test_func: Function that takes (username, password) and returns (success, message)
-                If None, just checks if credential exists
-                
-        Returns:
-            Dict with verification results
-        """
-        result = {
-            "system_id": system_id,
-            "exists": False,
-            "verified": False,
-            "message": None,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        # Check if credential exists
-        credential = self.get_credential(system_id)
-        if not credential:
-            result["message"] = f"No credentials found for {system_id}"
-            return result
-        
-        result["exists"] = True
-        
-        # If no test function, just return existence
-        if not test_func:
-            result["message"] = "Credential exists (no verification performed)"
-            return result
-        
-        # Test the credential
-        try:
-            success, message = test_func(credential["username"], credential["password"])
-            result["verified"] = success
-            result["message"] = message
-            
-            # Update metadata on the credential
-            if success:
-                self._credentials[system_id]["metadata"]["last_verified"] = datetime.now().isoformat()
-                self._credentials[system_id]["metadata"]["verification_status"] = "success"
-            else:
-                self._credentials[system_id]["metadata"]["last_verification_attempt"] = datetime.now().isoformat()
-                self._credentials[system_id]["metadata"]["verification_status"] = "failed"
-                self._credentials[system_id]["metadata"]["last_error"] = message
-            
-            # Save changes if auto_save
-            if self.auto_save:
-                self.save()
-                
-        except Exception as e:
-            result["verified"] = False
-            result["message"] = f"Verification error: {str(e)}"
-            
-            # Update metadata
-            self._credentials[system_id]["metadata"]["last_verification_attempt"] = datetime.now().isoformat()
-            self._credentials[system_id]["metadata"]["verification_status"] = "error"
-            self._credentials[system_id]["metadata"]["last_error"] = str(e)
-            
-            if self.auto_save:
-                self.save()
-        
-        return result
-    
-    def update_credential_metadata(self, system_id: str, metadata_updates: Dict[str, Any]) -> bool:
-        """
-        Update metadata for a credential.
-        
-        Args:
-            system_id: Identifier for the system
-            metadata_updates: Dictionary of metadata to update
-            
-        Returns:
-            bool: True if successful
-        """
-        if system_id not in self._credentials:
-            return False
-        
-        # Update metadata
-        self._credentials[system_id]["metadata"].update(metadata_updates)
-        self._credentials[system_id]["last_modified"] = datetime.now().isoformat()
-        
-        # Update global metadata
-        self._metadata["last_modified"] = datetime.now().isoformat()
-        
-        # Save if auto_save is enabled
-        if self.auto_save:
-            return self.save()
-        
-        return True
-    
-    def export_credentials(self, password: str, output_path: str) -> bool:
-        """
-        Export credentials to a portable encrypted file with a specific password.
-        Useful for transferring credentials between environments.
-        
-        Args:
-            password: Password to protect the export
-            output_path: Path to save the export file
-            
-        Returns:
-            bool: True if successful
-        """
-        try:
-            # Create key from password
-            salt = os.urandom(16)
-            kdf = PBKDF2HMAC(
-                algorithm=hashes.SHA256(),
-                length=32,
-                salt=salt,
-                iterations=100000,
-            )
-            key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
-            cipher = Fernet(key)
-            
-            # Prepare data for export
-            export_data = {
-                "metadata": self._metadata,
-                "credentials": self._credentials,
-                "export_date": datetime.now().isoformat(),
-                "export_version": "1.0"
-            }
-            
-            # Encrypt the data
-            json_data = json.dumps(export_data)
-            encrypted_data = cipher.encrypt(json_data.encode())
-            
-            # Combine salt and encrypted data
-            export_bytes = salt + encrypted_data
-            
-            # Write to file
-            with open(output_path, "wb") as f:
-                f.write(export_bytes)
-            
-            self.logger.info(f"Exported {len(self._credentials)} credentials to {output_path}")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to export credentials: {str(e)}")
-            return False
-    
-    def import_credentials(self, password: str, import_path: str, 
-                         overwrite_existing: bool = False) -> Dict[str, Any]:
-        """
-        Import credentials from an exported file.
-        
-        Args:
-            password: Password used to protect the export
-            import_path: Path to the export file
-            overwrite_existing: Whether to overwrite existing credentials
-            
-        Returns:
-            Dict with import results
-        """
-        result = {
-            "success": False,
-            "message": "",
-            "imported_count": 0,
-            "skipped_count": 0,
-            "error_count": 0
-        }
-        
-        try:
-            # Read the export file
-            with open(import_path, "rb") as f:
-                export_bytes = f.read()
-            
-            # Extract salt and encrypted data
-            salt = export_bytes[:16]
-            encrypted_data = export_bytes[16:]
-            
-            # Create key from password and salt
-            kdf = PBKDF2HMAC(
-                algorithm=hashes.SHA256(),
-                length=32,
-                salt=salt,
-                iterations=100000,
-            )
-            key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
-            cipher = Fernet(key)
-            
-            # Decrypt and parse
-            try:
-                json_data = cipher.decrypt(encrypted_data).decode()
-                import_data = json.loads(json_data)
-            except Exception:
-                result["message"] = "Invalid password or corrupted export file"
-                return result
-            
-            # Process import
-            imported_credentials = import_data.get("credentials", {})
-            
-            for system_id, credential in imported_credentials.items():
-                try:
-                    if system_id in self._credentials and not overwrite_existing:
-                        result["skipped_count"] += 1
-                        continue
-                    
-                    # Add the credential
-                    self._credentials[system_id] = credential
-                    result["imported_count"] += 1
-                    
-                except Exception:
-                    result["error_count"] += 1
-            
-            # Update metadata
-            self._metadata["last_modified"] = datetime.now().isoformat()
-            self._metadata["credential_count"] = len(self._credentials)
-            
-            # Save changes
-            if self.auto_save:
-                self.save()
-            
-            result["success"] = True
-            result["message"] = f"Imported {result['imported_count']} credentials"
-            
-            self.logger.info(f"Imported {result['imported_count']} credentials from {import_path}")
-            return result
-            
-        except Exception as e:
-            result["message"] = f"Import failed: {str(e)}"
-            self.logger.error(f"Failed to import credentials: {str(e)}")
-            return result
-    
-    def get_credential_hash(self, system_id: str) -> Optional[str]:
-        """
-        Get a secure hash of the credential for comparison without exposing the secret.
-        
-        Args:
-            system_id: Identifier for the system
-            
-        Returns:
-            str: Hash of the credential or None if not found
-        """
-        credential = self.get_credential(system_id)
-        if not credential:
-            return None
-        
-        # Create a hash of username + password
-        hash_input = f"{credential['username']}:{credential['password']}"
-        hash_value = hashlib.sha256(hash_input.encode()).hexdigest()
-        
-        return hash_value
-    
-    def rotate_encryption_key(self, new_master_key: str) -> bool:
-        """
-        Rotate the encryption key for enhanced security.
-        
-        Args:
-            new_master_key: New master key to use for encryption
-            
-        Returns:
-            bool: True if successful
-        """
-        try:
-            # First, save current state with current key
-            self.save()
-            
-            # Store current data
-            current_credentials = self._credentials
-            current_metadata = self._metadata
-            
-            # Initialize with new key
-            self._initialize_encryption(new_master_key)
-            
-            # Restore data
-            self._credentials = current_credentials
-            self._metadata = current_metadata
-            self._metadata["last_modified"] = datetime.now().isoformat()
-            
-            # Save with new key
-            success = self.save()
-            
-            if success:
-                self.logger.info("Encryption key rotated successfully")
-            
-            return success
-            
-        except Exception as e:
-            self.logger.error(f"Failed to rotate encryption key: {str(e)}")
-            return False

@@ -1,0 +1,13 @@
+rules_version: "2025-05-01T12:00:00Z"
+lead_sources:
+  AutoTrader:
+    - autotrader
+    - auto trader
+personnel_titles:
+  SalesRep:
+    - sales rep
+    - sales_rep
+vehicle_types:
+  SUV:
+    - sport utility vehicle
+    - suv 
