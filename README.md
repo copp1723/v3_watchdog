@@ -1,140 +1,98 @@
-# Watchdog AI - Dealership Analytics
+```markdown
+[![CI](https://github.com/copp1723/v3_watchdog/actions/workflows/ci.yml/badge.svg)](https://github.com/copp1723/v3_watchdog/actions/workflows/ci.yml)
 
-![Version](https://img.shields.io/badge/version-0.1.0--alpha-blue)
-![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+# Watchdog AI – Dealership Analytics
+
+![Version](https://img.shields.io/badge/version-0.1.0--alpha-blue)  
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)  
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Intelligent analytics platform for automotive dealerships, powered by AI.
 
-## Documentation
+---
 
-- [Getting Started](docs/onboarding.md) - Developer onboarding guide
-- [Infrastructure](docs/infra.md) - Infrastructure and deployment details
-- [Security & Compliance](docs/infra.md#backup-and-retention) - Backup and retention policies
-- [Development Roadmap](docs/ROADMAP.md) - Project development plans and status
-- [API Reference](docs/api.md) - API documentation
-- [Changelog](CHANGELOG.md) - Version history and changes
+## 📚 Documentation
 
-## Features
+- **Getting Started**: [docs/onboarding.md](docs/onboarding.md)  
+- **Infrastructure**: [docs/infra.md](docs/infra.md)  
+- **Security & Compliance**: [docs/infra.md#backup-and-retention](docs/infra.md#backup-and-retention)  
+- **Development Roadmap**: [docs/ROADMAP.md](docs/ROADMAP.md)  
+- **API Reference**: [docs/api.md](docs/api.md)  
+- **Changelog**: [CHANGELOG.md](CHANGELOG.md)  
+
+---
+
+## 🚀 Features
 
 ### 🔍 Smart Insights
-- Natural language queries about your dealership data
-- AI-powered analysis of sales, leads, and inventory
-- Interactive visualizations and downloadable reports
+- Natural language querying of dealership data  
+- AI-powered analysis of sales, leads, and inventory  
+- Interactive visualizations and downloadable reports  
 
 ![Lead Source Analysis](assets/tech_grid.png)
 
 ### 💬 Guided Analysis
-Try asking questions like:
-- "What was our highest-value lead source last month?"
-- "Show me our top-performing vehicles by revenue"
-- "Compare website leads vs walk-in performance"
+Ask questions like:  
+- “What was our highest-value lead source last month?”  
+- “Show me our top-performing vehicles by revenue”  
+- “Compare website leads vs walk-in performance”  
 
 ### 📊 Data Validation
-- Automatic schema validation
-- Data quality scoring
-- Detailed validation reports
-- Support for CSV and Excel files
+- Automatic schema validation  
+- Data quality scoring  
+- Detailed validation reports  
+- Support for CSV and Excel  
 
-### 📱 Mobile-First Design
-- Responsive layout for all devices
-- Touch-friendly interface
-- Optimized performance
+### 📱 Mobile‑First Design
+- Responsive layout for all devices  
+- Touch-friendly interface  
+- Optimized performance  
 
-## Getting Started
+---
+
+## 🏁 Getting Started
 
 ### Method 1: Local Python Setup
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/watchdog-ai.git
-cd watchdog-ai
-```
-
-2. Install dependencies:
-```bash
+git clone https://github.com/copp1723/v3_watchdog.git
+cd v3_watchdog
 pip install -r requirements.txt
-```
-
-3. Run the application:
-```bash
 streamlit run src/ui/streamlit_app.py
 ```
 
-4. Open your browser to http://localhost:8501
+Then open your browser at [http://localhost:8501](http://localhost:8501).
 
 ### Method 2: Docker (Recommended)
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/watchdog-ai.git
-cd watchdog-ai
-```
-
-2. Start the application with Docker Compose:
-```bash
-docker-compose up
-```
-
-3. Open your browser to http://localhost:8501
-
-4. To rebuild the container after changes:
-```bash
+git clone https://github.com/copp1723/v3_watchdog.git
+cd v3_watchdog
 docker-compose up --build
 ```
 
-5. To stop the containers:
-```bash
-docker-compose down
-```
+Browse to [http://localhost:8501](http://localhost:8501).  
+To stop: `docker-compose down`
 
-## Data Requirements
+---
 
-Your data file should include these required columns. The system supports multiple column name formats:
+## 📂 Data Requirements
 
-### Sale Date (Any of these formats):
-- SaleDate (preferred)
-- sale_date
-- Sale_Date
-- SALE_DATE
-- date
-- sale date
+Your CSV/Excel must include these core fields (multiple header variants supported):
 
-### Sale Price:
-- SalePrice (preferred)
-- sale_price
-- Sale_Price
-- SALE_PRICE
-- price
-- sale price
+| Canonical       | Variants                                     |
+| --------------- | -------------------------------------------- |
+| **Sale Date**   | SaleDate, sale_date, date, sale date         |
+| **Sale Price**  | SalePrice, sale_price, price, sale price     |
+| **Vehicle VIN** | VIN, vehicle_vin, Vehicle_VIN                |
+| **Total Gross** | TotalGross, total_gross, Gross_Profit        |
+| **Lead Source** | LeadSource, lead_source, source              |
 
-### Vehicle VIN:
-- VIN (preferred)
-- vehicle_vin
-- VehicleVIN
-- Vehicle_VIN
-- VEHICLE_VIN
-- vin
+*(See full list in README’s “Supported Header Variants” section below.)*
 
-### Total Gross:
-- TotalGross (preferred)
-- total_gross
-- Total_Gross
-- TOTAL_GROSS
-- Gross_Profit
-- gross profit
+---
 
-### Lead Source:
-- LeadSource (preferred)
-- lead_source
-- Lead_Source
-- LEAD_SOURCE
-- source
-- lead source
-
-## Sample Data
-
-Here's an example of a valid CSV file format:
+## 📝 Sample Data
 
 ```csv
 LeadSource,TotalGross,VIN,SaleDate,SalePrice
@@ -143,90 +101,105 @@ CarGurus,3000.00,1HGCM82633A123457,2024-01-02,30000.00
 Walk-in,2800.00,1HGCM82633A123458,2024-01-03,28000.00
 ```
 
-You can find this sample data in `examples/sample_data.csv`. Use this as a template for formatting your own data files.
+Use `examples/sample_data.csv` as a template.
 
-## Development
+---
+
+## 🛠 Development
 
 ### Architecture
-- Streamlit for UI components
-- Altair for interactive visualizations
-- Pandas for data processing
-- Modular design with reusable components
+- **UI**: Streamlit, Altair  
+- **Data**: Pandas, modular processing  
+- **AI**: LLM integration for summarization & insights  
 
-### Theme Customization
-Theme constants are centralized in `src/ui/theme.py`. Customize colors, spacing, animations, and more.
+### Theme
+Centralized constants in `src/ui/theme.py`.
 
 ### Performance
-- Data loading and processing is cached
-- Lazy loading for large datasets
-- Optimized chart rendering
+- Cached data loading  
+- Lazy evaluation for large datasets  
+- Optimized chart rendering  
 
-## Contributing
+---
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 🤝 Contributing
 
-## License
+1. Fork the repo  
+2. Create a branch: `git checkout -b feature/xyz`  
+3. Commit: `git commit -m "Add xyz"`  
+4. Push: `git push origin feature/xyz`  
+5. Open a PR  
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+---
 
-## Data Format
+## 📜 License
 
-The application expects CSV or Excel files with the following columns:
-- `date`: Date of the sale (YYYY-MM-DD format)
-- `lead_source`: Source of the lead (e.g., cargurus, autotrader)
-- `sales_rep`: Name of the sales representative
-- `vehicle_model`: Model of the vehicle sold
-- `sale_price`: Price of the sale (numeric)
+MIT — see [LICENSE](LICENSE) for details.
 
-### Supported Header Variants
+---
 
-The application attempts to normalize column headers. It recognizes common variations (case-insensitive, ignoring spaces and underscores) for canonical columns. Examples:
+## 🔄 Supported Header Variants
 
-- **LeadSource:** `leadsource`, `lead source`, `lead_source`
-- **LeadSource Category:** `leadsource category`, `lead_source_category`, `category`
-- **DealNumber:** `dealnumber`, `deal number`, `deal_number`, `deal id`
-- **SellingPrice:** `sellingprice`, `selling price`, `sale price`, `sale_price`, `price`
-- **FrontGross:** `frontgross`, `front gross`, `front_gross`, `frontend gross`
-- **BackGross:** `backgross`, `back gross`, `back_gross`, `backend gross`, `f&i gross`
-- **Total Gross:** `total gross`, `total_gross`, `gross`, `totalgross`
-- **SalesRepName:** `salesrepname`, `sales rep name`, `sales_rep_name`, `salesperson`, `sales rep`, `sales_rep`
-- **SplitSalesRep:** `splitsalesrep`, `split sales rep`, `split_sales_rep`, `split salesperson`
-- **VehicleYear:** `vehicleyear`, `vehicle year`, `vehicle_year`, `year`
-- **VehicleMake:** `vehiclemake`, `vehicle make`, `vehicle_make`, `make`
-- **VehicleModel:** `vehiclemodel`, `vehicle model`, `vehicle_model`, `model`
-- **VehicleStockNumber:** `vehiclestocknumber`, `vehicle stock number`, `vehicle_stock_number`, `stock number`, `stock_number`, `stock #`
-- **VehicleVIN:** `vehiclevin`, `vehicle vin`, `vehicle_vin`, `vin`
-- **Sale_Date:** `sale_date`, `sale date`, `saledate`, `date`, `deal date`
+The system normalizes headers (case‑insensitive, spaces/underscores ignored):
 
-*Note: If multiple headers map to the same canonical name, the first one encountered is typically used.*
+- **LeadSource**: `leadsource`, `lead source`, `lead_source`  
+- **SellingPrice**: `sellingprice`, `sale_price`, `price`  
+- **SalesRepName**: `salesrepname`, `sales rep`, `sales_rep`  
+- **VehicleModel**: `vehiclemodel`, `vehicle model`, `model`  
+- **Sale_Date**: `sale_date`, `saledate`, `deal date`  
+*(…plus others defined in code.)*
 
-## Project Structure
+---
 
-- `src/`: Source code
-  - `assets/`: Static assets
-    - `watchdog_logo.png`: Application logo (New)
-    - `tech_grid.png`: Background image
+## 🗂 Project Structure
 
-## Branding
+```
+├── assets/           # Static images (logo, tech_grid.png)
+├── config/           # Normalization rules, etc.
+├── docs/             # Markdown docs & guides
+├── examples/         # Sample data
+├── src/
+│   ├── insights/     # Insight logic & prompts
+│   ├── ui/           # Streamlit UI code
+│   ├── utils/        # I/O, normalization, audit, session
+│   ├── validators/   # Validation modules & registry
+│   └── scheduler/    # Report scheduling components
+├── tests/            # Unit & E2E tests
+├── docker-compose.yml
+├── Dockerfile
+├── README.md
+└── CHANGELOG.md
+```
 
-The application logo is located at `assets/watchdog_logo.png`.
-The header uses Streamlit's native `st.columns` and `st.image` for layout.
+---
 
-*(Add screenshot of the new header here)*
+## 🆕 Recent Updates
 
-## Recent Updates
+### v0.1.0‑alpha (April 2023)
+- Initial alpha release  
+- Core framework & component architecture  
+- LLM‑powered insight system  
+- Modular report scheduler  
+- Nova ACT DMS integration  
 
-### v0.1.0-alpha (April 2023)
-- Initial alpha release
-- Core platform framework and component architecture
-- Web-based UI with responsive design
-- Data validation framework with customizable rules
-- Insight generation system with LLM integration
-- Modular report scheduler system
-- Nova ACT integration for DMS connectivity
+See [CHANGELOG.md](CHANGELOG.md) for full history.
 
-For a complete list of changes, see the [CHANGELOG](CHANGELOG.md).
+### Containerized Dev Workflow
+
+1. **Build Docker image**  
+   ```bash
+   docker build -t v3_watchdog .
+   ```
+2. **Run container**  
+   ```bash
+   docker run -p 8501:8501 --env-file .env v3_watchdog
+   ```
+3. **Or with Docker Compose**  
+   ```bash
+   docker-compose up --build
+   ```
+4. **Access**: [http://localhost:8501](http://localhost:8501)  
+
+---
+
+*Feel free to reach out if you have any questions or need further guidance!*
