@@ -9,9 +9,13 @@ import os
 import pandas as pd
 import logging
 import sentry_sdk
+import redis
 from typing import Dict, List, Any, Optional, Union
 from functools import lru_cache
 from rapidfuzz import fuzz
+
+# Initialize Redis client
+redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 
 logger = logging.getLogger(__name__)
 
