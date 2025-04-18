@@ -1,13 +1,112 @@
 rules_version: "2025-05-01T12:00:00Z"
+fuzzy_threshold: 0.8
+
+# Name patterns for personnel
+name_patterns:
+  - ["john smith", "john.smith", "j. smith", "j smith", "j.smith"]
+  - ["alice jones", "a. jones", "alice.jones", "a jones", "a.jones"]
+
+# Lead source categories
 lead_sources:
+  CarGurus:
+    - cargurus.com
+    - car gurus
+    - car guru
+    - carguru
+    - car-gurus
+    - cargurus
+    - car gurus com
   AutoTrader:
-    - autotrader
     - auto trader
+    - autotrader.com
+    - auto-trader
+    - autotrader
+    - auto trader com
+  Cars.com:
+    - cars.com
+    - carscom
+    - cars
+  Facebook:
+    - fb
+    - facebook.com
+    - meta
+  Google:
+    - google ads
+    - google adwords
+    - google.com
+  Website:
+    - dealer website
+    - dealership website
+    - web
+    - www
+  Walk-In:
+    - walk in
+    - walkin
+    - walk-in
+  Phone:
+    - phone call
+    - call
+    - telephone
+  Email:
+    - e-mail
+    - mail
+    - electronic mail
+  Referral:
+    - refer
+    - reference
+    - word of mouth
+
+# Personnel titles
 personnel_titles:
   SalesRep:
+    - sales representative
+    - sales person
+    - salesperson
+    - sales associate
+    - sales consultant
     - sales rep
-    - sales_rep
+    - sales representative
+    - sales personnel
+  Manager:
+    - sales manager
+    - team lead
+    - team leader
+    - supervisor
+  Finance:
+    - finance manager
+    - f&i
+    - f&i manager
+    - financial services
+
+# Vehicle types
 vehicle_types:
   SUV:
     - sport utility vehicle
-    - suv 
+    - sport utility
+    - sports utility
+    - crossover
+    - cuv
+  Sedan:
+    - 4-door
+    - four door
+    - 4 door sedan
+  Truck:
+    - pickup
+    - pick-up
+    - pickup truck
+  Van:
+    - minivan
+    - passenger van
+    - cargo van
+  Coupe:
+    - 2-door
+    - two door
+    - sports car
+  Convertible:
+    - cabriolet
+    - roadster
+    - drop top
+  Wagon:
+    - estate
+    - station wagon
+    - touring
