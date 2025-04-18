@@ -1,19 +1,19 @@
 """
-Session management module for Watchdog AI.
+Audit logging module for Watchdog AI.
 """
 
 import redis
 import logging
 import json
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 # Configure Redis
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 0
 REDIS_PASSWORD = None
-SESSION_KEY_PREFIX = "watchdog:session:"
+AUDIT_LOG_KEY = "watchdog:audit_logs"
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -32,24 +32,19 @@ try:
 except Exception as e:
     logger.error(f"Failed to connect to Redis: {e}")
 
-def get_session_id() -> str:
-    """Get the current session ID."""
-    return datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-
-def record_action(session_id: str, action: str, details: Optional[Dict[str, Any]] = None) -> None:
-    """Record a user action in the session."""
+def log_audit_event(event_type: str, details: Dict[str, Any]) -> None:
+    """Log an audit event to Redis."""
     if not redis_client:
-        logger.error("Redis client not available for session recording")
+        logger.error("Redis client not available for audit logging")
         return
 
     try:
         event = {
             "timestamp": datetime.utcnow().isoformat(),
-            "action": action,
-            "details": details or {}
+            "event_type": event_type,
+            "details": details
         }
         
-        key = f"{SESSION_KEY_PREFIX}{session_id}"
-        redis_client.rpush(key, json.dumps(event))
+        redis_client.rpush(AUDIT_LOG_KEY, json.dumps(event))
     except Exception as e:
-        logger.error(f"Failed to record session action: {e}")
+        logger.error(f"Failed to log audit event: {e}")

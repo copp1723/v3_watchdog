@@ -1,3 +1,5 @@
+[![CI](https://github.com/copp1723/v3_watchdog/actions/workflows/ci.yml/badge.svg)](https://github.com/copp1723/v3_watchdog/actions/workflows/ci.yml)
+
 # Watchdog AI - Dealership Analytics
 
 Intelligent analytics platform for automotive dealerships, powered by AI.
@@ -180,3 +182,36 @@ The header uses Streamlit's native `st.columns` and `st.image` for layout.
 *(Add screenshot of the new header here)*
 
 ## Recent Updates
+
+
+## Containerized Dev Workflow
+
+To build and run the application using Docker:
+
+1.  **Build the Docker image:**
+    ```bash
+    docker build -t v3_watchdog .
+    ```
+
+2.  **Run the container:**
+    ```bash
+    # Make sure you have a .env file in the root directory or pass variables with -e
+    docker run -p 8501:8501 --env-file .env v3_watchdog
+    ```
+    *   Replace `.env` with the path to your environment file if it's named differently or located elsewhere.
+    *   You can also pass environment variables directly using the `-e` flag (e.g., `-e SENTRY_DSN=your_dsn`).
+
+Alternatively, use Docker Compose for a simpler setup:
+
+1.  **Build and run services:**
+    ```bash
+    # Ensure you have a .env file in the root directory for environment variables
+    docker-compose up --build
+    ```
+    This command reads the `docker-compose.yml` file, builds the `web` service image (if it doesn't exist or needs updating), and starts the container, mapping port 8501. It automatically picks up variables from a `.env` file in the same directory.
+
+2.  **Access the application:**
+    Open your web browser and navigate to `http://localhost:8501`.
+
+3.  **Stop the services:**
+    Press `Ctrl+C` in the terminal where `docker-compose up` is running.

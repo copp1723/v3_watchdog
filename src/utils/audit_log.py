@@ -1,7 +1,38 @@
-import json
+"""
+Audit logging module for Watchdog AI.
+"""
+
 import os
-from datetime import datetime
+import redis
+import logging
+import json
 import sentry_sdk
+from datetime import datetime
+from typing import Dict, Any
+
+# Configure Redis
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
+REDIS_PASSWORD = None
+AUDIT_LOG_KEY = "watchdog:audit_logs"
+
+# Configure logger
+logger = logging.getLogger(__name__)
+
+# Initialize Redis client
+redis_client = None
+try:
+    redis_client = redis.Redis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        db=REDIS_DB,
+        password=REDIS_PASSWORD,
+        decode_responses=True
+    )
+    redis_client.ping()
+except Exception as e:
+    logger.error(f"Failed to connect to Redis: {e}")
 
 def log_audit_event(event_name: str, user_id: str, session_id: str, details: dict = None) -> None:
     """
@@ -28,7 +59,7 @@ def log_audit_event(event_name: str, user_id: str, session_id: str, details: dic
     }
     
     # Log to local file
-    audit_logger.info(json.dumps(log_entry))
+    logger.info(json.dumps(log_entry))
     
     # Mirror Sentry tags
     sentry_sdk.set_tag("audit_event", event_name)
@@ -45,7 +76,7 @@ def log_audit_event(event_name: str, user_id: str, session_id: str, details: dic
             redis_client.expire(AUDIT_LOG_KEY, ttl)
             
             # Log success
-            audit_logger.debug(f"Audit log for event '{event_name}' stored in Redis with TTL={ttl}s")
+            logger.debug(f"Audit log for event '{event_name}' stored in Redis with TTL={ttl}s")
         except Exception as e:
-            audit_logger.error(f"Failed to push audit log to Redis: {e}")
-            sentry_sdk.capture_exception(e) 
+            logger.error(f"Failed to push audit log to Redis: {e}")
+            sentry_sdk.capture_exception(e)

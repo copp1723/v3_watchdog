@@ -3,20 +3,11 @@ Direct data analysis functions for common insight queries.
 """
 
 import pandas as pd
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 import numpy as np
 
 def analyze_negative_profits(df: pd.DataFrame, gross_col: str) -> Tuple[Dict[str, Any], pd.DataFrame]:
-    """
-    Analyze negative profit transactions.
-    
-    Args:
-        df: DataFrame to analyze
-        gross_col: Name of the gross profit column
-        
-    Returns:
-        Tuple of (metrics dict, visualization DataFrame)
-    """
+    """Analyze negative profit transactions."""
     # Clean and convert gross profit values
     df[gross_col] = pd.to_numeric(df[gross_col].astype(str).str.replace(r'[\$,]', '', regex=True), errors='coerce')
     
@@ -48,17 +39,7 @@ def analyze_negative_profits(df: pd.DataFrame, gross_col: str) -> Tuple[Dict[str
     return metrics, viz_data
 
 def analyze_by_lead_source(df: pd.DataFrame, gross_col: str, source_col: str) -> Dict[str, Any]:
-    """
-    Analyze performance by lead source.
-    
-    Args:
-        df: DataFrame to analyze
-        gross_col: Name of the gross profit column
-        source_col: Name of the lead source column
-        
-    Returns:
-        Dictionary of analysis results
-    """
+    """Analyze performance by lead source."""
     # Clean gross profit values
     df[gross_col] = pd.to_numeric(df[gross_col].astype(str).str.replace(r'[\$,]', '', regex=True), errors='coerce')
     

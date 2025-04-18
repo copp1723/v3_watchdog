@@ -8,11 +8,12 @@ Uses Fernet symmetric encryption from the cryptography library.
 import os
 import base64
 import logging
+import pandas as pd
+import io
 from typing import Union, Optional
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.fernet import InvalidToken
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -247,7 +248,6 @@ def read_encrypted_csv(file_path: str, **kwargs) -> 'pd.DataFrame':
     Returns:
         DataFrame containing the decrypted data
     """
-    import pandas as pd
     import io
     
     try:

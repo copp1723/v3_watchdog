@@ -3,7 +3,7 @@ Statistical baseline calculations for Watchdog AI.
 """
 
 import numpy as np
-from scipy import stats
+from scipy import stats as scipy_stats
 import pandas as pd
 from typing import Dict, Any, Tuple, Optional
 
@@ -25,7 +25,7 @@ def calculate_baseline_stats(data: pd.Series) -> Dict[str, float]:
 
 def detect_anomalies(data: pd.Series, threshold: float = 2.0) -> Tuple[pd.Series, Dict[str, Any]]:
     """Detect anomalies using z-score method."""
-    z_scores = stats.zscore(data)
+    z_scores = scipy_stats.zscore(data)
     anomalies = data[abs(z_scores) > threshold]
     
     summary = {
@@ -39,7 +39,7 @@ def detect_anomalies(data: pd.Series, threshold: float = 2.0) -> Tuple[pd.Series
 def calculate_trend(data: pd.Series) -> Dict[str, float]:
     """Calculate trend statistics."""
     x = np.arange(len(data))
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x, data)
+    slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(x, data)
     
     return {
         "slope": float(slope),

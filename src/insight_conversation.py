@@ -11,6 +11,7 @@ import traceback
 import pandas as pd
 from datetime import datetime
 import logging
+import requests
 
 from src.insight_card import InsightOutputFormatter
 from src.insight_flow import PromptGenerator
@@ -133,14 +134,13 @@ class ConversationManager:
         if 'regenerate_insight' not in st.session_state:
             st.session_state['regenerate_insight'] = False
 
-    def generate_insight(self, prompt: str, validation_context: Dict[str, Any] = None, add_to_history: bool = True) -> Dict[str, Any]:
+    def generate_insight(self, prompt: str, validation_context: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Generate a new insight based on the user prompt and validation context.
         
         Args:
             prompt: The user's prompt
             validation_context: Context including DataFrame and validation info
-            add_to_history: Whether to add this interaction to history
             
         Returns:
             The insight response
@@ -182,13 +182,12 @@ class ConversationManager:
                 if not llm_response.get("is_error"):
                     response = llm_response
             
-            # Add to history if requested
-            if add_to_history:
-                st.session_state.conversation_history.append({
-                    "prompt": prompt,
-                    "response": response,
-                    "timestamp": response["timestamp"]
-                })
+            # Add to conversation history
+            st.session_state.conversation_history.append({
+                "prompt": prompt,
+                "response": response,
+                "timestamp": response["timestamp"]
+            })
             
             return response
             
@@ -326,15 +325,6 @@ class ConversationManager:
                 response["timestamp"] = datetime.now().isoformat()
                 response["is_mock"] = self.use_mock
                 response["is_direct_calculation"] = False # It came from LLM
-
-                # Add to conversation history if requested
-                if add_to_history:
-                    st.session_state.conversation_history.append({
-                        "prompt": prompt,
-                        "response": response,
-                        "timestamp": response["timestamp"]
-                    })
-                    logger.info(f"[DEBUG] Added LLM result to history. Total: {len(st.session_state.conversation_history)}")
 
                 return response
 
