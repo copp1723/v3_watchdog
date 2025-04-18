@@ -1,5 +1,9 @@
 # Watchdog AI - Dealership Analytics
 
+![Version](https://img.shields.io/badge/version-0.1.0--alpha-blue)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 Intelligent analytics platform for automotive dealerships, powered by AI.
 
 ## Features
@@ -30,6 +34,8 @@ Try asking questions like:
 
 ## Getting Started
 
+### Method 1: Local Python Setup
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/watchdog-ai.git
@@ -43,11 +49,35 @@ pip install -r requirements.txt
 
 3. Run the application:
 ```bash
-cd src
-streamlit run app.py
+streamlit run src/ui/streamlit_app.py
 ```
 
 4. Open your browser to http://localhost:8501
+
+### Method 2: Docker (Recommended)
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/watchdog-ai.git
+cd watchdog-ai
+```
+
+2. Start the application with Docker Compose:
+```bash
+docker-compose up
+```
+
+3. Open your browser to http://localhost:8501
+
+4. To rebuild the container after changes:
+```bash
+docker-compose up --build
+```
+
+5. To stop the containers:
+```bash
+docker-compose down
+```
 
 ## Data Requirements
 
@@ -180,3 +210,14 @@ The header uses Streamlit's native `st.columns` and `st.image` for layout.
 *(Add screenshot of the new header here)*
 
 ## Recent Updates
+
+### v0.1.0-alpha (April 2023)
+- Initial alpha release
+- Core platform framework and component architecture
+- Web-based UI with responsive design
+- Data validation framework with customizable rules
+- Insight generation system with LLM integration
+- Modular report scheduler system
+- Nova ACT integration for DMS connectivity
+
+For a complete list of changes, see the [CHANGELOG](CHANGELOG.md).

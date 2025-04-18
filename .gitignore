@@ -11,3 +11,8 @@ uploads/
 # Virtual environments
 venv/
 .venv/
+
+# Archived files
+archive/
+archive/old-versions/
+archive/old-tests/
