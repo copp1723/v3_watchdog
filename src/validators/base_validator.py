@@ -6,3 +6,10 @@ class BaseValidator:
 
     def validate(self):
         raise NotImplementedError("Subclasses must implement validate().")
+
+class BaseRule:
+    def apply(self, value):
+        raise NotImplementedError("Subclasses must implement apply().")
+
+class ValidationError(Exception):
+    pass
