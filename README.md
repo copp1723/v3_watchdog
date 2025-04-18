@@ -6,6 +6,15 @@
 
 Intelligent analytics platform for automotive dealerships, powered by AI.
 
+## Documentation
+
+- [Getting Started](docs/onboarding.md) - Developer onboarding guide
+- [Infrastructure](docs/infra.md) - Infrastructure and deployment details
+- [Security & Compliance](docs/infra.md#backup-and-retention) - Backup and retention policies
+- [Development Roadmap](docs/ROADMAP.md) - Project development plans and status
+- [API Reference](docs/api.md) - API documentation
+- [Changelog](CHANGELOG.md) - Version history and changes
+
 ## Features
 
 ### 🔍 Smart Insights
