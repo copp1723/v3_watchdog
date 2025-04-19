@@ -267,8 +267,9 @@ def test_redis_failure_fallback(llm_engine_with_mock_redis):
     engine = llm_engine_with_mock_redis
     mock_redis = engine.redis_client
     
-    # Setup Redis to raise an exception
+    # Setup Redis to raise an exception on both get and set
     mock_redis.get.side_effect = Exception("Redis connection error")
+    mock_redis.set.side_effect = Exception("Redis connection error")
     
     # Setup LLM response
     with patch.object(engine, 'get_llm_response', return_value=SAMPLE_MAPPING):
@@ -280,5 +281,8 @@ def test_redis_failure_fallback(llm_engine_with_mock_redis):
         # Verify result matches the expected response despite Redis failure
         assert result == SAMPLE_MAPPING
         
-        # Verify Redis set was not called (due to error)
-        mock_redis.set.assert_not_called()
+        # Verify Redis get was called
+        mock_redis.get.assert_called_once()
+        
+        # Verify Redis set was called but failed silently
+        mock_redis.set.assert_called_once()
