@@ -19,6 +19,12 @@ from .logging_config import get_logger
 
 logger = get_logger(__name__)
 
+# Confidence threshold for automatically mapping columns without clarification
+MIN_CONFIDENCE_TO_AUTOMAP = 0.7
+
+# Whether to automatically drop unmapped columns after clarification
+DROP_UNMAPPED_COLUMNS = False  # Default to off
+
 class SecureConfig:
     """Manages secure configuration and secrets."""
     

@@ -124,6 +124,23 @@ Theme constants are centralized in `src/ui/theme.py`. Customize colors, spacing,
 - Lazy loading for large datasets
 - Optimized chart rendering
 
+### Testing
+- Unit tests cover core logic for validation, normalization, and utilities.
+- E2E tests (`tests/e2e/`) cover key user flows, including:
+  - Data upload and validation.
+  - LLM-driven column mapping with user clarifications (`test_data_upload_llm_mapping.py`).
+  - Insight generation and chat analysis.
+
+### Column Mapping System
+The platform features an advanced LLM-driven column mapping system that:
+
+- Uses "Jeopardy-style" reasoning to semantically map dataset columns to a canonical schema
+- Handles ambiguous column names through interactive user clarifications
+- Supports Redis caching for improved performance and reduced LLM API costs
+- Identifies lead source value columns that appear as headers
+- Provides confidence scores for each mapping decision
+- Can optionally drop unmapped columns after confirmation (configurable)
+
 ## Contributing
 
 1. Fork the repository
@@ -183,6 +200,13 @@ The header uses Streamlit's native `st.columns` and `st.image` for layout.
 
 ## Recent Updates
 
+### Column Mapping Enhancements
+- Implemented Redis caching for column mapping to improve performance and reduce API costs
+- Added configuration option to automatically drop unmapped columns
+- Enhanced user interaction for column mapping clarifications
+- Extended Redis connection handling with better error recovery
+- Added cache statistics tracking for monitoring cache hit/miss rates
+
 
 ## Containerized Dev Workflow
 
@@ -208,10 +232,29 @@ Alternatively, use Docker Compose for a simpler setup:
     # Ensure you have a .env file in the root directory for environment variables
     docker-compose up --build
     ```
-    This command reads the `docker-compose.yml` file, builds the `web` service image (if it doesn't exist or needs updating), and starts the container, mapping port 8501. It automatically picks up variables from a `.env` file in the same directory.
+    This command reads the `docker-compose.yml` file, builds the services.
 
-2.  **Access the application:**
-    Open your web browser and navigate to `http://localhost:8501`.
+## Configuration
 
-3.  **Stop the services:**
-    Press `Ctrl+C` in the terminal where `docker-compose up` is running.
+The application supports the following environment variables:
+
+```
+OPENAI_API_KEY=your-openai-key-here
+USE_MOCK=true  # Set to false to use real LLM API
+LOG_LEVEL=INFO
+MAX_UPLOAD_SIZE_MB=100
+
+# Redis caching for column mapping
+REDIS_CACHE_ENABLED=true
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+COLUMN_MAPPING_CACHE_TTL=86400  # 24 hours
+COLUMN_MAPPING_CACHE_PREFIX=watchdog:column_mapping:
+
+# Column mapping settings
+DROP_UNMAPPED_COLUMNS=false  # Set to true to automatically drop unmapped columns
+
+# AgentOps monitoring (optional)
+AGENTOPS_API_KEY=your-agentops-key-here
+```
