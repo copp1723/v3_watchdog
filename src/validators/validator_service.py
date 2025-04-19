@@ -14,6 +14,7 @@ import streamlit as st
 from datetime import datetime
 from io import BytesIO
 import hashlib # Import hashlib for caching key
+import json # Added for parsing LLM response
 
 from src.validators.validation_profile import (
     ValidationProfile,
@@ -28,6 +29,8 @@ from src.validators.insight_validator import (
 
 from src.utils.errors import ValidationError, ProcessingError, handle_error
 from src.utils.logging_config import get_logger
+from src.llm_engine import LLMEngine # Added import
+from src.utils.config import MIN_CONFIDENCE_TO_AUTOMAP, DROP_UNMAPPED_COLUMNS # Added imports
 
 logger = get_logger(__name__)
 
@@ -139,7 +142,9 @@ def process_uploaded_file(
         "passed_rows": 0,
         "failed_rows": 0,
         "flag_counts": {},
-        "profile_used": selected_profile.id if selected_profile else "None"
+        "profile_used": selected_profile.id if selected_profile else "None",
+        "llm_mapping_clarifications": [], # Added for clarifications
+        "llm_mapping_unmapped": [] # Added for unmapped columns
     }
     
     try:
@@ -174,40 +179,137 @@ def process_uploaded_file(
         if df.columns.empty:
             raise FileValidationError("DataFrame has no columns")
             
-        # Store schema information
+        # --- LLM Column Mapping ---
+        logger.info(f"Starting LLM column mapping for: {summary['filename']}")
+        initial_columns = df.columns.tolist()
+        try:
+            # TODO: Get LLM engine instance properly (potentially pass it in or use singleton)
+            # For now, instantiating directly
+            llm_engine = LLMEngine() 
+            
+            mapping_response = llm_engine.map_columns_jeopardy(initial_columns)
+
+            # Parse response (assuming map_columns_jeopardy returns a dict)
+            llm_mapping = mapping_response.get("mapping", {})
+            clarifications = mapping_response.get("clarifications", [])
+            unmapped_columns = mapping_response.get("unmapped_columns", [])
+
+            # Store the original response in session state for later use in confirmation
+            st.session_state["original_llm_mapping"] = mapping_response
+
+            summary["llm_mapping_clarifications"] = clarifications
+            summary["llm_mapping_unmapped"] = unmapped_columns
+
+            # --- Clarification Handling Placeholder ---
+            # TODO: Implement UI interaction for clarifications.
+            # If 'clarifications' is not empty:
+            # 1. Store 'df', 'clarifications', 'llm_mapping', 'unmapped_columns' in st.session_state.
+            # 2. Set summary['status'] = 'needs_clarification'.
+            # 3. Return immediately (or signal the UI layer).
+            # 4. The UI layer should display clarifications and get user confirmation.
+            # 5. User confirmation triggers another call/function to resume processing 
+            #    with the updated mapping based on user choices.
+            if clarifications:
+                logger.warning(f"LLM mapping requires {len(clarifications)} clarifications. Halting processing.")
+                # For now, proceed without clarification handling for development
+                # In production, we should stop here and wait for user input.
+                # raise ProcessingError("Column mapping requires user clarification", details={"clarifications": clarifications})
+                pass # Continue without handling clarifications for now
+
+            # --- Renaming Logic ---
+            rename_dict = {}
+            processed_originals = set() # Track original columns processed
+
+            # Iterate through canonical structure in mapping response
+            for category, fields in llm_mapping.items():
+                for canonical_name, mapping_info in fields.items():
+                    original_col = mapping_info.get("column")
+                    confidence = mapping_info.get("confidence", 0.0)
+                    
+                    # Only map if original_col is not null/empty and confidence is sufficient
+                    # TODO: Make confidence threshold configurable?
+                    if original_col and original_col in initial_columns and confidence >= MIN_CONFIDENCE_TO_AUTOMAP:
+                        # Prevent mapping the same original column twice
+                        if original_col in rename_dict.values():
+                             logger.warning(f"Original column '{original_col}' already mapped to '{list(rename_dict.keys())[list(rename_dict.values()).index(original_col)]}'. Skipping mapping to '{canonical_name}'.")
+                        elif original_col in processed_originals:
+                             logger.warning(f"Original column '{original_col}' was already considered for mapping. Skipping mapping to '{canonical_name}'.")
+                        else:
+                            rename_dict[original_col] = canonical_name
+                            processed_originals.add(original_col)
+                    elif original_col:
+                         processed_originals.add(original_col) # Mark as processed even if not mapped
+
+            logger.info(f"Applying LLM column renaming: {rename_dict}")
+            df.rename(columns=rename_dict, inplace=True)
+            
+            # Log columns that were present in the file but not mapped or marked as unmapped
+            final_mapped_originals = set(rename_dict.keys())
+            explicitly_unmapped = {item['column'] for item in unmapped_columns}
+            ignored_columns = set(initial_columns) - final_mapped_originals - explicitly_unmapped
+            if ignored_columns:
+                logger.warning(f"Columns ignored (neither mapped nor explicitly unmapped): {ignored_columns}")
+                # Add ignored columns to the summary's unmapped list for visibility
+                for col in ignored_columns:
+                     if col not in explicitly_unmapped:
+                        summary["llm_mapping_unmapped"].append({"column": col, "potential_category": None, "notes": "Ignored - Low confidence or ambiguous"})
+
+            # Handle dropping unmapped columns if configured
+            if DROP_UNMAPPED_COLUMNS:
+                # Combine explicitly unmapped columns and ignored columns
+                all_unmapped_cols = explicitly_unmapped.union(ignored_columns)
+                # Only drop columns that exist in the DataFrame
+                cols_to_drop = [col for col in all_unmapped_cols if col in df.columns]
+                if cols_to_drop:
+                    logger.info(f"Dropping {len(cols_to_drop)} unmapped columns: {cols_to_drop}")
+                    df.drop(columns=cols_to_drop, inplace=True)
+                    summary["dropped_columns"] = cols_to_drop
+
+
+        except Exception as mapping_error:
+            logger.error(f"Error during LLM column mapping: {mapping_error}")
+            summary["load_warning"] = f"LLM column mapping failed: {mapping_error}"
+            # Decide if we should proceed with original columns or fail
+            # For now, proceed with original columns
+            pass # Keep original df
+        # --- End LLM Column Mapping ---
+
+
+        # Store schema information (NOW using potentially renamed columns)
         schema_info = {col: str(dtype) for col, dtype in df.dtypes.items()}
-        
-        # Apply validation profile if provided
+
+        # Apply validation profile if provided (using renamed df)
+        validated_df = df # Start with potentially renamed df
         if selected_profile:
             try:
-                validated_df, flag_counts = apply_validation_profile(df, selected_profile)
+                validated_df, flag_counts = apply_validation_profile(validated_df, selected_profile) # Pass renamed df
                 summary["flag_counts"] = flag_counts
             except Exception as e:
                 print(f"[ERROR] Validation profile application failed: {e}")
                 # Don't fail completely - continue with original DataFrame
-                validated_df = df
+                # validated_df remains the (potentially renamed) df
                 summary["load_warning"] = f"Validation rules could not be applied: {str(e)}"
-        else:
-            validated_df = df
-            
-        # Apply auto-cleaning if requested
+        # else: # No need for else, validated_df already holds the potentially renamed df
+        #     validated_df = df
+
+        # Apply auto-cleaning if requested (using potentially renamed df)
         if apply_auto_cleaning:
             try:
-                validated_df = auto_clean_dataframe(validated_df)
+                validated_df = auto_clean_dataframe(validated_df) # Pass potentially renamed df
                 summary["message"] = "File processed and auto-cleaned successfully"
             except Exception as e:
                 print(f"[WARN] Auto-cleaning failed: {e}")
                 summary["load_warning"] = f"Auto-cleaning could not be applied: {str(e)}"
-        
-        # Generate validation report
+
+        # Generate validation report (using potentially renamed df)
         try:
-            validation_report = generate_validation_report(validated_df)
+            validation_report = generate_validation_report(validated_df) # Pass potentially renamed df
         except Exception as e:
             print(f"[ERROR] Failed to generate validation report: {e}")
             validation_report = None
             summary["load_warning"] = f"Could not generate validation report: {str(e)}"
-        
-        # Update summary
+
+        # Update summary (using potentially renamed df)
         summary.update({
             "status": "success",
             "total_rows": len(validated_df),
@@ -215,6 +317,14 @@ def process_uploaded_file(
             "failed_rows": sum(flag_counts.values()) if flag_counts else 0
         })
         
+        # Check for clarification status before final return
+        if clarifications:
+             summary["status"] = "needs_clarification"
+             summary["message"] = "Column mapping requires user clarification."
+             # NOTE: In a real implementation, we might return a specific object or structure
+             # to indicate clarification is needed, along with the necessary data (df, clarifications).
+             # For now, we return the df as is but mark the status.
+
         return validated_df, summary, validation_report, schema_info
         
     except FileValidationError as e:
@@ -222,6 +332,7 @@ def process_uploaded_file(
             "status": "error",
             "message": str(e)
         })
+        logger.error(f"File validation error: {e}") # Added logging
         return None, summary, None, None
         
     except Exception as e:
@@ -229,7 +340,7 @@ def process_uploaded_file(
             "status": "error",
             "message": f"Unexpected error: {str(e)}"
         })
-        print(f"[ERROR] Unexpected error in process_uploaded_file: {e}")
+        logger.exception(f"Unexpected error in process_uploaded_file") # Use logger.exception for traceback
         return None, summary, None, None
 
 class ValidatorService:
@@ -265,227 +376,380 @@ class ValidatorService:
 
 def render_data_validation_interface(df: pd.DataFrame, 
                                     validator: ValidatorService,
+                                    summary: Dict[str, Any],
                                     on_continue: Optional[Callable[[pd.DataFrame], None]] = None) -> Tuple[pd.DataFrame, bool]:
     """
     Render a complete data validation interface.
     
-    This function renders a UI for validating data, selecting profiles, and
-    continuing to the next step (insight generation).
+    This function renders a UI for validating data, selecting profiles,
+    handling LLM column mapping clarifications, and continuing to the next step.
     
     Args:
-        df: The DataFrame to validate
+        df: The DataFrame (potentially already renamed by LLM initial pass)
         validator: The validator service
+        summary: The summary dictionary returned by process_uploaded_file
         on_continue: Optional callback function to execute when the "Continue to Insights" button is clicked
         
     Returns:
-        Tuple of (potentially cleaned DataFrame, boolean indicating if cleaning was performed)
+        Tuple of (potentially cleaned and finalized DataFrame, boolean indicating if cleaning was performed)
     """
-    st.subheader("🔍 Data Validation")
+    st.subheader("🔍 Data Validation & Mapping")
     
-    # Create tabs for profile selection and validation results
-    tab1, tab2 = st.tabs(["Validation Profile", "Validation Results"])
-    
-    with tab1:
-        st.write("Select or create a validation profile to use for this dataset:")
-        
-        # Render profile selection UI
-        def handle_profile_change(profile):
-            # Re-validate the data with the new profile
-            validated_df, _ = validator.validate_dataframe(df)
+    # --- Check for Clarifications ---
+    needs_clarification = summary.get('status') == 'needs_clarification'
+    clarifications = summary.get('llm_mapping_clarifications', [])
+    unmapped_columns = summary.get('llm_mapping_unmapped', [])
+
+    if 'clarification_choices' not in st.session_state:
+        st.session_state.clarification_choices = {}
+
+    if needs_clarification:
+        st.warning("⚠️ LLM Column Mapping Needs Your Input", icon="🤖")
+        with st.expander("Resolve Column Mapping Ambiguities", expanded=True):
+            st.markdown("The AI needs help confirming the mapping for the following columns:")
             
-            # Update the session state with the new validated data
-            if "active_upload" in st.session_state and "validated_data" in st.session_state:
-                upload_key = st.session_state["active_upload"]
-                if upload_key in st.session_state["validated_data"]:
-                    st.session_state["validated_data"][upload_key]["df"] = validated_df
-                    st.session_state["validated_data"][upload_key]["profile"] = profile.id
-        
-        validator.render_profile_selection(handle_profile_change)
-    
-    with tab2:
-        # Get the validated data
-        validated_df, validation_summary = validator.validate_dataframe(df)
-        
-        # Display overview stats in a clean layout
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric(
-                label="Total Records", 
-                value=validation_summary['total_records']
-            )
-        
-        with col2:
-            st.metric(
-                label="Records with Issues", 
-                value=validation_summary['total_issues'],
-                delta=f"{100 - validation_summary['percentage_clean']:.1f}% of data",
-                delta_color="inverse"
-            )
+            # Store choices in session state
+            choices = st.session_state.clarification_choices
+
+            for i, item in enumerate(clarifications):
+                col_name = item['column']
+                question = item['question']
+                options = item['options'] + ["Unmapped"] # Add Unmapped option
+                
+                st.markdown(f"**Column:** `{col_name}`")
+                st.markdown(f"*AI Question:* {question}")
+                
+                # Use radio buttons for selection
+                choice = st.radio(
+                    f"Select the best match for '{col_name}':", 
+                    options,
+                    key=f"clarification_{i}_{col_name}",
+                    horizontal=True,
+                    index=None # Default to no selection
+                )
+                choices[col_name] = choice # Store user's choice
+
+            st.session_state.clarification_choices = choices
             
-        with col3:
-            st.metric(
-                label="Data Quality Score", 
-                value=f"{validation_summary['percentage_clean']:.1f}%",
-                delta=None if validation_summary['percentage_clean'] > 95 else f"{95 - validation_summary['percentage_clean']:.1f}% below target",
-                delta_color="normal" if validation_summary['percentage_clean'] > 95 else "inverse"
-            )
-        
-        # Display the validation results
-        st.write("---")
-        
-        if validation_summary['total_issues'] > 0:
-            # Initialize variables for handling cleaning
-            cleaned_df = validated_df.copy()
-            cleaning_applied = False
-            
-            # Show expanders for each issue type
-            
-            # 1. Negative Gross
-            if 'negative_gross_count' in validation_summary and validation_summary['negative_gross_count'] > 0:
-                with st.expander(f"📌 Negative Gross Profit ({validation_summary['negative_gross_count']} records)", expanded=True):
-                    st.markdown(f"""
-                    **Issue**: {validation_summary['negative_gross_count']} records ({validation_summary['negative_gross_count']/validation_summary['total_records']*100:.1f}% of data) 
-                    have negative gross profit values, which may indicate pricing errors or special circumstances.
-                    """)
-                    
-                    # Show sample of problematic records
-                    if st.checkbox("Show affected records", key="show_negative_gross"):
-                        st.dataframe(validated_df[validated_df['flag_negative_gross']], use_container_width=True)
-                    
-                    # Add option to fix negative gross by setting to 0
-                    if st.checkbox("📝 Convert negative gross values to zero", key="fix_negative_gross"):
-                        # Find gross column(s)
-                        gross_cols = [col for col in validated_df.columns if 'gross' in col.lower() and 'flag' not in col.lower()]
-                        if gross_cols:
-                            for col in gross_cols:
-                                cleaned_df.loc[cleaned_df[col] < 0, col] = 0
-                            st.success(f"Negative values in {', '.join(gross_cols)} will be converted to zero when cleaned.")
-                            cleaning_applied = True
-            
-            # 2. Missing Lead Source
-            if 'missing_lead_source_count' in validation_summary and validation_summary['missing_lead_source_count'] > 0:
-                with st.expander(f"📌 Missing Lead Sources ({validation_summary['missing_lead_source_count']} records)", expanded=True):
-                    st.markdown(f"""
-                    **Issue**: {validation_summary['missing_lead_source_count']} records ({validation_summary['missing_lead_source_count']/validation_summary['total_records']*100:.1f}% of data) 
-                    are missing lead source information, which prevents accurate marketing ROI analysis.
-                    """)
-                    
-                    # Show sample of problematic records
-                    if st.checkbox("Show affected records", key="show_missing_lead"):
-                        st.dataframe(validated_df[validated_df['flag_missing_lead_source']], use_container_width=True)
-                    
-                    # Add option to set a default lead source
-                    if st.checkbox("📝 Set missing lead sources to 'Unknown'", key="fix_missing_lead"):
-                        # Find lead source column(s)
-                        lead_cols = [col for col in validated_df.columns if ('lead' in col.lower() or 'source' in col.lower()) and 'flag' not in col.lower()]
-                        if lead_cols:
-                            for col in lead_cols:
-                                cleaned_df.loc[cleaned_df[col].isna() | (cleaned_df[col] == ''), col] = 'Unknown'
-                            st.success(f"Missing values in {', '.join(lead_cols)} will be set to 'Unknown' when cleaned.")
-                            cleaning_applied = True
-            
-            # 3. Duplicate VINs
-            if 'duplicate_vins_count' in validation_summary and validation_summary['duplicate_vins_count'] > 0:
-                with st.expander(f"📌 Duplicate VINs ({validation_summary['duplicate_vins_count']} records)", expanded=True):
-                    st.markdown(f"""
-                    **Issue**: {validation_summary['duplicate_vins_count']} records ({validation_summary['duplicate_vins_count']/validation_summary['total_records']*100:.1f}% of data) 
-                    have duplicate VIN numbers, which may indicate data entry errors or multiple transactions on the same vehicle.
-                    """)
-                    
-                    # Show sample of problematic records
-                    if st.checkbox("Show affected records", key="show_dup_vins"):
-                        st.dataframe(validated_df[validated_df['flag_duplicate_vin']], use_container_width=True)
-                    
-                    # Add option to keep only the latest transaction for each VIN
-                    if st.checkbox("📝 Keep only the latest transaction for each VIN", key="fix_dup_vins"):
-                        # Find VIN and date columns
-                        vin_cols = [col for col in validated_df.columns if 'vin' in col.lower() and 'flag' not in col.lower()]
-                        date_cols = [col for col in validated_df.columns if any(date_term in col.lower() for date_term in ['date', 'time', 'day', 'month', 'year']) and 'flag' not in col.lower()]
+            # Disable button if already resolved
+            confirm_button = st.button("Confirm Column Mapping", type="primary", disabled=st.session_state.get("clarifications_resolved", False))
+
+            if confirm_button:
+                all_answered = all(choices.get(item['column']) is not None for item in clarifications)
+                if all_answered:
+                    # Retrieve original mapping
+                    if "original_llm_mapping" not in st.session_state:
+                        st.error("Original mapping data not found in session state. Please re-upload the file.")
+                        # Don't proceed if mapping is missing
+                    else:
+                        original_mapping_response = st.session_state["original_llm_mapping"]
+                        original_mapping = original_mapping_response.get("mapping", {})
                         
-                        if vin_cols and date_cols:
-                            vin_col = vin_cols[0]
-                            date_col = date_cols[0]
+                        # Build updated rename_dict based on choices and original mapping
+                        rename_dict = {}
+                        processed_originals = set()
+                        initial_columns = df.columns.tolist() # Get columns *before* potential rename
+
+                        # Re-iterate through original structure to apply confirmed mappings
+                        for category, fields in original_mapping.items():
+                            for canonical_name, mapping_info in fields.items():
+                                original_col = mapping_info.get("column")
+                                confidence = mapping_info.get("confidence", 0.0)
+                                
+                                # Check if this column was part of the clarification process
+                                if original_col and original_col in initial_columns:
+                                    if original_col in choices:
+                                        user_choice = choices[original_col]
+                                        # Apply user choice if it's not 'Unmapped' and not already processed
+                                        if user_choice != "Unmapped" and original_col not in processed_originals:
+                                            # Ensure the chosen canonical name actually exists in the schema (safety check)
+                                            # This assumes user_choice is one of the canonical names offered
+                                            # TODO: Potentially add stricter validation if needed
+                                            rename_dict[original_col] = user_choice
+                                            processed_originals.add(original_col)
+                                        elif original_col not in processed_originals: # If user chose 'Unmapped' or choice invalid
+                                             processed_originals.add(original_col) # Mark as processed anyway
+                                             logger.info(f"User chose to unmap or provided invalid choice for: {original_col}")
+                                    # If not in clarifications, apply original high-confidence mapping
+                                    elif confidence >= MIN_CONFIDENCE_TO_AUTOMAP and original_col not in processed_originals:
+                                        rename_dict[original_col] = canonical_name
+                                        processed_originals.add(original_col)
+                                    elif original_col not in processed_originals: # Low confidence, not clarified
+                                        processed_originals.add(original_col) # Mark as processed
+                        
+                        # Apply the final confirmed renaming
+                        try:
+                            logger.info(f"Applying confirmed column renaming: {rename_dict}")
+                            df.rename(columns=rename_dict, inplace=True)
                             
-                            # Convert date column to datetime if needed
-                            if not pd.api.types.is_datetime64_dtype(cleaned_df[date_col]):
-                                try:
-                                    cleaned_df[date_col] = pd.to_datetime(cleaned_df[date_col])
-                                except:
-                                    st.error(f"Could not convert {date_col} to date format.")
-                                    
-                            # Sort by date and keep last entry for each VIN
-                            cleaned_df = cleaned_df.sort_values(date_col).drop_duplicates(subset=[vin_col], keep='last')
-                            st.success(f"Duplicate VINs will be resolved by keeping only the latest transaction when cleaned.")
-                            cleaning_applied = True
-            
-            # 4. Missing/Invalid VINs
-            if 'missing_vins_count' in validation_summary and validation_summary['missing_vins_count'] > 0:
-                with st.expander(f"📌 Missing/Invalid VINs ({validation_summary['missing_vins_count']} records)", expanded=True):
-                    st.markdown(f"""
-                    **Issue**: {validation_summary['missing_vins_count']} records ({validation_summary['missing_vins_count']/validation_summary['total_records']*100:.1f}% of data) 
-                    have missing or invalid VIN numbers, which complicates inventory tracking and reporting.
-                    """)
-                    
-                    # Show sample of problematic records
-                    if st.checkbox("Show affected records", key="show_missing_vins"):
-                        st.dataframe(validated_df[validated_df['flag_missing_vin']], use_container_width=True)
-                    
-                    # Add option to flag for manual review
-                    if st.checkbox("📝 Mark records with missing VINs for review", key="fix_missing_vins"):
-                        # Add a review flag column
-                        cleaned_df['needs_vin_review'] = validated_df['flag_missing_vin']
-                        st.success(f"Records with missing/invalid VINs will be marked for review when cleaned.")
-                        cleaning_applied = True
-            
-            # Add the cleanup button and continue to insights button
-            st.write("---")
-            
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                if cleaning_applied:
-                    st.info("Cleaning operations are ready to be applied.")
+                            # Handle dropping unmapped columns if configured
+                            if DROP_UNMAPPED_COLUMNS:
+                                # Get unmapped columns - ones that the user chose to leave unmapped
+                                user_unmapped = [col for col, choice in choices.items() if choice == "Unmapped"]
+                                if user_unmapped:
+                                    logger.info(f"Dropping user-marked unmapped columns: {user_unmapped}")
+                                    cols_to_drop = [col for col in user_unmapped if col in df.columns]
+                                    if cols_to_drop:
+                                        df.drop(columns=cols_to_drop, inplace=True)
+                                        st.info(f"The following unmapped columns were dropped: {', '.join(cols_to_drop)}")
+                            
+                            # Mark as resolved and clear session state
+                            st.session_state["clarifications_resolved"] = True
+                            st.session_state.pop("clarification_choices", None)
+                            st.session_state.pop("original_llm_mapping", None)
+                            
+                            # Display success and preview
+                            st.success("Columns remapped successfully based on your confirmation!")
+                            st.write("### Preview of Final Columns")
+                            st.write(df.columns.tolist()) 
+                            st.info("Validation and cleaning options below now use the updated columns.")
+                            
+                            # Rerun needed to disable button and update downstream UI
+                            st.rerun() 
+                            
+                        except Exception as rename_error:
+                             st.error(f"Error applying final renaming: {rename_error}")
+                             logger.error(f"Failed to apply confirmed rename: {rename_error}")
+                             # Keep clarifications unresolved if renaming fails
+                             st.session_state["clarifications_resolved"] = False
                 else:
-                    st.info("No cleaning operations selected.")
+                    st.error("Please answer all clarification questions before confirming.")
+            elif not st.session_state.get("clarifications_resolved", False): # Only show info if not resolved
+                # Don't proceed with further validation/cleaning until confirmed
+                st.info("Please resolve the ambiguities above and click 'Confirm Column Mapping' to proceed.")
+                return df, False # Return original df, no cleaning done yet
+    
+    # Only proceed if clarifications are resolved or not needed
+    if not needs_clarification or st.session_state.get('clarifications_resolved', False):
+        
+        # Display Unmapped Columns Warning
+        if unmapped_columns:
+            with st.expander("⚠️ Unmapped Columns", expanded=False):
+                st.warning("The following columns were not automatically mapped to the canonical schema and might be ignored during analysis:")
+                for item in unmapped_columns:
+                    notes = f" (Notes: {item.get('notes')})" if item.get('notes') else ""
+                    potential_category = f" (Potential Category: {item.get('potential_category')})" if item.get('potential_category') else ""
+                    st.markdown(f"- `{item['column']}`{potential_category}{notes}")
+                # TODO: Add option for manual mapping override?
+
+        # Create tabs for profile selection and validation results
+        # Moved tab creation here to only show after clarification resolved
+        tab1, tab2 = st.tabs(["Validation Profile", "Validation Results & Cleaning"])
+        
+        with tab1:
+            st.write("Select or create a validation profile to use for this dataset:")
             
-            with col2:
-                clean_button = st.button("✅ Apply Data Cleaning", 
-                                        type="primary" if cleaning_applied else "secondary",
-                                        disabled=not cleaning_applied)
-            
-            # Handle clean button click
-            if clean_button and cleaning_applied:
-                st.success("Data cleaned successfully!")
+            # Render profile selection UI (assuming validator and df are correct after potential re-mapping)
+            def handle_profile_change(profile):
+                # Re-validate the data with the new profile
+                validated_df, _ = validator.validate_dataframe(df)
                 
-                # Remove flag columns from the cleaned data
-                cleaned_df = cleaned_df.loc[:, ~cleaned_df.columns.str.startswith('flag_')]
-                
-                # Update the session state
+                # Update the session state with the new validated data
+                # Ensure this logic correctly handles potentially re-mapped df
                 if "active_upload" in st.session_state and "validated_data" in st.session_state:
                     upload_key = st.session_state["active_upload"]
                     if upload_key in st.session_state["validated_data"]:
-                        st.session_state["validated_data"][upload_key]["df"] = cleaned_df
-                        st.session_state["validated_data"][upload_key]["cleaned"] = True
+                        # Update the DataFrame in session state after potential remapping/validation
+                        st.session_state["validated_data"][upload_key]["df"] = validated_df 
+                        st.session_state["validated_data"][upload_key]["profile"] = profile.id
+            
+            validator.render_profile_selection(handle_profile_change)
+        
+        with tab2:
+            # Get the validated data (using potentially re-mapped df)
+            # This might need re-running if profile changes or remapping happened
+            validated_df, validation_summary = validator.validate_dataframe(df)
+            
+            # Display overview stats in a clean layout
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric(
+                    label="Total Records", 
+                    value=validation_summary.get('total_records', len(validated_df)) # Use get for safety
+                )
+            
+            with col2:
+                st.metric(
+                    label="Records with Issues", 
+                    value=validation_summary.get('total_issues', 'N/A'),
+                    delta=f"{100 - validation_summary.get('percentage_clean', 0):.1f}% of data" if validation_summary.get('percentage_clean') is not None else None,
+                    delta_color="inverse"
+                )
                 
+            with col3:
+                clean_percentage = validation_summary.get('percentage_clean')
+                st.metric(
+                    label="Data Quality Score", 
+                    value=f"{clean_percentage:.1f}%" if clean_percentage is not None else 'N/A',
+                    delta=None if clean_percentage is None or clean_percentage > 95 else f"{95 - clean_percentage:.1f}% below target",
+                    delta_color="normal" if clean_percentage is None or clean_percentage > 95 else "inverse"
+                )
+            
+            # Display the validation results & cleaning options
+            st.write("---")
+            
+            if validation_summary.get('total_issues', 0) > 0:
+                # Initialize variables for handling cleaning
+                cleaned_df = validated_df.copy()
+                cleaning_applied = False
+                
+                # Show expanders for each issue type
+                
+                # 1. Negative Gross
+                if 'negative_gross_count' in validation_summary and validation_summary['negative_gross_count'] > 0:
+                    with st.expander(f"📌 Negative Gross Profit ({validation_summary['negative_gross_count']} records)", expanded=True):
+                        st.markdown(f"""
+                        **Issue**: {validation_summary['negative_gross_count']} records ({validation_summary['negative_gross_count']/validation_summary['total_records']*100:.1f}% of data) 
+                        have negative gross profit values, which may indicate pricing errors or special circumstances.
+                        """)
+                        
+                        # Show sample of problematic records
+                        if st.checkbox("Show affected records", key="show_negative_gross"):
+                            st.dataframe(validated_df[validated_df['flag_negative_gross']], use_container_width=True)
+                        
+                        # Add option to fix negative gross by setting to 0
+                        if st.checkbox("📝 Convert negative gross values to zero", key="fix_negative_gross"):
+                            # Find gross column(s)
+                            gross_cols = [col for col in validated_df.columns if 'gross' in col.lower() and 'flag' not in col.lower()]
+                            if gross_cols:
+                                for col in gross_cols:
+                                    cleaned_df.loc[cleaned_df[col] < 0, col] = 0
+                                st.success(f"Negative values in {', '.join(gross_cols)} will be converted to zero when cleaned.")
+                                cleaning_applied = True
+                
+                # 2. Missing Lead Source
+                if 'missing_lead_source_count' in validation_summary and validation_summary['missing_lead_source_count'] > 0:
+                    with st.expander(f"📌 Missing Lead Sources ({validation_summary['missing_lead_source_count']} records)", expanded=True):
+                        st.markdown(f"""
+                        **Issue**: {validation_summary['missing_lead_source_count']} records ({validation_summary['missing_lead_source_count']/validation_summary['total_records']*100:.1f}% of data) 
+                        are missing lead source information, which prevents accurate marketing ROI analysis.
+                        """)
+                        
+                        # Show sample of problematic records
+                        if st.checkbox("Show affected records", key="show_missing_lead"):
+                            st.dataframe(validated_df[validated_df['flag_missing_lead_source']], use_container_width=True)
+                        
+                        # Add option to set a default lead source
+                        if st.checkbox("📝 Set missing lead sources to 'Unknown'", key="fix_missing_lead"):
+                            # Find lead source column(s)
+                            lead_cols = [col for col in validated_df.columns if ('lead' in col.lower() or 'source' in col.lower()) and 'flag' not in col.lower()]
+                            if lead_cols:
+                                for col in lead_cols:
+                                    cleaned_df.loc[cleaned_df[col].isna() | (cleaned_df[col] == ''), col] = 'Unknown'
+                                st.success(f"Missing values in {', '.join(lead_cols)} will be set to 'Unknown' when cleaned.")
+                                cleaning_applied = True
+                
+                # 3. Duplicate VINs
+                if 'duplicate_vins_count' in validation_summary and validation_summary['duplicate_vins_count'] > 0:
+                    with st.expander(f"📌 Duplicate VINs ({validation_summary['duplicate_vins_count']} records)", expanded=True):
+                        st.markdown(f"""
+                        **Issue**: {validation_summary['duplicate_vins_count']} records ({validation_summary['duplicate_vins_count']/validation_summary['total_records']*100:.1f}% of data) 
+                        have duplicate VIN numbers, which may indicate data entry errors or multiple transactions on the same vehicle.
+                        """)
+                        
+                        # Show sample of problematic records
+                        if st.checkbox("Show affected records", key="show_dup_vins"):
+                            st.dataframe(validated_df[validated_df['flag_duplicate_vin']], use_container_width=True)
+                        
+                        # Add option to keep only the latest transaction for each VIN
+                        if st.checkbox("📝 Keep only the latest transaction for each VIN", key="fix_dup_vins"):
+                            # Find VIN and date columns
+                            vin_cols = [col for col in validated_df.columns if 'vin' in col.lower() and 'flag' not in col.lower()]
+                            date_cols = [col for col in validated_df.columns if any(date_term in col.lower() for date_term in ['date', 'time', 'day', 'month', 'year']) and 'flag' not in col.lower()]
+                            
+                            if vin_cols and date_cols:
+                                vin_col = vin_cols[0]
+                                date_col = date_cols[0]
+                                
+                                # Convert date column to datetime if needed
+                                if not pd.api.types.is_datetime64_dtype(cleaned_df[date_col]):
+                                    try:
+                                        cleaned_df[date_col] = pd.to_datetime(cleaned_df[date_col])
+                                    except:
+                                        st.error(f"Could not convert {date_col} to date format.")
+                                    
+                                # Sort by date and keep last entry for each VIN
+                                cleaned_df = cleaned_df.sort_values(date_col).drop_duplicates(subset=[vin_col], keep='last')
+                                st.success(f"Duplicate VINs will be resolved by keeping only the latest transaction when cleaned.")
+                                cleaning_applied = True
+                
+                # 4. Missing/Invalid VINs
+                if 'missing_vins_count' in validation_summary and validation_summary['missing_vins_count'] > 0:
+                    with st.expander(f"📌 Missing/Invalid VINs ({validation_summary['missing_vins_count']} records)", expanded=True):
+                        st.markdown(f"""
+                        **Issue**: {validation_summary['missing_vins_count']} records ({validation_summary['missing_vins_count']/validation_summary['total_records']*100:.1f}% of data) 
+                        have missing or invalid VIN numbers, which complicates inventory tracking and reporting.
+                        """)
+                        
+                        # Show sample of problematic records
+                        if st.checkbox("Show affected records", key="show_missing_vins"):
+                            st.dataframe(validated_df[validated_df['flag_missing_vin']], use_container_width=True)
+                        
+                        # Add option to flag for manual review
+                        if st.checkbox("📝 Mark records with missing VINs for review", key="fix_missing_vins"):
+                            # Add a review flag column
+                            cleaned_df['needs_vin_review'] = validated_df['flag_missing_vin']
+                            st.success(f"Records with missing/invalid VINs will be marked for review when cleaned.")
+                            cleaning_applied = True
+                
+                # Add the cleanup button and continue to insights button
+                st.write("---")
+                
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    if cleaning_applied:
+                        st.info("Cleaning operations are ready to be applied.")
+                    else:
+                        st.info("No cleaning operations selected.")
+                
+                with col2:
+                    clean_button = st.button("✅ Apply Data Cleaning", 
+                                            type="primary" if cleaning_applied else "secondary",
+                                            disabled=not cleaning_applied)
+                
+                # Handle clean button click
+                if clean_button and cleaning_applied:
+                    st.success("Data cleaned successfully!")
+                    
+                    # Remove flag columns from the cleaned data
+                    cleaned_df = cleaned_df.loc[:, ~cleaned_df.columns.str.startswith('flag_')]
+                    
+                    # Update the session state
+                    if "active_upload" in st.session_state and "validated_data" in st.session_state:
+                        upload_key = st.session_state["active_upload"]
+                        if upload_key in st.session_state["validated_data"]:
+                            st.session_state["validated_data"][upload_key]["df"] = cleaned_df
+                            st.session_state["validated_data"][upload_key]["cleaned"] = True
+                            st.session_state["validated_data"][upload_key]["finalized"] = True # Mark as finalized
+                    
+                    # Show the Continue to Insights button
+                    st.write("---")
+                    continue_button = st.button("🚀 Continue to Insights Generation", type="primary", key="continue_after_clean")
+                    
+                    if continue_button and on_continue:
+                        on_continue(cleaned_df)
+                    
+                    return cleaned_df, True # Return cleaned df
+            else:
+                st.success("✨ No data quality issues detected. Data is ready for analysis!")
+                
+                # Mark data as finalized in session state even if no cleaning needed
+                if "active_upload" in st.session_state and "validated_data" in st.session_state:
+                    upload_key = st.session_state["active_upload"]
+                    if upload_key in st.session_state["validated_data"]:
+                         st.session_state["validated_data"][upload_key]["df"] = validated_df # Store potentially remapped df
+                         st.session_state["validated_data"][upload_key]["finalized"] = True
+
                 # Show the Continue to Insights button
                 st.write("---")
-                continue_button = st.button("🚀 Continue to Insights Generation", type="primary")
+                continue_button = st.button("🚀 Continue to Insights Generation", type="primary", key="continue_no_clean")
                 
                 if continue_button and on_continue:
-                    on_continue(cleaned_df)
-                
-                return cleaned_df, True
-        else:
-            st.success("✨ No data quality issues detected. Data is ready for analysis!")
-            
-            # Show the Continue to Insights button
-            st.write("---")
-            continue_button = st.button("🚀 Continue to Insights Generation", type="primary")
-            
-            if continue_button and on_continue:
-                on_continue(validated_df)
-    
-    return df, False
+                    on_continue(validated_df)
+
+    # If clarifications needed but not resolved, or no continue clicked
+    return df, False # Return potentially remapped df, cleaning not done/confirmed
 
 def auto_clean_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -594,7 +858,7 @@ if __name__ == "__main__":
                 st.success("Data ready for insights generation!")
                 st.balloons()
             
-            render_data_validation_interface(df, validator, on_continue_callback)
+            render_data_validation_interface(df, validator, summary, on_continue_callback)
         else:
             st.error(f"Error: {summary.get('error', 'Unknown error')}")
     else:

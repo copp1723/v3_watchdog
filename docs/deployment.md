@@ -158,6 +158,15 @@ WATCHDOG_DB_PASSWORD=<db-password>
 # Redis
 WATCHDOG_REDIS_URL=<redis-url>
 WATCHDOG_REDIS_PASSWORD=<redis-password>
+REDIS_CACHE_ENABLED=true
+COLUMN_MAPPING_CACHE_TTL=86400 # 24 hours cache TTL
+REDIS_HOST=<redis-host>  # localhost by default
+REDIS_PORT=<redis-port>  # 6379 by default
+REDIS_DB=<redis-db>      # 0 by default
+COLUMN_MAPPING_CACHE_PREFIX=watchdog:column_mapping:  # Cache key prefix
+
+# Column Mapping
+DROP_UNMAPPED_COLUMNS=false  # Whether to drop columns that can't be mapped to the canonical schema
 
 # Storage
 WATCHDOG_STORAGE_TYPE=s3|local
@@ -521,6 +530,18 @@ python -c "import redis; r = redis.from_url('$WATCHDOG_REDIS_URL'); print('Conne
 
 # Check Redis memory usage
 redis-cli -u $WATCHDOG_REDIS_URL info memory
+
+# Check LLM column mapping cache statistics
+python -c "from src.llm_engine import LLMEngine; engine = LLMEngine(); print(engine.cache_stats)"
+
+# Clear LLM column mapping cache if needed
+python -c "from src.llm_engine import LLMEngine; engine = LLMEngine(); redis_client = engine.redis_client; if redis_client: redis_client.delete(f'{engine.cache_prefix}*')"
+
+# Toggle unmapped column dropping
+python -c "from src.utils.config import DROP_UNMAPPED_COLUMNS; print(f'Current unmapped columns dropping setting: {DROP_UNMAPPED_COLUMNS}')"
+
+# To enable/disable unmapped column dropping, set the environment variable:
+# export DROP_UNMAPPED_COLUMNS=true  # or false
 ```
 
 #### API Service Issues
@@ -713,7 +734,13 @@ service fail2ban restart
 3. Cache clearing:
    ```bash
    # Clear Redis cache
-   python manage.py clear_cache --type all|data|session|metrics
+   python manage.py clear_cache --type all|data|session|metrics|column_mapping
+
+   # Clear LLM column mapping cache specifically
+   python -c "from src.llm_engine import LLMEngine; engine = LLMEngine(); redis_client = engine.redis_client; if redis_client: redis_client.delete(f'{engine.cache_prefix}*')"
+   
+   # View column mapping cache hits/misses
+   python -c "from src.llm_engine import LLMEngine; engine = LLMEngine(); print(f'Cache stats: {engine.cache_stats}')"
    ```
 
 ### Scheduled Maintenance
@@ -758,3 +785,38 @@ For additional support, contact:
 - Technical support: support@watchdogai.com
 - Documentation: https://docs.watchdogai.com
 - GitHub repository: https://github.com/watchdogai/v3-platform
+
+## AgentOps Integration
+
+### Configuration
+
+Set up AgentOps monitoring by configuring these environment variables:
+
+```bash
+# AgentOps Configuration
+AGENTOPS_API_KEY=<your-agentops-key>
+AGENTOPS_ENABLED=true  # Optional, defaults to true if key is set
+```
+
+### Monitoring Features
+
+The AgentOps integration provides:
+- LLM call tracking with performance metrics
+- Intent detection monitoring
+- Error tracking and analysis
+- Custom tags for filtering (session_id, query_type, etc.)
+
+### Verification
+
+To verify AgentOps integration:
+
+```bash
+# Check AgentOps initialization
+python manage.py check_agentops
+
+# View recent monitoring data
+python manage.py show_agentops_metrics
+
+# Test monitoring
+python -m pytest tests/unit/test_agentops_integration.py
+```

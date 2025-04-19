@@ -99,10 +99,31 @@ Customize styles via: `src/ui/theme.py`
 
 ---
 
+<<<<<<< HEAD
 ## 🚀 Performance
 - Caching for data load & processing
 - Lazy loading of large datasets
 - Efficient chart rendering
+=======
+### Testing
+- Unit tests cover core logic for validation, normalization, and utilities.
+- E2E tests (`tests/e2e/`) cover key user flows, including:
+  - Data upload and validation.
+  - LLM-driven column mapping with user clarifications (`test_data_upload_llm_mapping.py`).
+  - Insight generation and chat analysis.
+
+### Column Mapping System
+The platform features an advanced LLM-driven column mapping system that:
+
+- Uses "Jeopardy-style" reasoning to semantically map dataset columns to a canonical schema
+- Handles ambiguous column names through interactive user clarifications
+- Supports Redis caching for improved performance and reduced LLM API costs
+- Identifies lead source value columns that appear as headers
+- Provides confidence scores for each mapping decision
+- Can optionally drop unmapped columns after confirmation (configurable)
+
+## Contributing
+>>>>>>> feature/retention-ttl-focused
 
 ---
 
@@ -170,4 +191,64 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## 🌐 Branding
 - Logo: `assets/watchdog_logo.png`
 - Header layout: `st.columns` + `st.image`
- 
+
+## Recent Updates
+
+### Column Mapping Enhancements
+- Implemented Redis caching for column mapping to improve performance and reduce API costs
+- Added configuration option to automatically drop unmapped columns
+- Enhanced user interaction for column mapping clarifications
+- Extended Redis connection handling with better error recovery
+- Added cache statistics tracking for monitoring cache hit/miss rates
+
+
+## Containerized Dev Workflow
+
+To build and run the application using Docker:
+
+1.  **Build the Docker image:**
+    ```bash
+    docker build -t v3_watchdog .
+    ```
+
+2.  **Run the container:**
+    ```bash
+    # Make sure you have a .env file in the root directory or pass variables with -e
+    docker run -p 8501:8501 --env-file .env v3_watchdog
+    ```
+    *   Replace `.env` with the path to your environment file if it's named differently or located elsewhere.
+    *   You can also pass environment variables directly using the `-e` flag (e.g., `-e SENTRY_DSN=your_dsn`).
+
+Alternatively, use Docker Compose for a simpler setup:
+
+1.  **Build and run services:**
+    ```bash
+    # Ensure you have a .env file in the root directory for environment variables
+    docker-compose up --build
+    ```
+    This command reads the `docker-compose.yml` file, builds the services.
+
+## Configuration
+
+The application supports the following environment variables:
+
+```
+OPENAI_API_KEY=your-openai-key-here
+USE_MOCK=true  # Set to false to use real LLM API
+LOG_LEVEL=INFO
+MAX_UPLOAD_SIZE_MB=100
+
+# Redis caching for column mapping
+REDIS_CACHE_ENABLED=true
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+COLUMN_MAPPING_CACHE_TTL=86400  # 24 hours
+COLUMN_MAPPING_CACHE_PREFIX=watchdog:column_mapping:
+
+# Column mapping settings
+DROP_UNMAPPED_COLUMNS=false  # Set to true to automatically drop unmapped columns
+
+# AgentOps monitoring (optional)
+AGENTOPS_API_KEY=your-agentops-key-here
+```
