@@ -554,17 +554,4 @@ class LeadSourceIntent(Intent):
                 error=str(e)
             )
 
-class IntentManager:
-    """Manages the collection of available intents."""
-    
-    def __init__(self):
-        self.intents = [
-            LeadSourceIntent(),  # Add LeadSourceIntent first for priority
-            TopMetricIntent(),
-            BottomMetricIntent(),
-            CountMetricIntent(),
-            HighestCountIntent()
-        ]
-
-# Create a default instance for easy import
-intent_manager = IntentManager()
+# Implementation for these classes will be in intent_manager.py

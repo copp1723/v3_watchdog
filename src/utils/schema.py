@@ -3,223 +3,238 @@ Schema validation module for Watchdog AI.
 Defines required data structure and validates uploaded files.
 """
 
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Set, Tuple, Optional, Any
 import pandas as pd
 from dataclasses import dataclass
+import logging
+from datetime import datetime
+from .errors import ValidationError
+from .data_normalization import normalize_column_name, COLUMN_ALIASES
 
-# Required sheets and their columns
-REQUIRED_SHEETS = {
-    'sales': {'required': True, 'description': 'Sales transaction data'},
-    'inventory': {'required': False, 'description': 'Current inventory status'},
-    'leads': {'required': False, 'description': 'Lead tracking data'}
-}
+logger = logging.getLogger(__name__)
 
-# Required columns per sheet with aliases
-REQUIRED_COLUMNS = {
-    'sales': {
-        # Core required columns
-        'gross': ['gross', 'total_gross', 'front_gross', 'gross_profit'],
-        'lead_source': ['lead_source', 'leadsource', 'source', 'lead_type'],
-        # Optional columns with fallbacks
-        'date': {
+# Core schema definition
+DATASET_SCHEMA = {
+    'required_columns': {
+        'gross': {
+            'type': float,
+            'aliases': ['gross', 'total_gross', 'front_gross', 'gross_profit'],
+            'description': 'Total gross profit for the deal',
+            'validation': lambda x: x is not None
+        },
+        'lead_source': {
+            'type': str,
+            'aliases': ['lead_source', 'leadsource', 'source', 'lead_type'],
+            'description': 'Source of the lead',
+            'validation': lambda x: x is not None and str(x).strip() != ''
+        },
+        'sale_date': {
+            'type': 'datetime',
             'aliases': ['date', 'sale_date', 'transaction_date', 'deal_date'],
-            'required': False,
-            'fallback': 'created_at'  # Will create this if missing
-        },
-        'sales_rep': {
-            'aliases': ['sales_rep', 'salesperson', 'rep_name', 'employee'],
-            'required': False,
-            'fallback': 'Unknown'  # Will use this value if missing
-        },
-        'vin': {
-            'aliases': ['vin', 'vin_number', 'vehicle_id'],
-            'required': False,
-            'fallback': None  # Optional with no fallback
+            'description': 'Date of the sale',
+            'validation': lambda x: pd.notna(x)
         }
     },
-    'inventory': {
-        'vin': ['vin', 'vin_number', 'vehicle_id'],
-        'days_in_stock': ['days_in_stock', 'age', 'days_on_lot'],
-        'price': ['price', 'list_price', 'asking_price', 'msrp']
-    },
-    'leads': {
-        'date': ['date', 'lead_date', 'inquiry_date'],
-        'source': ['source', 'lead_source', 'origin', 'channel'],
-        'status': ['status', 'lead_status', 'state']
+    'optional_columns': {
+        'vin': {
+            'type': str,
+            'aliases': ['vin', 'vin_number', 'vehicle_id'],
+            'description': 'Vehicle Identification Number',
+            'validation': lambda x: x is None or (isinstance(x, str) and len(x) == 17)
+        },
+        'sales_rep': {
+            'type': str,
+            'aliases': ['sales_rep', 'salesperson', 'rep_name', 'employee'],
+            'description': 'Sales representative name',
+            'validation': None  # No specific validation
+        }
     }
 }
 
 @dataclass
-class SchemaValidationError(Exception):
-    """Custom error for schema validation failures."""
-    message: str
-    missing_sheets: List[str] = None
-    missing_columns: Dict[str, List[str]] = None
-    
-    def __str__(self) -> str:
-        details = []
-        if self.missing_sheets:
-            details.append(f"Missing required sheets: {', '.join(self.missing_sheets)}")
-        if self.missing_columns:
-            for sheet, cols in self.missing_columns.items():
-                details.append(f"Sheet '{sheet}' missing columns: {', '.join(cols)}")
-        return f"{self.message}\n" + "\n".join(details)
+class ValidationResult:
+    """Stores the results of schema validation."""
+    is_valid: bool
+    missing_required: List[str]
+    type_errors: Dict[str, List[str]]
+    validation_errors: Dict[str, List[str]]
+    column_mapping: Dict[str, str]
+    timestamp: str = datetime.now().isoformat()
 
-def find_matching_column(df: pd.DataFrame, aliases: List[str]) -> Optional[str]:
+class DatasetSchema:
     """
-    Find a column in the DataFrame that matches any of the provided aliases.
+    Defines and validates the schema for automotive dealership datasets.
+    Handles column aliases, type validation, and data coercion.
+    """
     
-    Args:
-        df: DataFrame to search
-        aliases: List of possible column names
+    def __init__(self, schema: Dict[str, Dict] = None):
+        """
+        Initialize the schema validator.
         
-    Returns:
-        Matching column name or None if not found
-    """
-    # Convert all column names to lowercase for case-insensitive matching
-    df_cols_lower = {col.lower(): col for col in df.columns}
+        Args:
+            schema: Optional custom schema definition. If None, uses DATASET_SCHEMA.
+        """
+        self.schema = schema or DATASET_SCHEMA
+        self._validate_schema_definition()
+        logger.info("Initialized DatasetSchema with %d required and %d optional columns",
+                   len(self.schema['required_columns']),
+                   len(self.schema['optional_columns']))
     
-    # Try exact matches first
-    for alias in aliases:
-        if alias.lower() in df_cols_lower:
-            return df_cols_lower[alias.lower()]
+    def _validate_schema_definition(self):
+        """Validate the schema definition itself."""
+        required_keys = {'type', 'aliases', 'description'}
+        
+        for section in ['required_columns', 'optional_columns']:
+            if section not in self.schema:
+                raise ValueError(f"Schema must contain '{section}'")
+            
+            for col, config in self.schema[section].items():
+                missing = required_keys - set(config.keys())
+                if missing:
+                    raise ValueError(f"Column '{col}' missing required keys: {missing}")
     
-    # Try partial matches
-    for alias in aliases:
-        for col_lower, col in df_cols_lower.items():
-            if alias.lower() in col_lower or col_lower in alias.lower():
-                return col
+    def validate(self, df: pd.DataFrame) -> ValidationResult:
+        """
+        Validate a DataFrame against the schema.
+        
+        Args:
+            df: DataFrame to validate
+            
+        Returns:
+            ValidationResult object containing validation details
+        """
+        # Initialize validation results
+        missing_required = []
+        type_errors = {}
+        validation_errors = {}
+        column_mapping = {}
+        
+        # First pass: Check for required columns and build column mapping
+        df_cols_lower = {col.lower(): col for col in df.columns}
+        
+        for col_name, config in self.schema['required_columns'].items():
+            # Try to find the column using aliases
+            found_col = None
+            for alias in config['aliases']:
+                if alias.lower() in df_cols_lower:
+                    found_col = df_cols_lower[alias.lower()]
+                    break
+            
+            if found_col:
+                column_mapping[col_name] = found_col
+            else:
+                missing_required.append(col_name)
+        
+        # If missing required columns, return early
+        if missing_required:
+            return ValidationResult(
+                is_valid=False,
+                missing_required=missing_required,
+                type_errors={},
+                validation_errors={},
+                column_mapping=column_mapping
+            )
+        
+        # Second pass: Validate types and custom validation rules
+        for col_name, config in {**self.schema['required_columns'], 
+                               **self.schema['optional_columns']}.items():
+            if col_name in column_mapping:
+                df_col = column_mapping[col_name]
+                
+                # Type validation and coercion
+                try:
+                    if config['type'] == 'datetime':
+                        df[df_col] = pd.to_datetime(df[df_col], errors='coerce')
+                    else:
+                        df[df_col] = df[df_col].astype(config['type'])
+                except (ValueError, TypeError) as e:
+                    type_errors[col_name] = [str(e)]
+                
+                # Custom validation if specified
+                if config.get('validation'):
+                    invalid_rows = ~df[df_col].apply(config['validation'])
+                    if invalid_rows.any():
+                        validation_errors[col_name] = [
+                            f"Invalid values in rows: {invalid_rows.sum()}"
+                        ]
+        
+        return ValidationResult(
+            is_valid=not (missing_required or type_errors or validation_errors),
+            missing_required=missing_required,
+            type_errors=type_errors,
+            validation_errors=validation_errors,
+            column_mapping=column_mapping
+        )
     
-    return None
+    def standardize_dataframe(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, str]]:
+        """
+        Standardize a DataFrame to match the schema.
+        
+        Args:
+            df: DataFrame to standardize
+            
+        Returns:
+            Tuple of (standardized DataFrame, column mapping dictionary)
+        """
+        # Validate first
+        validation = self.validate(df)
+        if not validation.is_valid:
+            raise ValidationError(
+                "Cannot standardize invalid DataFrame",
+                details={
+                    'missing_required': validation.missing_required,
+                    'type_errors': validation.type_errors,
+                    'validation_errors': validation.validation_errors
+                }
+            )
+        
+        # Create a copy to avoid modifying the original
+        std_df = df.copy()
+        
+        # Rename columns to canonical names
+        reverse_mapping = {v: k for k, v in validation.column_mapping.items()}
+        std_df = std_df.rename(columns=reverse_mapping)
+        
+        # Ensure proper types
+        for col_name, config in {**self.schema['required_columns'], 
+                               **self.schema['optional_columns']}.items():
+            if col_name in std_df.columns:
+                if config['type'] == 'datetime':
+                    std_df[col_name] = pd.to_datetime(std_df[col_name], errors='coerce')
+                else:
+                    std_df[col_name] = std_df[col_name].astype(config['type'])
+        
+        return std_df, validation.column_mapping
+    
+    def get_column_info(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Get detailed information about all columns in the schema.
+        
+        Returns:
+            Dictionary with column information
+        """
+        info = {}
+        for section in ['required_columns', 'optional_columns']:
+            for col_name, config in self.schema[section].items():
+                info[col_name] = {
+                    'type': config['type'],
+                    'aliases': config['aliases'],
+                    'description': config['description'],
+                    'required': section == 'required_columns'
+                }
+        return info
 
-def validate_sheet_schema(df: pd.DataFrame, sheet_name: str) -> Tuple[bool, Dict[str, str], List[str]]:
+# Create a global instance for convenience
+default_schema = DatasetSchema()
+
+def validate_dataframe(df: pd.DataFrame) -> ValidationResult:
     """
-    Validate a single sheet against its required schema.
+    Convenience function to validate a DataFrame using the default schema.
     
     Args:
         df: DataFrame to validate
-        sheet_name: Name of the sheet for looking up requirements
         
     Returns:
-        Tuple containing:
-        - success: Boolean indicating if validation passed
-        - column_map: Dictionary mapping required columns to found columns
-        - missing: List of missing required columns
+        ValidationResult object
     """
-    if sheet_name not in REQUIRED_COLUMNS:
-        return True, {}, []  # No requirements defined
-    
-    column_map = {}
-    missing = []
-    
-    # Check each required column
-    for required_col, config in REQUIRED_COLUMNS[sheet_name].items():
-        if isinstance(config, list):  # Simple required column with aliases
-            aliases = config
-            found_col = find_matching_column(df, aliases)
-            if found_col:
-                column_map[required_col] = found_col
-            else:
-                missing.append(required_col)
-        elif isinstance(config, dict):  # Column with additional configuration
-            aliases = config['aliases']
-            found_col = find_matching_column(df, aliases)
-            if found_col:
-                column_map[required_col] = found_col
-            elif config.get('required', True):  # Only add to missing if required
-                missing.append(required_col)
-            elif config.get('fallback') is not None:
-                # Add fallback column if specified
-                if isinstance(config['fallback'], str):
-                    df[required_col] = config['fallback']
-                    column_map[required_col] = required_col
-    
-    # For sales sheet, add created_at if date is missing
-    if sheet_name == 'sales' and 'date' not in column_map:
-        df['date'] = pd.Timestamp.now()
-        column_map['date'] = 'date'
-    
-    return len(missing) == 0, column_map, missing
-
-def validate_workbook_schema(sheets: Dict[str, pd.DataFrame]) -> Tuple[bool, Dict[str, Dict[str, str]], Dict[str, List[str]]]:
-    """
-    Validate all sheets in a workbook against their required schemas.
-    
-    Args:
-        sheets: Dictionary mapping sheet names to DataFrames
-        
-    Returns:
-        Tuple containing:
-        - success: Boolean indicating if validation passed
-        - column_maps: Dictionary mapping sheets to their column mappings
-        - missing_columns: Dictionary mapping sheets to their missing columns
-    """
-    # Check for required sheets
-    missing_required = [
-        name for name, info in REQUIRED_SHEETS.items()
-        if info['required'] and name not in sheets
-    ]
-    
-    if missing_required:
-        raise SchemaValidationError(
-            "Missing required sheets",
-            missing_sheets=missing_required
-        )
-    
-    # Validate each sheet
-    success = True
-    column_maps = {}
-    missing_columns = {}
-    
-    for sheet_name, df in sheets.items():
-        if sheet_name in REQUIRED_COLUMNS:
-            sheet_success, sheet_map, sheet_missing = validate_sheet_schema(df, sheet_name)
-            success = success and sheet_success
-            column_maps[sheet_name] = sheet_map
-            if sheet_missing:
-                missing_columns[sheet_name] = sheet_missing
-    
-    if not success:
-        raise SchemaValidationError(
-            "Missing required columns",
-            missing_columns=missing_columns
-        )
-    
-    return success, column_maps, missing_columns
-
-def load_and_validate_file(file_path: str) -> Dict[str, pd.DataFrame]:
-    """
-    Load an Excel workbook or CSV file and validate its schema.
-    
-    Args:
-        file_path: Path to the file to load
-        
-    Returns:
-        Dictionary mapping sheet names to validated DataFrames
-    """
-    sheets = {}
-    
-    try:
-        # Try loading as Excel first
-        if file_path.endswith(('.xlsx', '.xls')):
-            xl = pd.ExcelFile(file_path)
-            for sheet_name in xl.sheet_names:
-                sheets[sheet_name] = pd.read_excel(xl, sheet_name)
-        else:
-            # Assume CSV
-            df = pd.read_csv(file_path)
-            sheets['sales'] = df  # Treat CSV as sales sheet
-        
-        # Validate schema
-        success, column_maps, missing = validate_workbook_schema(sheets)
-        
-        # Rename columns according to schema
-        for sheet_name, mapping in column_maps.items():
-            sheets[sheet_name] = sheets[sheet_name].rename(columns={v: k for k, v in mapping.items()})
-        
-        return sheets
-        
-    except SchemaValidationError as e:
-        raise  # Re-raise schema validation errors
-    except Exception as e:
-        raise SchemaValidationError(f"Error loading file: {str(e)}")
+    return default_schema.validate(df)

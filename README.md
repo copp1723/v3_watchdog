@@ -54,8 +54,7 @@ pip install -r requirements.txt
 
 ### Run the application:
 ```bash
-cd src
-streamlit run app.py
+streamlit run src/app.py
 ```
 Then open: [http://localhost:8501](http://localhost:8501)
 
@@ -99,12 +98,13 @@ Customize styles via: `src/ui/theme.py`
 
 ---
 
-<<<<<<< HEAD
 ## 🚀 Performance
 - Caching for data load & processing
 - Lazy loading of large datasets
 - Efficient chart rendering
-=======
+- Schema profile caching for fast query resolution
+- Redis caching for column mapping results
+
 ### Testing
 - Unit tests cover core logic for validation, normalization, and utilities.
 - E2E tests (`tests/e2e/`) cover key user flows, including:
@@ -122,8 +122,14 @@ The platform features an advanced LLM-driven column mapping system that:
 - Provides confidence scores for each mapping decision
 - Can optionally drop unmapped columns after confirmation (configurable)
 
-## Contributing
->>>>>>> feature/retention-ttl-focused
+### Semantic Layer & Query Processing
+The platform includes a sophisticated semantic layer that:
+
+- Enforces role-based access control to data through schema profiles
+- Dynamically rewrites ambiguous queries to match canonical schema
+- Validates queries against business rules before execution
+- Scores query precision to prevent low-quality results
+- Adapts to user feedback for personalized schema understanding
 
 ---
 
@@ -176,11 +182,16 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 .
 ├── src/
 │   ├── app.py               # Streamlit app
-│   ├── insights/            # Insight engine
+│   ├── watchdog_ai/         # Main package
+│   │   ├── insights/        # Insight engine
+│   │   ├── ui/              # UI components
+│   │   ├── utils/           # Utilities
+│   │   └── llm/             # LLM integration
 │   ├── validators/          # Schema validation
-│   ├── ui/                  # Theming + layout
+│   ├── utils/               # General utilities
 ├── tests/
-│   └── unit/test_session_ttl.py   # TTL enforcement test
+│   ├── unit/                # Unit tests
+│   └── e2e/                 # End-to-end tests
 ├── examples/sample_data.csv
 ├── assets/watchdog_logo.png
 └── .github/workflows/ci.yml
@@ -193,6 +204,22 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - Header layout: `st.columns` + `st.image`
 
 ## Recent Updates
+
+### Semantic Layer & Business Guardrails
+- Implemented Dynamic Executive Schema Profile system with role-specific column visibility
+- Created pluggable Business Rule Engine with YAML-based rules configuration
+- Built query rewriting system for schema compatibility and ambiguity resolution
+- Added Precision Scoring Engine to predict query reliability before execution
+- Personalized schema adjustments for individual users based on feedback
+- See `schema-aware-query-processing.md` for complete documentation
+
+### Sandboxed Agent Execution System
+- Implemented secure, isolated environment for executing LLM-generated code
+- Added strict JSON schema validation for agent outputs
+- Built-in error handling and automatic retry mechanisms with improved prompts
+- Comprehensive logging and monitoring of all code executions
+- Resource limits (memory, execution time) to prevent abuse
+- See `docs/agent_sandbox.md` for complete documentation
 
 ### Column Mapping Enhancements
 - Implemented Redis caching for column mapping to improve performance and reduce API costs

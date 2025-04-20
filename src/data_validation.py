@@ -6,7 +6,7 @@ Handles validation of data files, schema checking, and data cleaning.
 import pandas as pd
 import numpy as np
 from typing import Dict, Any, List, Tuple, Optional
-from .utils.data_normalization import normalize_columns, get_supported_aliases
+from utils.data_normalization import normalize_columns, get_supported_aliases
 
 class DataValidator:
     """

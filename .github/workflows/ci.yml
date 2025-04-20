@@ -46,7 +46,7 @@ jobs:
 
     - name: Start Streamlit server
       run: |
-        nohup streamlit run src/ui/streamlit_app.py &
+        nohup streamlit run src/app.py &
         timeout 30 bash -c 'until curl --output /dev/null --silent --head --fail http://localhost:8501; do sleep 1; done'
 
     - name: Run E2E tests

@@ -1,0 +1,41 @@
+# Recommendation Templates
+templates:
+  data_quality:
+    missing_data:
+      warning: "Consider collecting more complete data for {column}. Currently {missing_pct}% missing."
+      error: "High percentage ({missing_pct}%) of missing data in {column} significantly impacts results."
+    sample_size:
+      warning: "Limited sample size ({size} records) may affect confidence."
+      error: "Sample size ({size} records) too small for reliable analysis."
+    outliers:
+      warning: "Check {column} for potential data entry errors - {outlier_pct}% outliers detected."
+
+  business_rules:
+    negative_gross:
+      warning: "Found {count} deals with negative gross profit."
+      action: "Review pricing and cost data for accuracy."
+    high_days_inventory:
+      warning: "{count} vehicles in inventory over {threshold} days."
+      action: "Consider adjusting pricing or marketing strategy."
+    low_be_penetration:
+      warning: "Back-end penetration rate ({rate}%) below target ({target}%)."
+      action: "Review F&I processes and product offerings."
+
+  schema_feedback:
+    new_alias:
+      suggestion: "Add '{alias}' as an alias for {column}."
+      reason: "This term appears frequently in user queries."
+    column_type:
+      suggestion: "Update {column} type to {new_type}."
+      reason: "Current type ({current_type}) causes frequent conversion errors."
+    ignore_column:
+      suggestion: "Consider excluding {column} from analysis."
+      reason: "{missing_pct}% missing values indicate low data quality."
+
+  query_improvement:
+    ambiguous_term:
+      suggestion: "Clarify which {term} you mean: {options}."
+    missing_metric:
+      suggestion: "Specify which metric to analyze (e.g., {examples})."
+    date_range:
+      suggestion: "Add a date range to focus the analysis."

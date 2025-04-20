@@ -1,0 +1,176 @@
+# Executive Templates
+- name: executive_metric
+  persona: executive
+  insight_type: metric
+  sections:
+    - summary
+    - key_metric
+    - trend
+  max_length: 100
+  required_elements:
+    - summary
+    - key_metric
+  optional_elements:
+    - trend
+    - context
+  style_guide:
+    summary:
+      capitalize: true
+      bullet_points: false
+    key_metric:
+      capitalize: false
+      bullet_points: false
+    trend:
+      capitalize: false
+      bullet_points: false
+
+- name: executive_trend
+  persona: executive
+  insight_type: trend
+  sections:
+    - summary
+    - key_trends
+    - impact
+  max_length: 150
+  required_elements:
+    - summary
+    - key_trends
+  optional_elements:
+    - impact
+    - recommendations
+  style_guide:
+    summary:
+      capitalize: true
+      bullet_points: false
+    key_trends:
+      capitalize: false
+      bullet_points: true
+    impact:
+      capitalize: false
+      bullet_points: true
+
+# Analyst Templates
+- name: analyst_metric
+  persona: analyst
+  insight_type: metric
+  sections:
+    - summary
+    - methodology
+    - metrics
+    - context
+    - analysis
+  max_length: 500
+  required_elements:
+    - summary
+    - methodology
+    - metrics
+  optional_elements:
+    - context
+    - analysis
+    - recommendations
+  style_guide:
+    summary:
+      capitalize: true
+      bullet_points: false
+    methodology:
+      capitalize: false
+      bullet_points: true
+    metrics:
+      capitalize: false
+      bullet_points: true
+    analysis:
+      capitalize: false
+      bullet_points: true
+
+- name: analyst_trend
+  persona: analyst
+  insight_type: trend
+  sections:
+    - summary
+    - methodology
+    - trends
+    - analysis
+    - context
+  max_length: 800
+  required_elements:
+    - summary
+    - methodology
+    - trends
+  optional_elements:
+    - analysis
+    - context
+    - recommendations
+  style_guide:
+    summary:
+      capitalize: true
+      bullet_points: false
+    methodology:
+      capitalize: false
+      bullet_points: true
+    trends:
+      capitalize: false
+      bullet_points: true
+    analysis:
+      capitalize: false
+      bullet_points: true
+
+# Manager Templates
+- name: manager_metric
+  persona: manager
+  insight_type: metric
+  sections:
+    - summary
+    - metrics
+    - trends
+    - actions
+  max_length: 300
+  required_elements:
+    - summary
+    - metrics
+  optional_elements:
+    - trends
+    - actions
+    - context
+  style_guide:
+    summary:
+      capitalize: true
+      bullet_points: false
+    metrics:
+      capitalize: false
+      bullet_points: true
+    trends:
+      capitalize: false
+      bullet_points: true
+    actions:
+      capitalize: false
+      bullet_points: true
+
+- name: manager_trend
+  persona: manager
+  insight_type: trend
+  sections:
+    - summary
+    - trends
+    - impact
+    - actions
+  max_length: 400
+  required_elements:
+    - summary
+    - trends
+  optional_elements:
+    - impact
+    - actions
+    - context
+  style_guide:
+    summary:
+      capitalize: true
+      bullet_points: false
+    trends:
+      capitalize: false
+      bullet_points: true
+    impact:
+      capitalize: false
+      bullet_points: true
+    actions:
+      capitalize: false
+      bullet_points: true 

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "watchdog_ai"
+version = "0.1.0"
+authors = [
+  { name="Josh Copp", email="noreply@codebuff.com" },
+]
+description = "AI-powered dealership analytics"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "streamlit>=1.31.0",
+    "pandas>=2.2.0",
+    "altair>=5.2.0",
+    "openai>=1.12.0",
+    "pydantic>=2.6.0",
+    "jinja2>=3.1.0",
+    "pytest>=8.0.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/copp1723/v3watchdog_ai"

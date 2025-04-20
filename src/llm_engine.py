@@ -18,14 +18,18 @@ from .direct_processors import (
     clean_lead_source_name
 )
 
+from .utils.agentops_config import AgentOpsConfig
+
 class LLMEngine:
     """Manages interactions with LLM, enforcing structured output schemas."""
     
-    def __init__(self, use_mock: bool = True, api_key: Optional[str] = None):
+    def __init__(self, use_mock: bool = True, api_key: Optional[str] = None, session_id: Optional[str] = None):
         """Initialize the LLM engine."""
         self.use_mock = use_mock
         self.api_key = api_key
         self.client = None
+        self.session_id = session_id
+        self.agentops = AgentOpsConfig()
         
         if not use_mock and api_key:
             try:
@@ -37,20 +41,29 @@ class LLMEngine:
     
     def generate_insight(self, prompt: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Generate an insight based on the prompt and context."""
-        # Check for direct processing opportunities
-        if context and 'validated_data' in context:
-            df = context['validated_data']
-            
-            # Check for lead source queries
-            lead_source = extract_lead_source_from_prompt(prompt)
-            if lead_source:
-                return process_generic_lead_source_query(df, lead_source)
+        # Set up AgentOps tracking if available
+        track_decorator = self.agentops.track(
+            operation_type="generate_insight",
+            session_id=self.session_id,
+            query=prompt
+        )
         
-        # Fall back to standard LLM processing
-        if self.use_mock or not self.client:
-            return self.get_mock_response(prompt, context)
-        else:
-            return self.get_llm_response(prompt, context)
+        # Use AgentOps tracking if available
+        with track_decorator:
+            # Check for direct processing opportunities
+            if context and 'validated_data' in context:
+                df = context['validated_data']
+                
+                # Check for lead source queries
+                lead_source = extract_lead_source_from_prompt(prompt)
+                if lead_source:
+                    return process_generic_lead_source_query(df, lead_source)
+            
+            # Fall back to standard LLM processing
+            if self.use_mock or not self.client:
+                return self.get_mock_response(prompt, context)
+            else:
+                return self.get_llm_response(prompt, context)
 
     def _generate_system_prompt(self) -> str:
         """Generate a comprehensive system prompt for the LLM."""
@@ -347,52 +360,59 @@ CRITICAL: Return ONLY valid JSON matching the schema. No additional text or expl
         if not self.client:
             return self.get_mock_response(prompt, context)
         
-        try:
-            # Analyze data if provided
-            patterns = []
-            metrics = {}
-            if context and 'validated_data' in context:
-                df = context['validated_data']
-                patterns = self._analyze_patterns(df)
-                metrics = self._calculate_metrics(df, prompt)
-            
-            # Enhance prompt with patterns and metrics
-            enhanced_prompt = {
-                "query": prompt,
-                "patterns_detected": patterns,
-                "calculated_metrics": metrics
-            }
-            
-            # Call OpenAI
-            messages = [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": json.dumps(enhanced_prompt)}
-            ]
-            
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=messages,
-                temperature=0.3,  # Lower temperature for more focused responses
-                max_tokens=1000
-            )
-            
-            content = response.choices[0].message.content
-            return self.parse_llm_response(content)
-            
-        except Exception as e:
-            st.error(f"Error getting LLM response: {str(e)}")
-            return {
-                "summary": "Error generating insight",
-                "value_insights": [
-                    "The system encountered an error while generating insights.",
-                    f"Error: {str(e)}"
-                ],
-                "actionable_flags": [
-                    "Please try your request again."
-                ],
-                "confidence": "low",
-                "timestamp": datetime.now().isoformat()
-            }
+        track_decorator = self.agentops.track(
+            operation_type="llm_call",
+            session_id=self.session_id,
+            query=prompt
+        )
+        
+        with track_decorator:
+            try:
+                # Analyze data if provided
+                patterns = []
+                metrics = {}
+                if context and 'validated_data' in context:
+                    df = context['validated_data']
+                    patterns = self._analyze_patterns(df)
+                    metrics = self._calculate_metrics(df, prompt)
+                
+                # Enhance prompt with patterns and metrics
+                enhanced_prompt = {
+                    "query": prompt,
+                    "patterns_detected": patterns,
+                    "calculated_metrics": metrics
+                }
+                
+                # Call OpenAI
+                messages = [
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": json.dumps(enhanced_prompt)}
+                ]
+                
+                response = self.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=messages,
+                    temperature=0.3,  # Lower temperature for more focused responses
+                    max_tokens=1000
+                )
+                
+                content = response.choices[0].message.content
+                return self.parse_llm_response(content)
+                
+            except Exception as e:
+                st.error(f"Error getting LLM response: {str(e)}")
+                return {
+                    "summary": "Error generating insight",
+                    "value_insights": [
+                        "The system encountered an error while generating insights.",
+                        f"Error: {str(e)}"
+                    ],
+                    "actionable_flags": [
+                        "Please try your request again."
+                    ],
+                    "confidence": "low",
+                    "timestamp": datetime.now().isoformat()
+                }
     
     def get_mock_response(self, prompt: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Generate an intelligent mock response."""

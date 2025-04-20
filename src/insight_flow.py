@@ -8,6 +8,8 @@ import re
 from dataclasses import dataclass
 import json
 from Levenshtein import distance
+from datetime import datetime
+from fallback_renderer import FallbackRenderer, ErrorCode, ErrorContext
 
 @dataclass
 class FollowUpPrompt:
@@ -505,64 +507,61 @@ def generate_llm_prompt(selected_prompt: str, context_vars: Dict[str, str], prev
 
 def render_insight_flow(response: Dict[str, Any], schema: Dict[str, str], previous_insights: List[Dict[str, Any]] = None) -> Optional[str]:
     """
-    Render the complete insight flow with follow-up suggestions.
+    Render the insight flow with fallback error handling.
     
     Args:
-        response: The insight response dictionary
+        response: The insight response data
         schema: Dictionary mapping entity types to their descriptions
         previous_insights: List of previous insights for context
         
     Returns:
-        Selected follow-up prompt or None if no selection was made
+        Optional[str]: The rendered insight or None if there was an error
     """
-    if not response or 'summary' not in response:
-        return None
-    
-    # Render follow-up suggestions
-    generator = PromptGenerator(schema)
-    prompts = generator.generate_follow_up_prompts(response['summary'])
-    
-    if not prompts:
-        return None
-    
-    st.markdown("### 🤔 Would you like to dig deeper?")
-    
-    # Group prompts by category
-    categories = {}
-    for prompt in prompts:
-        if prompt.category not in categories:
-            categories[prompt.category] = []
-        categories[prompt.category].append(prompt)
-    
-    # Render prompts by category
-    selected_prompt = None
-    
-    for category, category_prompts in categories.items():
-        st.markdown(f"#### {category.title()} Questions")
+    try:
+        # Initialize the fallback renderer
+        fallback_renderer = FallbackRenderer()
         
-        # Create columns for the buttons
-        cols = st.columns(min(3, len(category_prompts)))
+        # Check if the response indicates an error
+        if response.get("type") == "error":
+            error_context = ErrorContext(
+                error_code=ErrorCode(response.get("error_code", "system_error")),
+                error_message=response.get("error_message", "Unknown error occurred"),
+                details=response.get("error_details", {}),
+                timestamp=datetime.now().isoformat(),
+                user_query=response.get("user_query"),
+                affected_columns=response.get("affected_columns"),
+                stack_trace=response.get("stack_trace")
+            )
+            return fallback_renderer.render_fallback(error_context)
         
-        for i, prompt in enumerate(category_prompts):
-            col_idx = i % len(cols)
-            with cols[col_idx]:
-                if st.button(prompt.text, key=f"{category}_{i}"):
-                    selected_prompt = prompt.text
-    
-    # If a prompt was selected, generate the LLM prompt
-    if selected_prompt:
-        # Find the prompt object to get context variables
-        for prompt in prompts:
-            if prompt.text == selected_prompt:
-                llm_prompt = generate_llm_prompt(
-                    selected_prompt, 
-                    prompt.context_vars,
-                    previous_insights
-                )
-                
-                # Store the prompt in session state for the next step
-                st.session_state['next_prompt'] = llm_prompt
-                st.info("Follow-up question prepared! Click 'Generate Insight' to continue.")
-                break
-    
-    return selected_prompt 
+        # Process the insight response
+        if not response.get("content"):
+            error_context = ErrorContext(
+                error_code=ErrorCode.NO_MATCHING_DATA,
+                error_message="No insight content generated",
+                details={"criteria": "insight content"},
+                timestamp=datetime.now().isoformat(),
+                user_query=response.get("user_query")
+            )
+            return fallback_renderer.render_fallback(error_context)
+        
+        # Generate follow-up prompts
+        prompt_generator = PromptGenerator(schema)
+        prompts = prompt_generator.generate_follow_up_prompts(response["content"])
+        
+        # Render the insight and prompts
+        st.write(response["content"])
+        render_follow_up_suggestions(prompts)
+        
+        return response["content"]
+        
+    except Exception as e:
+        # Handle unexpected errors
+        error_context = ErrorContext(
+            error_code=ErrorCode.SYSTEM_ERROR,
+            error_message=str(e),
+            details={"error_details": str(e)},
+            timestamp=datetime.now().isoformat(),
+            stack_trace=getattr(e, "__traceback__", None)
+        )
+        return fallback_renderer.render_fallback(error_context) 

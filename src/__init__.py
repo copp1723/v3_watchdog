@@ -1,5 +1,5 @@
 """
-Watchdog AI - Data Analysis and Insight Generation Platform
+Watchdog AI package.
 """
 
 __version__ = '0.1.0'

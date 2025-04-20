@@ -1,66 +1,47 @@
 """
-Data models for insight generation.
+Data models for insights.
 """
 
-from dataclasses import dataclass
-from typing import Optional, Dict, Any, List
-from datetime import datetime
+from typing import List, Dict, Any, Optional
 import pandas as pd
+from pydantic import BaseModel
+from enum import Enum
 
-@dataclass
+class ConfidenceLevel(str, Enum):
+    """Confidence level for insights."""
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+class ChartType(str, Enum):
+    """Chart types for visualizations."""
+    BAR = "bar"
+    LINE = "line"
+    PIE = "pie"
+    SCATTER = "scatter"
+    TABLE = "table"
+    NONE = "none"
+
 class InsightResult:
-    """Result from insight analysis."""
-    title: str
-    summary: str
-    recommendations: list[str]
-    chart_data: Optional[pd.DataFrame] = None
-    chart_encoding: Optional[Dict[str, Any]] = None
-    supporting_data: Optional[pd.DataFrame] = None
-    confidence: str = "high"
-    error: Optional[str] = None
-
-@dataclass
-class FeedbackEntry:
-    """User feedback for an insight."""
-    insight_id: str
-    user_id: str
-    rating: int  # 1-5 scale
-    comment: Optional[str] = None
-    tags: List[str] = None
-    created_at: datetime = None
-    context: Optional[Dict[str, Any]] = None
-
-    def __post_init__(self):
-        """Initialize default values."""
-        if self.created_at is None:
-            self.created_at = datetime.now()
-        if self.tags is None:
-            self.tags = []
-        if self.context is None:
-            self.context = {}
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert feedback entry to dictionary format."""
-        return {
-            "insight_id": self.insight_id,
-            "user_id": self.user_id,
-            "rating": self.rating,
-            "comment": self.comment,
-            "tags": self.tags,
-            "created_at": self.created_at.isoformat(),
-            "context": self.context
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'FeedbackEntry':
-        """Create feedback entry from dictionary format."""
-        if "created_at" in data and isinstance(data["created_at"], str):
-            data["created_at"] = datetime.fromisoformat(data["created_at"])
-        return cls(**data)
-
-# TEMPORARY: FeedbackStats stub for CI unblocking
-# TODO: Properly deprecate or implement in #1234
-class FeedbackStats:
-    """Legacy stats container (temporary fix)"""
-    def __init__(self):
-        self.data = {}
+    """Result of an insight analysis."""
+    
+    def __init__(
+        self,
+        title: str,
+        summary: str,
+        recommendations: List[str],
+        confidence: str = ConfidenceLevel.MEDIUM,
+        chart_data: Optional[pd.DataFrame] = None,
+        chart_encoding: Optional[Dict[str, Any]] = None,
+        supporting_data: Optional[pd.DataFrame] = None,
+        error: Optional[str] = None
+    ):
+        """Initialize an insight result."""
+        self.title = title
+        self.summary = summary
+        self.recommendations = recommendations
+        self.confidence = confidence
+        self.chart_data = chart_data
+        self.chart_encoding = chart_encoding or {}
+        self.supporting_data = supporting_data
+        self.error = error

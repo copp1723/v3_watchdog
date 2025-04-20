@@ -15,24 +15,25 @@ from datetime import datetime
 from io import BytesIO
 import hashlib # Import hashlib for caching key
 import json # Added for parsing LLM response
+import logging
 
-from src.validators.validation_profile import (
+from .validation_profile import (
     ValidationProfile,
     get_available_profiles,
     apply_validation_profile
 )
 
-from src.validators.insight_validator import (
+from .insight_validator import (
     summarize_flags,
     generate_flag_summary
 )
 
-from src.utils.errors import ValidationError, ProcessingError, handle_error
-from src.utils.logging_config import get_logger
-from src.llm_engine import LLMEngine # Added import
-from src.utils.config import MIN_CONFIDENCE_TO_AUTOMAP, DROP_UNMAPPED_COLUMNS # Added imports
+from utils.errors import ValidationError, ProcessingError, handle_error
+from utils.logging_config import get_logger
+from watchdog_ai.llm.llm_engine import LLMEngine # Fixed import path
+from utils.config import MIN_CONFIDENCE_TO_AUTOMAP, DROP_UNMAPPED_COLUMNS # Added imports
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class FileValidationError(ValidationError):
     """Custom exception for file validation errors."""
@@ -342,6 +343,45 @@ def process_uploaded_file(
         })
         logger.exception(f"Unexpected error in process_uploaded_file") # Use logger.exception for traceback
         return None, summary, None, None
+
+class DataValidator:
+    """Validator class for data validation used by insight conversation."""
+    
+    def __init__(self):
+        """Initialize the DataValidator."""
+        pass
+        
+    def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Validate a DataFrame.
+        
+        Args:
+            df: DataFrame to validate
+            
+        Returns:
+            Dictionary with validation results
+        """
+        # Basic validation
+        validation_result = {
+            "is_valid": True,
+            "errors": [],
+            "warnings": []
+        }
+        
+        # Check if DataFrame is empty
+        if df.empty:
+            validation_result["is_valid"] = False
+            validation_result["errors"].append("DataFrame is empty")
+            return validation_result
+            
+        # Check for required columns (can be customized based on specific needs)
+        required_cols = []  # Add required columns as needed
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            validation_result["warnings"].append(f"Missing columns: {', '.join(missing_cols)}")
+            
+        # Return validation result
+        return validation_result
 
 class ValidatorService:
     """Service for validating data using validation profiles."""

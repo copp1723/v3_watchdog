@@ -9,15 +9,18 @@ import pandas as pd
 from datetime import datetime
 from .models import InsightResult
 from .intents import Intent, TopMetricIntent, BottomMetricIntent, CountMetricIntent, HighestCountIntent
+from ..utils.agentops_config import AgentOpsConfig
 
 logger = logging.getLogger(__name__)
 
 class IntentManager:
     """Manages registration and matching of intents."""
     
-    def __init__(self):
+    def __init__(self, session_id: Optional[str] = None):
         """Initialize with core intents."""
         self.intents: List[Intent] = []
+        self.session_id = session_id
+        self.agentops = AgentOpsConfig()
         self._register_core_intents()
     
     def _register_core_intents(self):
@@ -40,19 +43,26 @@ class IntentManager:
         Returns:
             The matching intent or None if no match found
         """
-        logger.debug(f"Finding intent match for prompt: {prompt[:50]}...")
+        track_decorator = self.agentops.track(
+            operation_type="intent_matching",
+            session_id=self.session_id,
+            query=prompt
+        )
         
-        for intent in self.intents:
-            try:
-                if intent.matches(prompt):
-                    logger.info(f"Matched intent: {type(intent).__name__}")
-                    return intent
-            except Exception as e:
-                logger.error(f"Error matching intent {type(intent).__name__}: {e}")
-                continue
-        
-        logger.info("No matching intent found")
-        return None
+        with track_decorator:
+            logger.debug(f"Finding intent match for prompt: {prompt[:50]}...")
+            
+            for intent in self.intents:
+                try:
+                    if intent.matches(prompt):
+                        logger.info(f"Matched intent: {type(intent).__name__}")
+                        return intent
+                except Exception as e:
+                    logger.error(f"Error matching intent {type(intent).__name__}: {e}")
+                    continue
+            
+            logger.info("No matching intent found")
+            return None
     
     def generate_insight(self, prompt: str, df: pd.DataFrame) -> Dict[str, Any]:
         """
@@ -65,46 +75,63 @@ class IntentManager:
         Returns:
             The insight result
         """
-        logger.info(f"Generating insight for prompt: {prompt[:50]}...")
+        track_decorator = self.agentops.track(
+            operation_type="generate_insight",
+            session_id=self.session_id,
+            query=prompt
+        )
         
-        # Find matching intent
-        intent = self.find_matching_intent(prompt)
-        if not intent:
-            logger.info("No matching intent, returning fallback")
-            return self._generate_fallback_response(prompt, df)
-        
-        try:
-            # Generate insight using the matched intent
-            result = intent.analyze(df, prompt)
+        with track_decorator:
+            logger.info(f"Generating insight for prompt: {prompt[:50]}...")
             
-            # Convert InsightResult to dict format expected by UI
-            response = {
-                "summary": result.summary,
-                "value_insights": [result.title] + result.recommendations,
-                "actionable_flags": result.recommendations,
-                "confidence": result.confidence,
-                "chart_data": result.chart_data.to_dict('records') if result.chart_data is not None else None,
-                "chart_encoding": result.chart_encoding,
-                "supporting_data": result.supporting_data.to_dict('records') if result.supporting_data is not None else None,
-                "timestamp": datetime.now().isoformat(),
-                "is_error": result.error is not None,
-                "error": result.error,
-                "title": result.title,
-                "is_direct_calculation": True
-            }
+            # Find matching intent
+            intent = self.find_matching_intent(prompt)
+            if not intent:
+                logger.info("No matching intent, returning fallback")
+                return self._generate_fallback_response(prompt, df)
             
-            return response
-            
-        except Exception as e:
-            logger.error(f"Error generating insight: {e}")
-            return {
-                "summary": "Failed to generate insight",
-                "error": str(e),
-                "error_type": "analysis_error",
-                "timestamp": datetime.now().isoformat(),
-                "is_error": True,
-                "is_direct_calculation": True
-            }
+            try:
+                # Generate insight using the matched intent
+                result = intent.analyze(df, prompt)
+                
+                # Add intent info to AgentOps tags
+                intent_type = type(intent).__name__
+                self.agentops.handler.tags["intent_type"] = intent_type
+                
+                # Convert InsightResult to dict format expected by UI
+                response = {
+                    "summary": result.summary,
+                    "value_insights": [result.title] + result.recommendations,
+                    "actionable_flags": result.recommendations,
+                    "confidence": result.confidence,
+                    "chart_data": result.chart_data.to_dict('records') if result.chart_data is not None else None,
+                    "chart_encoding": result.chart_encoding,
+                    "supporting_data": result.supporting_data.to_dict('records') if result.supporting_data is not None else None,
+                    "timestamp": datetime.now().isoformat(),
+                    "is_error": result.error is not None,
+                    "error": result.error,
+                    "title": result.title,
+                    "is_direct_calculation": True,
+                    "intent_type": intent_type
+                }
+                
+                return response
+                
+            except Exception as e:
+                logger.error(f"Error generating insight: {e}")
+                # Add error to AgentOps tags
+                if self.agentops.handler:
+                    self.agentops.handler.tags["error"] = str(e)
+                    self.agentops.handler.tags["error_type"] = "analysis_error"
+                
+                return {
+                    "summary": "Failed to generate insight",
+                    "error": str(e),
+                    "error_type": "analysis_error",
+                    "timestamp": datetime.now().isoformat(),
+                    "is_error": True,
+                    "is_direct_calculation": True
+                }
     
     def _generate_fallback_response(self, prompt: str, df: pd.DataFrame) -> Dict[str, Any]:
         """Generate a helpful fallback response when no intent matches."""
