@@ -298,6 +298,7 @@ class InsightFunctions:
             A dictionary with summary information
         """
         if df.empty:
+            self.logger.warning(f"Cannot summarize {metric}. Empty dataset.")
             return {
                 "summary": f"⚠️ Cannot summarize {metric}. Empty dataset.",
                 "metrics": {},
@@ -313,8 +314,9 @@ class InsightFunctions:
             found_col = self.find_column(df, [metric])
             if found_col:
                 metric = found_col
-                logger.info(f"Using alternative column '{found_col}' for metric '{metric}'")
+                self.logger.info(f"Using alternative column '{found_col}' for metric '{metric}'")
             else:
+                self.logger.warning(f"Cannot summarize {metric}. Column not found.")
                 return {
                     "summary": f"⚠️ Cannot summarize {metric}. Column not found.",
                     "metrics": {},
@@ -349,7 +351,7 @@ class InsightFunctions:
                 "confidence": "high"
             }
         except Exception as e:
-            logger.error(f"Error in total_summary: {e}")
+            self.logger.error(f"Error in total_summary: {e}")
             return {
                 "summary": f"⚠️ {str(e)}",
                 "metrics": {},
