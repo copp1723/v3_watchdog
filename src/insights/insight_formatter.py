@@ -52,6 +52,7 @@ class InsightFormatter:
         """
         self.template_file = template_file
         self.templates: Dict[str, FormattingTemplate] = {}
+        self.logger = logging.getLogger(__name__)
         self._load_templates()
     
     def _load_templates(self) -> None:
@@ -72,7 +73,7 @@ class InsightFormatter:
                     style_guide=template['style_guide']
                 )
         except Exception as e:
-            logger.error(f"Error loading templates: {e}")
+            self.logger.error(f"Error loading templates: {e}")
             raise
     
     def format_insight(
@@ -95,7 +96,7 @@ class InsightFormatter:
         # Find matching template
         template = self._find_template(persona, insight_type)
         if not template:
-            logger.warning(f"No template found for {persona} {insight_type}")
+            self.logger.warning(f"No template found for {persona} {insight_type}")
             return insight
         
         # Create formatted insight
