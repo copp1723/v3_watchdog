@@ -31,28 +31,34 @@ class InsightFunctions:
         lead_source_col = self.find_column(df, ["LeadSource", "lead_source", "Lead Source"])
         is_sale_col = self.find_column(df, ["IsSale", "is_sale", "Sold"])
         if not lead_source_col or not is_sale_col:
+            self.logger.warning("Required columns not found for lead conversion rate calculation")
             return pd.DataFrame(columns=['LeadSource', 'total_leads', 'total_sales', 'conversion_rate'])
-        df = df.copy()
-        df[lead_source_col] = df[lead_source_col].fillna('Unknown')
-        def to_sale(val):
-            if pd.isna(val):
+        
+        try:
+            df = df.copy()
+            df[lead_source_col] = df[lead_source_col].fillna('Unknown')
+            def to_sale(val):
+                if pd.isna(val):
+                    return 0
+                if isinstance(val, (int, float)):
+                    return int(val != 0)
+                if isinstance(val, str):
+                    return 1 if val.strip().lower() in ['1', 'true', 'yes', 'sold'] else 0
+                if isinstance(val, bool):
+                    return int(val)
                 return 0
-            if isinstance(val, (int, float)):
-                return int(val != 0)
-            if isinstance(val, str):
-                return 1 if val.strip().lower() in ['1', 'true', 'yes', 'sold'] else 0
-            if isinstance(val, bool):
-                return int(val)
-            return 0
-        df['_is_sale_norm'] = df[is_sale_col].apply(to_sale)
-        grouped = df.groupby(lead_source_col)['_is_sale_norm'].agg(['count', 'sum']).reset_index()
-        grouped.columns = ['LeadSource', 'total_leads', 'total_sales']
-        grouped['conversion_rate'] = grouped.apply(
-            lambda row: 100.0 * row['total_sales'] / row['total_leads'] if row['total_leads'] > 0 else 0.0,
-            axis=1
-        )
-        grouped = grouped.sort_values(by='conversion_rate', ascending=False).reset_index(drop=True)
-        return grouped
+            df['_is_sale_norm'] = df[is_sale_col].apply(to_sale)
+            grouped = df.groupby(lead_source_col)['_is_sale_norm'].agg(['count', 'sum']).reset_index()
+            grouped.columns = ['LeadSource', 'total_leads', 'total_sales']
+            grouped['conversion_rate'] = grouped.apply(
+                lambda row: 100.0 * row['total_sales'] / row['total_leads'] if row['total_leads'] > 0 else 0.0,
+                axis=1
+            )
+            grouped = grouped.sort_values(by='conversion_rate', ascending=False).reset_index(drop=True)
+            return grouped
+        except Exception as e:
+            self.logger.error(f"Error in compute_lead_conversion_rate: {e}")
+            return pd.DataFrame(columns=['LeadSource', 'total_leads', 'total_sales', 'conversion_rate'])
 
     def compute_gross_profit_summary(self, df):
         gross_profit_col = self.find_column(df, ["GrossProfit", "gross_profit", "Gross Profit"])
@@ -138,6 +144,7 @@ class InsightFunctions:
             A dictionary with summary information
         """
         if df.empty:
+            self.logger.warning("Empty DataFrame provided for groupby_summary")
             return {
                 "summary": "⚠️ No data available for analysis.",
                 "metrics": {},
@@ -150,6 +157,7 @@ class InsightFunctions:
         # Find the actual column names
         category_col = self.find_column(df, [category])
         if not category_col:
+            self.logger.warning(f"Could not find category column: {category}")
             return {
                 "summary": f"⚠️ Could not find category column: {category}",
                 "metrics": {},
@@ -191,6 +199,7 @@ class InsightFunctions:
                 # Normal aggregation for other metrics
                 metric_col = self.find_column(df, [metric])
                 if not metric_col:
+                    self.logger.warning(f"Could not find metric column: {metric}")
                     return {
                         "summary": f"⚠️ Could not find metric column: {metric}",
                         "metrics": {},
@@ -267,14 +276,14 @@ class InsightFunctions:
                     "confidence": "high" if nan_percentage < 10 else "medium"
                 }
         except Exception as e:
-            logger.error(f"Error in groupby_summary: {e}")
+            self.logger.error(f"Error in groupby_summary: {e}")
             return {
-                "summary": f"⚠️ Error analyzing data: {str(e)}",
+                "summary": f"⚠️ An error occurred during analysis: {str(e)}",
                 "metrics": {},
                 "breakdown": [],
                 "recommendations": [],
                 "confidence": "low",
-                "error_type": "DATA_ERROR"
+                "error_type": "PROCESSING_ERROR"
             }
     
     def total_summary(self, df, metric):
