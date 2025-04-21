@@ -61,6 +61,16 @@ jobs:
       run: |
         pip-audit --output=report.json --fail-on=vuln
 
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          report.json
+          coverage.xml
+        retention-days: 14
+
     - name: Build Docker image
       run: |
         docker build . -t watchdog:ci
