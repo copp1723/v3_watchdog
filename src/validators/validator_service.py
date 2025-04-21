@@ -28,10 +28,10 @@ from .insight_validator import (
     generate_flag_summary
 )
 
-from utils.errors import ValidationError, ProcessingError, handle_error
-from utils.logging_config import get_logger
-from watchdog_ai.llm.llm_engine import LLMEngine # Fixed import path
-from utils.config import MIN_CONFIDENCE_TO_AUTOMAP, DROP_UNMAPPED_COLUMNS # Added imports
+from ..utils.errors import ValidationError, ProcessingError, handle_error
+from ..utils.logging_config import get_logger
+from ..watchdog_ai.llm.llm_engine import LLMEngine # Fixed import path
+from ..utils.config import MIN_CONFIDENCE_TO_AUTOMAP, DROP_UNMAPPED_COLUMNS # Added imports
 
 logger = logging.getLogger(__name__)
 
