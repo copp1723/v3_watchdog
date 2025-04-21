@@ -59,8 +59,19 @@
     --font-size-xl: 1.5rem;
     
     /* Button gradients */
-    --btn-gradient: linear-gradient(to bottom, #32323A, #1F1F23);
-    --btn-gradient-hover: linear-gradient(to bottom, #3a3a42, #27272b);
+    --button-gradient: linear-gradient(to bottom, #32323A, #1F1F23);
+    --button-gradient-hover: linear-gradient(to bottom, #3a3a42, #27272b);
+    
+    /* Navigation */
+    --nav-tab-gap: 1.5rem;
+    --nav-tab-padding: 0.75rem 1.25rem;
+    --nav-tab-border-radius: var(--border-radius);
+    --nav-tab-bg: transparent;
+    --nav-tab-bg-active: var(--bg-primary);
+    --nav-tab-color: var(--fg-secondary);
+    --nav-tab-color-active: var(--accent-primary);
+    --nav-tab-font-weight: 400;
+    --nav-tab-font-weight-active: 500;
 }
 
 /* Light theme overrides */
@@ -73,11 +84,11 @@
     --bg-input: #F3F4F6;
     --bg-page: #f5f5ff;
     
-    /* Text colors */
-    --fg-primary: #111827;
-    --fg-secondary: #4B5563;
-    --fg-muted: #6B7280;
-    --fg-placeholder: #9CA3AF;
+    /* Text colors - improved contrast for accessibility */
+    --fg-primary: #0F172A;      /* Darker for better contrast */
+    --fg-secondary: #334155;    /* Darker for better contrast */
+    --fg-muted: #475569;        /* Darker for better contrast */
+    --fg-placeholder: #64748B;  /* Darker for better contrast */
     
     /* Accent colors - adjusted for light theme */
     --accent-primary: #6e56cf;  /* Purple-ish */
@@ -101,8 +112,8 @@
     --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.05);
     
     /* Button gradients */
-    --btn-gradient: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
-    --btn-gradient-hover: linear-gradient(to bottom, #e5e7eb, #d1d5db);
+    --button-gradient: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+    --button-gradient-hover: linear-gradient(to bottom, #e5e7eb, #d1d5db);
 }
 
 /* Legacy selector for backward compatibility */
@@ -131,6 +142,54 @@
     --shadow-card: var(--shadow-card);
     --shadow-panel: var(--shadow-panel);
     
-    --btn-gradient: var(--btn-gradient);
-    --btn-gradient-hover: var(--btn-gradient-hover);
+    --button-gradient: var(--button-gradient);
+    --button-gradient-hover: var(--button-gradient-hover);
+}
+
+/* Navigation Styles */
+.stTabs [data-baseweb="tab-list"] {
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--nav-tab-gap);
+    display: flex;
+    align-items: center;
+    min-height: 3rem;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: var(--nav-tab-bg);
+    color: var(--nav-tab-color);
+    border-radius: var(--nav-tab-border-radius);
+    padding: var(--nav-tab-padding);
+    font-weight: var(--nav-tab-font-weight);
+    transition: all 0.2s ease;
+    min-width: max-content;
+}
+
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    background-color: var(--nav-tab-bg-active);
+    color: var(--nav-tab-color-active);
+    font-weight: var(--nav-tab-font-weight-active);
+}
+
+/* Mobile Navigation */
+@media (max-width: 360px) {
+    .stTabs [data-baseweb="tab-list"] {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        gap: var(--spacing-md);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {
+        display: none;
+    }
 }

@@ -118,7 +118,7 @@
 
 /* Buttons */
 .btn {
-    background: var(--btn-gradient);
+    background: var(--button-gradient);
     color: var(--fg-primary);
     border: none;
     padding: var(--spacing-sm) var(--spacing-lg);
@@ -130,7 +130,7 @@
 }
 
 .btn:hover {
-    background: var(--btn-gradient-hover);
+    background: var(--button-gradient-hover);
     transform: translateY(-1px);
 }
 

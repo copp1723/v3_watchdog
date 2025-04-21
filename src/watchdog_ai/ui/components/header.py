@@ -25,21 +25,41 @@ def render_header():
         except Exception as e:
             st.warning(f"Could not load {css_file}: {e}")
     
-    # Apply theme class to the body
+    # Apply theme class to the body with early CSS injection in head
     st.markdown(f"""
-        <style>
-            {css_output}
-        </style>
+        <head>
+            <style>
+                {css_output}
+            </style>
+        </head>
         <script>
             (function() {{
+                // Check localStorage for saved theme preference
+                const savedTheme = localStorage.getItem('watchdogTheme');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                
+                // Initialize theme based on saved preference, OS preference, or default
+                let activeTheme = '{theme_class}';
+                if (savedTheme) {{
+                    // Use saved theme
+                    activeTheme = savedTheme === 'light' ? 'light-theme' : '';
+                }} else if (prefersDark) {{
+                    // Use OS preference if no saved theme
+                    activeTheme = '';
+                }}
+                
                 // Apply theme class to body element
-                document.body.className = '{theme_class}';
+                document.body.className = activeTheme;
                 
                 // Listen for messages from iframe buttons
                 window.addEventListener('message', function(event) {{
                     if (event.data.type === 'themeToggle') {{
                         // Simulate click on the hidden Streamlit button
                         document.querySelector('button[data-testid="baseButton-header-theme-toggle"]').click();
+                        
+                        // Save theme preference to localStorage
+                        const newTheme = document.body.className.includes('light-theme') ? 'light' : 'dark';
+                        localStorage.setItem('watchdogTheme', newTheme);
                     }}
                 }});
             }})();
@@ -97,7 +117,7 @@ def render_header():
             }
             
             .theme-toggle {
-                background: var(--btn-gradient);
+                background: var(--button-gradient);
                 color: var(--fg-primary);
                 border: none;
                 border-radius: var(--border-radius);
@@ -107,7 +127,7 @@ def render_header():
             }
             
             .theme-toggle:hover {
-                background: var(--btn-gradient-hover);
+                background: var(--button-gradient-hover);
                 transform: translateY(-1px);
             }
             

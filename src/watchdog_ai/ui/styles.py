@@ -66,7 +66,7 @@ def get_streamlit_styles():
             
             /* Upload button styling */
             .stFileUploader > div > button {
-                background: var(--btn-gradient) !important;
+                background: var(--button-gradient) !important;
                 color: var(--fg-primary) !important;
                 border-radius: var(--border-radius) !important;
                 border: none !important;
@@ -75,7 +75,7 @@ def get_streamlit_styles():
             }
 
             .stFileUploader > div > button:hover {
-                background: var(--btn-gradient-hover) !important;
+                background: var(--button-gradient-hover) !important;
                 transform: translateY(-1px);
             }
 
@@ -94,7 +94,7 @@ def get_streamlit_styles():
 
             /* Button styling */
             .stButton > button {
-                background: var(--btn-gradient) !important;
+                background: var(--button-gradient) !important;
                 color: var(--fg-primary) !important;
                 border-radius: 20px !important;
                 border: none !important;
@@ -104,7 +104,7 @@ def get_streamlit_styles():
             }
 
             .stButton > button:hover {
-                background: var(--btn-gradient-hover) !important;
+                background: var(--button-gradient-hover) !important;
                 transform: translateY(-1px);
             }
 
