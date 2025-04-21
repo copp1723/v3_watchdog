@@ -26,8 +26,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
+        pip install -e .
     
     - name: Run tests
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/ -v --cov=src --cov-report=xml
     
@@ -38,11 +41,14 @@ jobs:
         fail_ci_if_error: true
     
     - name: Run performance tests
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/test_debug_dashboard.py -v -m performance || echo "Debug dashboard performance tests skipped"
     
     - name: Generate test report
-      if: always()
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/ --junitxml=test-results.xml
     
@@ -54,5 +60,7 @@ jobs:
         path: test-results.xml
 
     - name: Check performance thresholds
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         python scripts/check_performance.py test-results.xml 

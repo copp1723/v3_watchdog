@@ -15,15 +15,15 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Cache pip dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
@@ -35,26 +35,34 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pip-audit coverage
+        pip install -e .
 
     - name: Run Unit Tests with Coverage
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         coverage run -m pytest tests/unit
 
     - name: Generate Coverage Report
       run: |
         coverage report
-        coverage xml
 
     - name: Start Streamlit server
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         nohup streamlit run src/app.py &
         timeout 30 bash -c 'until curl --output /dev/null --silent --head --fail http://localhost:8501; do sleep 1; done'
 
     - name: Run E2E tests
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/e2e/ --capture=no
 
     - name: Run smoke tests
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         python scripts/smoke_insights.py
 
@@ -64,14 +72,13 @@ jobs:
 
     - name: Upload test artifacts
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: test-results-${{ matrix.python-version }}
         path: |
-          ./report.json
-          ./coverage.xml
+          report.json
+          coverage.xml
         retention-days: 14
-        if-no-files-found: warn
 
     - name: Build Docker image
       run: |
@@ -81,10 +88,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
     - name: Set up Python 3.9
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
