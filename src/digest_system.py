@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 import threading
 import time
 
-from src.insights_digest import InsightsDigest, DigestEntry, Insight, Recommendation
+from src.insights_digest import InsightsDigest, DigestEntry, Insight, Recommendation, create_insights_digest
 from src.digest_bot import DigestBot
 from src.scheduler.base_scheduler import BaseScheduler, ScheduledReport, ReportFrequency, DeliveryMethod
 from src.scheduler.notification_service import NotificationService

@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 from ..config import SessionKeys
 from ..llm.llm_engine import LLMEngine
 from ..models import InsightResponse, InsightErrorType
-from ..utils.adaptive_schema import SchemaProfile
+from ..utils.adaptive_schema import SchemaProfile, MetricType as Metric
 from .insight_functions import find_column
 from .utils import is_all_sales_dataset, expand_variants
 from .middleware import InsightMiddleware

@@ -1,6 +1,9 @@
 import pandas as pd
 import logging
 
+# Configure logging
+logger = logging.getLogger(__name__)
+
 class InsightFunctions:
     """
     Collection of functions for generating insights from data.

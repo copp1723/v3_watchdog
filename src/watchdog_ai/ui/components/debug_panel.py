@@ -5,11 +5,15 @@ Provides detailed execution tracing and debugging information.
 
 import streamlit as st
 import pandas as pd
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import json
 from datetime import datetime
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+
+# Constants for execution limits
+TIME_LIMIT = 30  # seconds
+MEMORY_LIMIT = 512 * 1024 * 1024  # 512MB
 
 class InsightDebugPanel:
     """UI component for debugging insight generation."""

@@ -11,7 +11,7 @@ import json
 import logging
 import pandas as pd
 from typing import Dict, List, Set, Optional, Any, Tuple, Union
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from enum import Enum
 from datetime import datetime
 from pathlib import Path

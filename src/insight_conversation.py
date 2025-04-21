@@ -19,6 +19,10 @@ from .llm_engine import LLMEngine
 from .insight_card import render_insight_card
 from .utils.columns import find_metric_column, find_category_column
 
+# Import MetricType as Metric from any appropriate module that defines it
+# We'll use exec_schema_profiles.py since it contains a MetricType definition
+from .exec_schema_profiles import MetricType as Metric
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
