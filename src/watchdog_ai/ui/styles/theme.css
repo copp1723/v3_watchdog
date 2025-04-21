@@ -1,0 +1,136 @@
+/* Theme System
+ * 
+ * This file defines Watchdog AI's theming system using CSS custom properties (variables).
+ * To add a new variable, define it in :root (dark theme) and .light-theme (light theme).
+ * Use these variables in your components instead of hard-coded colors/values.
+ */
+
+/* Default theme variables (dark) */
+:root {
+    /* Core colors */
+    --bg-primary: #1F1F23;
+    --bg-secondary: #26262A;
+    --bg-card: #2D2D32;
+    --bg-panel: #26262A;
+    --bg-input: #26262A;
+    --bg-page: #0F0F12;
+    
+    /* Text colors */
+    --fg-primary: #FFFFFF;
+    --fg-secondary: #B0B0B5;
+    --fg-muted: #6B7280;
+    --fg-placeholder: #9CA3AF;
+    
+    /* Accent colors */
+    --accent-primary: #7c6dd1;  /* Purple-ish */
+    --accent-warning: #FBBF24;  /* Yellow/orange */
+    --accent-success: #34D399;  /* Green */
+    --accent-high: #F87171;     /* Red */
+    --accent-medium: #FBBF24;   /* Yellow/orange */
+    --accent-info: #60a5fa;     /* Blue */
+    
+    /* Status colors */
+    --status-error: var(--accent-high);
+    --status-warning: var(--accent-medium);
+    --status-info: var(--accent-info);
+    --status-success: var(--accent-success);
+    
+    /* Borders */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-radius: 8px;
+    
+    /* Shadows */
+    --shadow-card: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    --shadow-panel: 0 2px 4px rgba(0, 0, 0, 0.2);
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem; 
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    
+    /* Typography */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    
+    /* Button gradients */
+    --btn-gradient: linear-gradient(to bottom, #32323A, #1F1F23);
+    --btn-gradient-hover: linear-gradient(to bottom, #3a3a42, #27272b);
+}
+
+/* Light theme overrides */
+.light-theme {
+    /* Core colors */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F3F4F6;
+    --bg-card: #FFFFFF;
+    --bg-panel: #F9FAFB;
+    --bg-input: #F3F4F6;
+    --bg-page: #f5f5ff;
+    
+    /* Text colors */
+    --fg-primary: #111827;
+    --fg-secondary: #4B5563;
+    --fg-muted: #6B7280;
+    --fg-placeholder: #9CA3AF;
+    
+    /* Accent colors - adjusted for light theme */
+    --accent-primary: #6e56cf;  /* Purple-ish */
+    --accent-warning: #f59e0b;  /* Yellow/orange */
+    --accent-success: #10b981;  /* Green */
+    --accent-high: #ef4444;     /* Red */
+    --accent-medium: #f59e0b;   /* Yellow/orange */
+    --accent-info: #3b82f6;     /* Blue */
+    
+    /* Status colors - inherit from accent colors */
+    --status-error: var(--accent-high);
+    --status-warning: var(--accent-medium);
+    --status-info: var(--accent-info);
+    --status-success: var(--accent-success);
+    
+    /* Borders */
+    --border-color: rgba(0, 0, 0, 0.1);
+    
+    /* Shadows */
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.05);
+    
+    /* Button gradients */
+    --btn-gradient: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+    --btn-gradient-hover: linear-gradient(to bottom, #e5e7eb, #d1d5db);
+}
+
+/* Legacy selector for backward compatibility */
+[data-theme="light"] {
+    --bg-primary: var(--bg-primary);
+    --bg-secondary: var(--bg-secondary);
+    --bg-card: var(--bg-card);
+    --bg-panel: var(--bg-panel);
+    --bg-input: var(--bg-input);
+    --bg-page: var(--bg-page);
+    
+    --fg-primary: var(--fg-primary);
+    --fg-secondary: var(--fg-secondary);
+    --fg-muted: var(--fg-muted);
+    --fg-placeholder: var(--fg-placeholder);
+    
+    --accent-primary: var(--accent-primary);
+    --accent-warning: var(--accent-warning);
+    --accent-success: var(--accent-success);
+    --accent-high: var(--accent-high);
+    --accent-medium: var(--accent-medium);
+    --accent-info: var(--accent-info);
+    
+    --border-color: var(--border-color);
+    
+    --shadow-card: var(--shadow-card);
+    --shadow-panel: var(--shadow-panel);
+    
+    --btn-gradient: var(--btn-gradient);
+    --btn-gradient-hover: var(--btn-gradient-hover);
+}
