@@ -11,6 +11,7 @@ import numpy as np
 from typing import Dict, Any, List, Optional, Union
 from datetime import timedelta
 from watchdog_ai.core.data_utils import format_metric_value
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
 
 # Import new visualization system
 from watchdog_ai.core.visualization import (
@@ -147,7 +148,8 @@ def render_report(self, data: pd.DataFrame, legacy_charts: bool = False):
     
     except Exception as e:
         # Fallback to legacy rendering if new system fails
-        st.warning(f"Using legacy chart rendering due to: {str(e)}")
+        warning_text = f"{format_status_text(StatusType.WARNING)} Using legacy chart rendering due to: {str(e)}"
+        st.markdown(warning_text, unsafe_allow_html=True)
         return render_chart(chart_data, use_legacy=True)
     Args:
         metrics: Response time metrics dictionary containing:
@@ -266,9 +268,12 @@ def render_inventory_age_metrics(metrics: Dict[str, Any]):
         
         # Show correlation indicator
         if correlation := metrics.get('profit_correlation'):
-            correlation_color = 'red' if correlation < -0.3 else 'green' if correlation > 0.3 else 'orange'
+            # Determine status type based on correlation value
+            status_type = StatusType.ERROR if correlation < -0.3 else StatusType.SUCCESS if correlation > 0.3 else StatusType.WARNING
+            correlation_text = format_status_text(status_type, custom_text=f"Profit-Age Correlation: {correlation:.2f}", include_brackets=False)
+            
             st.markdown(
-                f"<p style='color: {correlation_color}'>Profit-Age Correlation: {correlation:.2f}</p>",
+                correlation_text,
                 unsafe_allow_html=True,
                 help="Correlation between inventory age and profit"
             )
@@ -300,7 +305,8 @@ def render_chart(chart_data: Dict[str, Any]):
     elif chart_type == 'bar':
         st.bar_chart(chart_data['data'])
     else:
-        st.warning(f"Unsupported chart type: {chart_type}")
+        warning_text = f"{format_status_text(StatusType.WARNING)} Unsupported chart type: {chart_type}"
+        st.markdown(warning_text, unsafe_allow_html=True)
 
 def render_time_series_chart(chart_data: Dict[str, Any]):
     """Render a time series chart using plotly."""
@@ -394,7 +400,8 @@ def render_insight_block(insight_data: Optional[Dict[str, Any]] = None):
                      visualizations, findings, and recommendations
     """
     if not insight_data:
-        st.warning("No insight data available")
+        warning_text = f"{format_status_text(StatusType.WARNING)} No insight data available"
+        st.markdown(warning_text, unsafe_allow_html=True)
         return
     
     # Main summary
@@ -438,13 +445,19 @@ def render_insight_block(insight_data: Optional[Dict[str, Any]] = None):
     # Show confidence level with appropriate color
     if confidence := insight_data.get('confidence'):
         confidence_color = {
-            'high': 'green',
-            'medium': 'orange',
-            'low': 'red'
-        }.get(confidence.lower(), 'grey')
+            'high': StatusType.SUCCESS,
+            'medium': StatusType.WARNING,
+            'low': StatusType.ERROR
+        }.get(confidence.lower(), StatusType.INFO)
+        
+        confidence_text = format_status_text(
+            confidence_color, 
+            custom_text=f"Confidence Level: {confidence.title()}", 
+            include_brackets=False
+        )
         
         st.markdown(
-            f"<p style='color: {confidence_color}'>Confidence Level: {confidence.title()}</p>",
+            confidence_text,
             unsafe_allow_html=True,
             help="Indicates the reliability of the insight based on data quality"
         )
@@ -456,10 +469,8 @@ def render_error_state(error_message: str):
     Args:
         error_message: Error message to display
     """
-    st.error(
-        f"⚠️ {error_message}",
-        icon="🚫"
-    )
+    error_text = f"{format_status_text(StatusType.ERROR)} {error_message}"
+    st.markdown(error_text, unsafe_allow_html=True)
 
 # For backward compatibility
 class SalesReportRenderer:

@@ -12,6 +12,7 @@ from typing import Dict, Any, List, Optional
 from ...insights.metrics_logger import MetricsLogger
 from ...scheduler.notification_service import NotificationService
 from ...utils.config import get_feature_flags
+from ...ui.utils.status_formatter import StatusType, format_status_text
 
 class DeliveryStatusDashboard:
     """Dashboard for monitoring notification delivery status and performance."""
@@ -39,13 +40,15 @@ class DeliveryStatusDashboard:
         st.title("Delivery Status Dashboard")
         
         # Feature flag check
+        # Feature flag check
         if not get_feature_flags().get('enable_notifications', True):
-            st.warning("⚠️ Notifications are currently disabled for maintenance.")
+            warning_text = f"{format_status_text(StatusType.WARNING)} Notifications are currently disabled for maintenance."
+            st.markdown(warning_text, unsafe_allow_html=True)
             
             if st.button("Re-enable Notifications"):
                 # Update feature flag
-                st.success("Notifications re-enabled!")
-                st.rerun()
+                success_text = f"{format_status_text(StatusType.SUCCESS)} Notifications re-enabled!"
+                st.markdown(success_text, unsafe_allow_html=True)
             return
         
         # Create tabs for different views
@@ -84,7 +87,7 @@ class DeliveryStatusDashboard:
         
         with col3:
             st.write("")  # Spacing
-            refresh = st.button("🔄 Refresh")
+            refresh = st.button("Refresh")
         
         # Get delivery records
         records = self._get_filtered_records(days, status)
@@ -192,11 +195,12 @@ class DeliveryStatusDashboard:
         with col1:
             st.subheader("Service Status")
             
+            st.subheader("Service Status")
+            
             for service, info in status['services'].items():
-                color = "🟢" if info['status'] == 'healthy' else "🔴"
-                st.write(f"{color} {service}: {info['status']}")
-                
-                if info.get('message'):
+                status_type = StatusType.SUCCESS if info['status'] == 'healthy' else StatusType.ERROR
+                service_status = format_status_text(status_type, custom_text=f"{service}: {info['status']}")
+                st.markdown(service_status, unsafe_allow_html=True)
                     st.caption(info['message'])
         
         with col2:
@@ -218,11 +222,13 @@ class DeliveryStatusDashboard:
         
         with col1:
             if st.button("Pause Notifications"):
-                st.warning("⚠️ Notifications paused")
+                warning_text = f"{format_status_text(StatusType.WARNING)} Notifications paused"
+                st.markdown(warning_text, unsafe_allow_html=True)
         
         with col2:
             if st.button("Clear Error State"):
-                st.success("✅ Error state cleared")
+                success_text = f"{format_status_text(StatusType.SUCCESS)} Error state cleared"
+                st.markdown(success_text, unsafe_allow_html=True)
     
     def _get_filtered_records(self, days: int, status: str) -> List[Dict[str, Any]]:
         """

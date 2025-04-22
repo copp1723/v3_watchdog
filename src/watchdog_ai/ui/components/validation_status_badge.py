@@ -10,26 +10,30 @@ from typing import Dict, Any, Optional, List, Tuple, Union
 import pandas as pd
 
 from watchdog_ai.ui.utils.ui_theme import ColorSystem, Typography, Spacing
+from watchdog_ai.ui.utils.status_formatter import StatusFormatter, StatusType, format_status_text, render_status_badge
 
 # Validation status types and their corresponding colors/icons
 VALIDATION_STATUS = {
     "success": {
         "color": ColorSystem.SECONDARY.get(500),  # Green
-        "icon": "✓",
+        "icon": "[SUCCESS]",
         "label": "Success",
-        "description": "Validation passed without issues"
+        "description": "Validation passed without issues",
+        "status_type": StatusType.SUCCESS
     },
     "warning": {
         "color": ColorSystem.WARNING.get(500),  # Yellow
-        "icon": "⚠️",
+        "icon": "[WARNING]",
         "label": "Warning",
-        "description": "Validation completed with warnings"
+        "description": "Validation completed with warnings",
+        "status_type": StatusType.WARNING
     },
     "error": {
         "color": ColorSystem.ALERT.get(500),  # Red
-        "icon": "✗",
+        "icon": "[ERROR]",
         "label": "Error",
-        "description": "Validation failed with errors"
+        "description": "Validation failed with errors",
+        "status_type": StatusType.ERROR
     }
 }
 
@@ -63,7 +67,7 @@ class ValidationStatusBadge:
                 margin-right: 8px;
             }
             
-            .validation-badge-icon {
+            .validation-badge-text {
                 margin-right: 4px;
             }
             
@@ -230,16 +234,22 @@ class ValidationStatusBadge:
         
         # Create badge HTML
         badge_html = f"""
+        # Create badge HTML
+        formatted_status = format_status_text(
+            status_config['status_type'], 
+            custom_text=status_config['label'],
+            use_color=True
+        )
+        
+        badge_html = f"""
         <div class="validation-tooltip">
             <div class="validation-badge validation-badge-{status} {size_class}">
-                <span class="validation-badge-icon">{status_config['icon']}</span>
+                <span class="validation-badge-text">{formatted_status}</span>
                 <span>{badge_text}</span>
             </div>
             <span class="tooltip-text">{tooltip_html}</span>
         </div>
         """
-        
-        # Render badge
         st.markdown(badge_html, unsafe_allow_html=True)
     
     def render_multiple(self, validation_results: Dict[str, Any]) -> None:
@@ -344,8 +354,20 @@ def create_validation_badge(
         count: Optional count to display (e.g., number of issues)
         size: Badge size ('small', 'medium', 'large')
     """
-    badge = ValidationStatusBadge()
-    badge.render(status, message, details, count, size)
+    # Map string status to StatusType for direct use with status_formatter
+    status_map = {
+        "success": StatusType.SUCCESS,
+        "warning": StatusType.WARNING,
+        "error": StatusType.ERROR
+    }
+    
+    # If using simple cases, use the status formatter directly
+    if size == "medium" and not details and not count and status in status_map:
+        render_status_badge(status_map[status], custom_text=message or VALIDATION_STATUS[status]["label"])
+    else:
+        # Use original implementation for complex cases
+        badge = ValidationStatusBadge()
+        badge.render(status, message, details, count, size)
 
 
 def render_validation_summary(validation_results: Dict[str, Any]) -> None:

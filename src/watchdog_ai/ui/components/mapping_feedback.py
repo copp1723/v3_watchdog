@@ -10,6 +10,7 @@ import logging
 
 from ...utils.adaptive_schema import MappingSuggestion
 from ...utils.data_lineage import DataLineage
+from ...ui.utils.status_formatter import StatusType, format_status_text
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,8 @@ class MappingFeedbackUI:
         if not suggestions:
             return
             
-        st.warning("⚠️ Schema validation found some issues:")
+        warning_text = f"{format_status_text(StatusType.WARNING)} Schema validation found some issues:"
+        st.markdown(warning_text, unsafe_allow_html=True)
         
         for i, suggestion in enumerate(suggestions, 1):
             with st.expander(f"Suggestion {i}: Map '{suggestion.source_column}' to '{suggestion.target_column}'"):
@@ -67,7 +69,8 @@ class MappingFeedbackUI:
                             confidence=suggestion.confidence,
                             metadata=suggestion.metadata
                         )
-                        st.success("✅ Mapping applied!")
+                        success_text = f"{format_status_text(StatusType.SUCCESS)} Mapping applied!"
+                        st.markdown(success_text, unsafe_allow_html=True)
                 
     def render_feedback_history(self) -> None:
         """Render the history of mapping feedback."""

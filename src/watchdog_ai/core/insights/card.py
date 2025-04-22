@@ -7,6 +7,7 @@ from typing import Dict, Any, Union, Optional
 import logging
 
 from .base import InsightBase
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
 
 logger = logging.getLogger(__name__)
 
@@ -49,16 +50,26 @@ class InsightCard:
                 
                 # If it's a mock fallback, flag to the user
                 if is_mock:
-                    st.warning("⚠️ This insight was generated from fallback due to a formatting error from the LLM.")
+                    warning_text = format_status_text(StatusType.WARNING, custom_text="This insight was generated from fallback due to a formatting error from the LLM.")
+                    st.markdown(warning_text, unsafe_allow_html=True)
+                
                 
                 # Header with confidence indicator
                 if confidence == "high":
-                    st.markdown(f"#### 🟢 {summary}")
+                    status_type = StatusType.SUCCESS
+                    confidence_label = "HIGH CONFIDENCE"
                 elif confidence == "medium":
-                    st.markdown(f"#### 🟡 {summary}")
+                    status_type = StatusType.WARNING
+                    confidence_label = "MEDIUM CONFIDENCE"
                 else:
-                    st.markdown(f"#### 🔴 {summary}")
+                    status_type = StatusType.ERROR
+                    confidence_label = "LOW CONFIDENCE"
                 
+                # Format the confidence status
+                confidence_status = format_status_text(status_type, custom_text=confidence_label)
+                
+                # Display summary with formatted confidence indicator
+                st.markdown(f"#### {confidence_status} {summary}", unsafe_allow_html=True)
                 # Display metrics if available
                 metrics = insight.get("metrics", {})
                 if metrics:
@@ -101,16 +112,16 @@ class InsightCard:
                 if show_buttons:
                     col1, col2, col3 = st.columns([1, 1, 3])
                     with col1:
-                        if st.button(f"🔄 Regenerate", key=f"regenerate_{index}"):
+                    with col1:
+                        if st.button("Regenerate", key=f"regenerate_{index}"):
                             st.session_state.regenerate_insight = True
                             st.session_state.regenerate_index = index
                             st.rerun()
                     with col2:
-                        if st.button(f"🔍 Follow-up", key=f"followup_{index}"):
+                        if st.button("Follow-up", key=f"followup_{index}"):
                             st.session_state.followup_insight = True
                             st.session_state.followup_index = index
                             st.rerun()
-                            
         except Exception as e:
             logger.error(f"Error rendering insight card: {e}")
             st.error("An error occurred while rendering this insight.")

@@ -11,6 +11,8 @@ from datetime import datetime
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
+
 # Constants for execution limits
 TIME_LIMIT = 30  # seconds
 MEMORY_LIMIT = 512 * 1024 * 1024  # 512MB
@@ -43,7 +45,7 @@ class InsightDebugPanel:
             rephrased_query: Rephrased query for LLM
             steps: List of processing steps
         """
-        st.subheader("🔄 Query Processing Flow")
+        st.subheader("Query Processing Flow")
         
         # Show queries
         col1, col2 = st.columns(2)
@@ -69,7 +71,7 @@ class InsightDebugPanel:
             code: Generated Python code
             analysis_result: Code analysis results
         """
-        st.subheader("💻 Generated Code")
+        st.subheader("Generated Code")
         
         # Show code with syntax highlighting
         st.code(code, language='python')
@@ -93,7 +95,8 @@ class InsightDebugPanel:
             )
         
         if analysis_result['issues']:
-            st.warning("⚠️ Security Issues Found")
+            warning_text = f"{format_status_text(StatusType.WARNING)} Security Issues Found"
+            st.markdown(warning_text, unsafe_allow_html=True)
             for issue in analysis_result['issues']:
                 st.markdown(f"- {issue}")
     
@@ -104,7 +107,7 @@ class InsightDebugPanel:
         Args:
             metrics: Execution metrics data
         """
-        st.subheader("📊 Execution Metrics")
+        st.subheader("Execution Metrics")
         
         # Create metrics display
         col1, col2, col3 = st.columns(3)
@@ -128,9 +131,13 @@ class InsightDebugPanel:
             )
         
         with col3:
+            cache_status = "Hit" if metrics.get('cache_hit', False) else "Miss"
+            status_type = StatusType.SUCCESS if metrics.get('cache_hit', False) else StatusType.INFO
+            formatted_status = format_status_text(status_type, custom_text=cache_status, include_brackets=False)
+            
             st.metric(
                 "Cache Status",
-                "Hit" if metrics.get('cache_hit', False) else "Miss",
+                cache_status,
                 delta=None
             )
         
@@ -163,7 +170,8 @@ class InsightDebugPanel:
         Args:
             error: Error information
         """
-        st.subheader("❌ Error Details")
+        error_text = f"{format_status_text(StatusType.ERROR, custom_text='ERROR')} Error Details"
+        st.markdown(error_text, unsafe_allow_html=True)
         
         st.error(
             f"**{error['error_type']}**: {error['error_message']}"
@@ -173,13 +181,13 @@ class InsightDebugPanel:
             st.code(error['traceback'], language='python')
         
         if 'suggestions' in error:
-            st.subheader("💡 Suggestions")
+            st.subheader("Suggestions")
             for suggestion in error['suggestions']:
                 st.markdown(f"- {suggestion}")
     
     def render_trace_history(self) -> None:
         """Render the execution trace history."""
-        st.subheader("📝 Trace History")
+        st.subheader("Trace History")
         
         if not st.session_state.debug_history:
             st.info("No trace history available")
@@ -207,7 +215,7 @@ class InsightDebugPanel:
         Args:
             insight_execution: Complete insight execution data
         """
-        st.title("🔍 Insight Debug Panel")
+        st.title("Insight Debug Panel")
         
         # Add trace to history
         self.add_trace(insight_execution)

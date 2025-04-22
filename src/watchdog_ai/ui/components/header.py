@@ -10,7 +10,7 @@ from typing import List, Dict, Optional, Callable
 from datetime import datetime
 
 from watchdog_ai.ui.utils.ui_theme import Theme, ColorMode, ColorSystem, Typography, Spacing
-
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
 
 def render_logo() -> None:
     """Render the Watchdog AI logo and title."""
@@ -23,7 +23,7 @@ def render_logo() -> None:
     # Create logo and title with styling
     st.markdown(f"""
         <div class="logo-container">
-            <div class="logo-icon">🔍</div>
+            <div class="logo-icon">WD</div>
             <div class="logo-text" style="color: {logo_color};">
                 <span class="logo-name">Watchdog</span>
                 <span class="logo-accent" style="color: {ColorSystem.get_primary()};">AI</span>
@@ -50,7 +50,7 @@ def render_theme_toggle() -> None:
     st.markdown(f"""
         <div class="theme-toggle-container">
             <label for="{toggle_id}" class="theme-toggle-label">
-                <span class="toggle-icon">{'🌙' if is_dark else '☀️'}</span>
+                <span class="toggle-icon">{('DARK' if is_dark else 'LIGHT')}</span>
             </label>
             <div class="theme-toggle-wrapper">
                 <div class="theme-toggle" 
@@ -113,7 +113,7 @@ def render_notification_indicator(count: int = 0) -> None:
     # Create notification bell with badge
     st.markdown(f"""
         <div class="notification-container">
-            <div class="notification-icon">🔔</div>
+            <div class="notification-icon">NOTIF</div>
             {badge_html}
         </div>
     """, unsafe_allow_html=True)
@@ -273,7 +273,8 @@ def render_header_css(theme: Theme) -> None:
         }}
         
         .toggle-icon {{
-            font-size: 16px;
+            font-size: 12px;
+            font-weight: bold;
         }}
         
         /* Notification Styling */
@@ -283,7 +284,8 @@ def render_header_css(theme: Theme) -> None:
         }}
         
         .notification-icon {{
-            font-size: 20px;
+            font-size: 14px;
+            font-weight: bold;
         }}
         
         .notification-badge {{

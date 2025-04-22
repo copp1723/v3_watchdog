@@ -10,6 +10,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 from validators.schema_manager import SchemaProfileManager
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
 from insights.benchmarking import BenchmarkEngine
 
 class SchemaProfileEditor:
@@ -201,7 +202,8 @@ class SchemaProfileEditor:
                         # Save profile
                         self.schema_manager.save_profile(selected_profile, edited_profile)
                         
-                        st.success("✅ Profile saved successfully!")
+                        success_text = f"{format_status_text(StatusType.SUCCESS)} Profile saved successfully!"
+                        st.markdown(success_text, unsafe_allow_html=True)
                         
                     except json.JSONDecodeError as e:
                         st.error(f"Invalid JSON: {str(e)}")
@@ -301,7 +303,8 @@ class SchemaProfileEditor:
                 # Save profile
                 self.schema_manager.save_profile(profile_id, profile)
                 
-                st.success("✅ Profile created successfully!")
+                success_text = f"{format_status_text(StatusType.SUCCESS)} Profile created successfully!"
+                st.markdown(success_text, unsafe_allow_html=True)
                 
                 # Clear form
                 st.session_state.columns = []
@@ -350,7 +353,8 @@ class SchemaProfileEditor:
                     st.subheader("Mapping Results")
                     
                     # Successful mappings
-                    st.write("✅ Successfully Mapped Columns:")
+                    success_text = f"{format_status_text(StatusType.SUCCESS)} Successfully Mapped Columns:"
+                    st.markdown(success_text, unsafe_allow_html=True)
                     mapped_data = []
                     for target, source in results['mapped'].items():
                         mapped_data.append({
@@ -364,7 +368,8 @@ class SchemaProfileEditor:
                     
                     # Unmapped columns
                     if results['unmapped']:
-                        st.write("❌ Unmapped Columns:")
+                        error_text = f"{format_status_text(StatusType.ERROR)} Unmapped Columns:"
+                        st.markdown(error_text, unsafe_allow_html=True)
                         st.write(", ".join(results['unmapped']))
                     
                     # Preview mapped data

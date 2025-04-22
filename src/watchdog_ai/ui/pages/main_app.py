@@ -73,6 +73,7 @@ from watchdog_ai.ui.components.nova_act_panel import render_nova_act_panel
 
 # Import theme system
 from watchdog_ai.ui.utils.ui_theme import Theme, ColorMode, Spacing, ColorSystem, Typography
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -85,7 +86,7 @@ QUICK_START_GUIDE_HTML = """
 <div class="quick-start-container">
     <div class="quick-start-steps">
         <div class="step">
-st.header("Data Upload", "📤")
+            <div class="step-number">1</div>
             <div class="step-content">
                 <h4>Upload Your Data</h4>
                 <p>Upload your dealership data or connect to your DMS/CRM.</p>
@@ -614,23 +615,21 @@ def show_message(message_type: str, message: str) -> None:
         st.session_state.success_message = message
     
     if message_type == "error":
-        st.error(message, icon="🚫")
+        st.session_state.error_message = message
     elif message_type == "success":
-        st.success(message, icon="✅")
-    elif message_type == "info":
-        st.info(message, icon="ℹ️")
-    elif message_type == "warning":
-        st.warning(message, icon="⚠️")
-
-
-def display_status_messages() -> None:
+        st.session_state.success_message = message
+    
+    if message_type == "error":
+        formatted_message = format_status_text(StatusType.ERROR, custom_text=messagdef display_status_messages() -> None:
     """Display any status messages stored in session state and clear them."""
     if error := st.session_state.get('error_message'):
-        st.error(error, icon="🚫")
+        error_message = format_status_text(StatusType.ERROR, custom_text=error)
+        st.markdown(error_message, unsafe_allow_html=True)
         st.session_state.error_message = None
         
     if success := st.session_state.get('success_message'):
-        st.success(success, icon="✅")
+        success_message = format_status_text(StatusType.SUCCESS, custom_text=success)
+        st.markdown(success_message, unsafe_allow_html=True)
         st.session_state.success_message = None
 
 # =============================================================================
@@ -827,20 +826,20 @@ def render_quick_start_guide() -> None:
     
     with col1:
         if st.button("📤 Upload Data", use_container_width=True):
+    with col1:
+        if st.button("Upload Data", use_container_width=True):
             st.session_state.active_tab = "Insight Engine"
             st.rerun()
     
     with col2:
-        if st.button("🔌 Connect Systems", use_container_width=True):
+        if st.button("Connect Systems", use_container_width=True):
             st.session_state.active_tab = "System Connect"
             st.rerun()
     
     with col3:
-        if st.button("⚙️ Configure Settings", use_container_width=True):
+        if st.button("Configure Settings", use_container_width=True):
             st.session_state.active_tab = "Settings"
             st.rerun()
-    
-    # Additional resources section
     st.markdown("### Additional Resources")
     
     resources_col1, resources_col2 = st.columns(2)
@@ -889,10 +888,13 @@ def render_system_connect_tab() -> None:
     status_col1, status_col2 = st.columns([1, 3])
     
     with status_col1:
+    with status_col1:
         if connection_status:
-            st.success("Connected", icon="✅")
+            connected_message = format_status_text(StatusType.SUCCESS, custom_text="Connected")
+            st.markdown(connected_message, unsafe_allow_html=True)
         else:
-            st.error("Not Connected", icon="❌")
+            not_connected_message = format_status_text(StatusType.ERROR, custom_text="Not Connected")
+            st.markdown(not_connected_message, unsafe_allow_html=True)
     
     with status_col2:
         if connection_status:
@@ -901,10 +903,11 @@ def render_system_connect_tab() -> None:
                 sync_str = last_sync.strftime("%b %d, %Y %I:%M %p")
             else:
                 sync_str = str(last_sync)
-            st.info(f"Last synchronized: {sync_str}", icon="🔄")
+            sync_message = format_status_text(StatusType.INFO, custom_text=f"Last synchronized: {sync_str}")
+            st.markdown(sync_message, unsafe_allow_html=True)
         else:
-            st.warning("No active connections", icon="⚠️")
-    
+            no_connections_message = format_status_text(StatusType.WARNING, custom_text="No active connections")
+            st.markdown(no_connections_message, unsafe_allow_html=True)
     # API Key Management
     st.subheader("API Credentials")
     
@@ -1372,18 +1375,21 @@ def plot_chart(data: pd.DataFrame, chart_type: str, settings: dict) -> None:
         Various exceptions are caught and displayed to the user, not raised.
     """
     # Input validation
+    # Input validation
     if data is None or len(data) == 0 or len(data.columns) == 0:
-        st.error("Cannot generate chart: Empty or invalid dataset provided.", icon="❌")
+        error_message = format_status_text(StatusType.ERROR, custom_text="Cannot generate chart: Empty or invalid dataset provided.")
+        st.markdown(error_message, unsafe_allow_html=True)
         return
         
     if not isinstance(chart_type, str) or chart_type.strip() == "":
-        st.error("Invalid chart type specified.", icon="❌")
+        error_message = format_status_text(StatusType.ERROR, custom_text="Invalid chart type specified.")
+        st.markdown(error_message, unsafe_allow_html=True)
         return
         
     if not isinstance(settings, dict):
-        st.error("Invalid chart settings provided.", icon="❌")
+        error_message = format_status_text(StatusType.ERROR, custom_text="Invalid chart settings provided.")
+        st.markdown(error_message, unsafe_allow_html=True)
         return
-    
     try:
         # Find appropriate columns for charts
         numeric_cols = data.select_dtypes(include=['number', 'float', 'int']).columns.tolist()
@@ -1405,11 +1411,13 @@ def plot_chart(data: pd.DataFrame, chart_type: str, settings: dict) -> None:
         color_col = categorical_cols[0] if categorical_cols and len(categorical_cols) > 1 else None
         
         if not numeric_cols:
-            st.warning("No numeric columns detected in your dataset. Charts require at least one numeric column for analysis.", icon="⚠️")
+            warning_message = format_status_text(StatusType.WARNING, custom_text="No numeric columns detected in your dataset. Charts require at least one numeric column for analysis.")
+            st.markdown(warning_message, unsafe_allow_html=True)
             return
             
         if not x_col or not y_col:
-            st.warning("Could not identify appropriate columns for charting. Please make sure your data has both numeric and categorical/date columns.", icon="⚠️")
+            warning_message = format_status_text(StatusType.WARNING, custom_text="Could not identify appropriate columns for charting. Please make sure your data has both numeric and categorical/date columns.")
+            st.markdown(warning_message, unsafe_allow_html=True)
             return
         
         # Create colorscale based on settings
@@ -1553,19 +1561,10 @@ def plot_chart(data: pd.DataFrame, chart_type: str, settings: dict) -> None:
         })
         
     except KeyError as ke:
-        st.error(f"Chart creation failed: Could not find required column '{ke}'", icon="❌")
-        st.info("Try selecting a different chart type that's compatible with your data", icon="ℹ️")
-        logger.error(f"Chart KeyError: {str(ke)}")
-        
-    except ValueError as ve:
-        st.error(f"Chart creation failed: Invalid value - {str(ve)}", icon="❌")
-        st.info("This may be due to incompatible data types for the selected chart", icon="ℹ️")
-        logger.error(f"Chart ValueError: {str(ve)}")
-        
-    except Exception as e:
-        st.error(f"Error generating chart: {str(e)}", icon="❌")
-        st.info("An unexpected error occurred. Try a different chart type or check your data.", icon="ℹ️")
-        
+    except KeyError as ke:
+        error_message = format_status_text(StatusType.ERROR, custom_text=f"Chart creation failed: Could not find required column '{ke}'")
+        st.markdown(error_message, unsafe_allow_html=True)
+        info_message = format_status_text(StatusType.INFO, custom_text="Try selecting a different chart type that's compatible with your data
         # Log the detailed error for debugging
         logger.error(f"Chart generation error: {str(e)}")
         logger.error(traceback.format_exc())
@@ -1694,11 +1693,10 @@ def render_insight_engine_tab() -> None:
     
     # Data Upload Section
     with st.container():
+        # Use Streamlit's native header with emoji parameter
+        st.header("Data Upload", ":inbox_tray:")
         st.markdown("""
-            <div class="section-header">
-                <h3>📤 Data Upload</h3>
-                <p class="section-description">Upload your dealership data or connect to your CRM</p>
-            </div>
+            <p class="section-description">Upload your dealership data or connect to your CRM</p>
         """, unsafe_allow_html=True)
         
         # Render data uploader

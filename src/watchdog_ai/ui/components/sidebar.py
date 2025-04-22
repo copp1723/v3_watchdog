@@ -2,11 +2,12 @@
 
 import streamlit as st
 import pandas as pd
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
 
 def render_sidebar():
     """Render the application sidebar with settings and tools."""
     with st.sidebar:
-        st.header("⚙️ Settings & Tools")
+        st.header("Settings & Tools")
         
         # Model settings
         st.subheader("Model Settings")
@@ -33,7 +34,8 @@ def render_sidebar():
                 "model": model,
                 "temperature": temperature
             }
-            st.success("Settings applied!")
+            success_text = f"{format_status_text(StatusType.SUCCESS)} Settings applied!"
+            st.markdown(success_text, unsafe_allow_html=True)
         
         # Sample datasets
         st.subheader("Sample Datasets")
@@ -53,7 +55,8 @@ def render_sidebar():
                 # Store in session state
                 st.session_state.sample_data = df
                 st.session_state.validated_data = df
-                st.success(f"Loaded {selected_sample} successfully!")
+                success_text = f"{format_status_text(StatusType.SUCCESS)} Loaded {selected_sample} successfully!"
+                st.markdown(success_text, unsafe_allow_html=True)
             elif selected_sample == "Inventory Data":
                 # Create a simple inventory dataset
                 df = pd.DataFrame({
@@ -67,11 +70,12 @@ def render_sidebar():
                 # Store in session state
                 st.session_state.sample_data = df
                 st.session_state.validated_data = df
-                st.success(f"Loaded {selected_sample} successfully!")
+                success_text = f"{format_status_text(StatusType.SUCCESS)} Loaded {selected_sample} successfully!"
+                st.markdown(success_text, unsafe_allow_html=True)
         
         # Help section
         st.markdown("---")
-        with st.expander("❓ Help & Information", expanded=False):
+        with st.expander("Help & Information", expanded=False):
             st.markdown("""
             **Getting Started**
             1. Upload your data in the Data Upload tab

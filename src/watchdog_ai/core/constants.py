@@ -2,6 +2,7 @@
 Centralized constants for Watchdog AI.
 """
 from typing import List, Dict, Set
+from watchdog_ai.ui.utils.status_formatter import StatusType
 
 # Validation Thresholds
 CONFIDENCE_THRESHOLD = 0.7
@@ -56,16 +57,23 @@ DEFAULT_PREVIOUS_SALES = 25
 CURRENCY_INDICATORS = {'price', 'cost', 'profit', 'revenue'}
 PERCENTAGE_INDICATORS = {'percent', 'percentage', 'rate'}
 
-# Error Messages
-ERR_NO_DATA = '⚠️ No data available for analysis.'
-ERR_COLUMN_NOT_FOUND = '⚠️ Could not find required column: {}'
-ERR_NO_VALID_DATA = '⚠️ No valid data found for {} after removing missing values.'
-ERR_PROCESSING = '⚠️ An error occurred during analysis: {}'
+# Status Types for Error Messages
+# The StatusType enum should be used with these messages via the format_status_text utility
+ERROR_STATUS_TYPE = StatusType.ERROR
+WARNING_STATUS_TYPE = StatusType.WARNING
+INFO_STATUS_TYPE = StatusType.INFO
+SUCCESS_STATUS_TYPE = StatusType.SUCCESS
+
+# Error Messages (plain text, use with format_status_text)
+ERR_NO_DATA = 'No data available for analysis.'
+ERR_COLUMN_NOT_FOUND = 'Could not find required column: {}'
+ERR_NO_VALID_DATA = 'No valid data found for {} after removing missing values.'
+ERR_PROCESSING = 'An error occurred during analysis: {}'
 
 # Streamlit Settings
 PAGE_CONFIG = {
     'page_title': 'Watchdog AI',
-    'page_icon': '🔍',
+    'page_icon': 'WD',  # Replaced emoji with text alternative
     'layout': 'wide',
     'initial_sidebar_state': 'expanded'
 }

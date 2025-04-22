@@ -9,6 +9,7 @@ import json
 import os
 
 from ...scheduler.notification_service import NotificationService
+from ...ui.utils.status_formatter import StatusType, format_status_text
 from ...utils.config import save_user_preferences, get_user_preferences
 from ....notifications.escalation import AlertEscalationRouter
 
@@ -145,9 +146,10 @@ class NotificationSettings:
                     new_preferences['phone'] = phone
                 
                 # Save to user preferences
+                # Save to user preferences
                 save_user_preferences(st.session_state.user.username, new_preferences)
-                st.success("✅ Preferences saved successfully!")
-    
+                success_text = format_status_text(StatusType.SUCCESS, custom_text="Preferences saved successfully!")
+                st.markdown(success_text, unsafe_allow_html=True)
     def _render_schedule_settings(self, preferences: Dict[str, Any]) -> None:
         """
         Render schedule settings section.
@@ -208,10 +210,11 @@ class NotificationSettings:
                 }
                 
                 # Update preferences
+                # Update preferences
                 preferences['schedule'] = new_schedule
                 save_user_preferences(st.session_state.user.username, preferences)
-                st.success("✅ Schedule saved successfully!")
-        
+                success_text = format_status_text(StatusType.SUCCESS, custom_text="Schedule saved successfully!")
+                st.markdown(success_text, unsafe_allow_html=True)
         # Preview next deliveries
         st.subheader("Next Scheduled Deliveries")
         
@@ -509,7 +512,8 @@ class NotificationSettings:
                 }
                 save_user_preferences(st.session_state.user.username, preferences)
                 
-                st.success("✅ Escalation settings saved successfully!")
+                success_text = format_status_text(StatusType.SUCCESS, custom_text="Escalation settings saved successfully!")
+                st.markdown(success_text, unsafe_allow_html=True)
         
         # Show recent escalations
         recent_escalations = self.escalation_router.get_recent_escalations(5)

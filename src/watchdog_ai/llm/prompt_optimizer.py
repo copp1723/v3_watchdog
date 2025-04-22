@@ -13,6 +13,9 @@ import sys
 import re
 from typing import Dict, List, Any, Optional
 
+from watchdog_ai.ui.utils.status_formatter import StatusType
+from watchdog_ai.core.constants import ERROR_STATUS_TYPE, WARNING_STATUS_TYPE
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -374,34 +377,37 @@ def generate_llm_engine_override(output_file="llm_engine_optimized.py"):
                     
                     logger.error("Failed to parse LLM response as JSON")
                     return {
-                        "summary": "⚠️ Failed to parse insight response",
+                        "summary": "Failed to parse insight response",
                         "metrics": {},
                         "breakdown": [],
                         "recommendations": ["Try rephrasing your query"],
                         "confidence": "low",
-                        "error_type": "PARSE_ERROR"
+                        "error_type": "PARSE_ERROR",
+                        "status_type": "ERROR"
                     }
                     
             except Exception as e:
                 logger.error(f"OpenAI API error: {e}")
                 return {
-                    "summary": f"⚠️ API Error: {str(e)}",
+                    "summary": f"API Error: {str(e)}",
                     "metrics": {},
                     "breakdown": [],
                     "recommendations": ["Try again in a moment"],
                     "confidence": "low",
-                    "error_type": "API_ERROR"
+                    "error_type": "API_ERROR",
+                    "status_type": "ERROR"
                 }
                 
         except Exception as e:
             logger.error(f"Unexpected error in generate_insight: {e}")
             return {
-                "summary": f"⚠️ Error: {str(e)}",
+                "summary": f"Error: {str(e)}",
                 "metrics": {},
                 "breakdown": [],
                 "recommendations": ["Try rephrasing your query"],
                 "confidence": "low",
-                "error_type": "SYSTEM_ERROR"
+                "error_type": "SYSTEM_ERROR",
+                "status_type": "ERROR"
             }
     """
     
@@ -465,6 +471,11 @@ def main():
                         help="Path for the prompt optimization guide")
     
     args = parser.parse_args()
+    
+    # Add a comment explaining the status_type field usage
+    print("Note: The optimized LLM engine now includes a 'status_type' field in error responses.")
+    print("This field should be used with the StatusFormatter utility to display properly formatted error messages.")
+    print("Example usage: format_status_text(StatusType[response['status_type']], custom_text=response['summary'])")
     
     try:
         # Generate optimized LLM engine

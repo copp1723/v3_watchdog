@@ -11,6 +11,7 @@ from watchdog_ai.core.constants import (
     NAN_WARNING_THRESHOLD,
     NAN_SEVERE_THRESHOLD
 )
+from watchdog_ai.ui.utils.status_formatter import StatusType
 
 logger = logging.getLogger(__name__)
 
@@ -157,11 +158,11 @@ def get_error_response(
         Standardized error response dictionary
     """
     return {
-        "summary": (f"⚠️ {error_details}"
-                    if error_details else "⚠️ An error occurred."),
+        "summary": (f"{error_details}" if error_details else "An error occurred."),
         "metrics": {},
         "breakdown": [],
         "recommendations": [],
         "confidence": "low",
-        "error_type": error_type
+        "error_type": error_type,
+        "status_type": "WARNING"  # Use with StatusFormatter.format_status_text(StatusType.WARNING, custom_text=summary)
     }

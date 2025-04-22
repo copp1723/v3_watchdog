@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+from watchdog_ai.ui.utils.status_formatter import StatusType
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -146,12 +147,13 @@ class InsightFunctions:
         if df.empty:
             self.logger.warning("Empty DataFrame provided for groupby_summary")
             return {
-                "summary": "⚠️ No data available for analysis.",
+                "summary": "No data available for analysis.",
                 "metrics": {},
                 "breakdown": [],
                 "recommendations": [],
                 "confidence": "low",
-                "error_type": "NO_DATA"
+                "error_type": "NO_DATA",
+                "status_type": "WARNING"  # For use with StatusFormatter
             }
 
         # Find the actual column names
@@ -159,12 +161,13 @@ class InsightFunctions:
         if not category_col:
             self.logger.warning(f"Could not find category column: {category}")
             return {
-                "summary": f"⚠️ Could not find category column: {category}",
+                "summary": f"Could not find category column: {category}",
                 "metrics": {},
                 "breakdown": [],
                 "recommendations": [],
                 "confidence": "low",
-                "error_type": "COLUMN_NOT_FOUND"
+                "error_type": "COLUMN_NOT_FOUND",
+                "status_type": "WARNING"  # For use with StatusFormatter
             }
 
         try:
@@ -201,12 +204,13 @@ class InsightFunctions:
                 if not metric_col:
                     self.logger.warning(f"Could not find metric column: {metric}")
                     return {
-                        "summary": f"⚠️ Could not find metric column: {metric}",
+                        "summary": f"Could not find metric column: {metric}",
                         "metrics": {},
                         "breakdown": [],
                         "recommendations": [],
                         "confidence": "low",
-                        "error_type": "COLUMN_NOT_FOUND"
+                        "error_type": "COLUMN_NOT_FOUND",
+                        "status_type": "WARNING"  # For use with StatusFormatter
                     }
 
                 # Clean numeric data and handle NaN values
@@ -223,12 +227,13 @@ class InsightFunctions:
                 
                 if df_clean.empty:
                     return {
-                        "summary": f"⚠️ No valid data found for {metric} after removing missing values.",
+                        "summary": f"No valid data found for {metric} after removing missing values.",
                         "metrics": {},
                         "breakdown": [],
                         "recommendations": [],
                         "confidence": "low",
-                        "error_type": "NO_VALID_DATA"
+                        "error_type": "NO_VALID_DATA",
+                        "status_type": "WARNING"  # For use with StatusFormatter
                     }
 
                 # Perform aggregation
@@ -259,7 +264,7 @@ class InsightFunctions:
                 # Create summary with warning about missing data if significant
                 summary_parts = [f"Breakdown of {metric} by {category}."]
                 if nan_percentage > 10:  # Warning if more than 10% of data is missing
-                    summary_parts.append(f"⚠️ Note: {nan_count:,} rows ({nan_percentage:.1f}%) had missing or invalid values and were excluded.")
+                    summary_parts.append(f"Note: {nan_count:,} rows ({nan_percentage:.1f}%) had missing or invalid values and were excluded.")
                 
                 return {
                     "summary": " ".join(summary_parts),
@@ -278,12 +283,13 @@ class InsightFunctions:
         except Exception as e:
             self.logger.error(f"Error in groupby_summary: {e}")
             return {
-                "summary": f"⚠️ An error occurred during analysis: {str(e)}",
+                "summary": f"An error occurred during analysis: {str(e)}",
                 "metrics": {},
                 "breakdown": [],
                 "recommendations": [],
                 "confidence": "low",
-                "error_type": "PROCESSING_ERROR"
+                "error_type": "PROCESSING_ERROR",
+                "status_type": "ERROR"  # For use with StatusFormatter
             }
     
     def total_summary(self, df, metric):
@@ -300,12 +306,13 @@ class InsightFunctions:
         if df.empty:
             self.logger.warning(f"Cannot summarize {metric}. Empty dataset.")
             return {
-                "summary": f"⚠️ Cannot summarize {metric}. Empty dataset.",
+                "summary": f"Cannot summarize {metric}. Empty dataset.",
                 "metrics": {},
                 "breakdown": [],
                 "recommendations": [],
                 "confidence": "low",
-                "error_type": "DATA_ERROR"
+                "error_type": "DATA_ERROR",
+                "status_type": "WARNING"  # For use with StatusFormatter
             }
             
         # Check if metric exists in DataFrame
@@ -318,12 +325,13 @@ class InsightFunctions:
             else:
                 self.logger.warning(f"Cannot summarize {metric}. Column not found.")
                 return {
-                    "summary": f"⚠️ Cannot summarize {metric}. Column not found.",
+                    "summary": f"Cannot summarize {metric}. Column not found.",
                     "metrics": {},
                     "breakdown": [],
                     "recommendations": [],
                     "confidence": "low",
-                    "error_type": "DATA_ERROR"
+                    "error_type": "DATA_ERROR",
+                    "status_type": "WARNING"  # For use with StatusFormatter
                 }
         
         try:
@@ -353,12 +361,13 @@ class InsightFunctions:
         except Exception as e:
             self.logger.error(f"Error in total_summary: {e}")
             return {
-                "summary": f"⚠️ {str(e)}",
+                "summary": f"{str(e)}",
                 "metrics": {},
                 "breakdown": [],
                 "recommendations": [],
                 "confidence": "low",
-                "error_type": "DATA_ERROR"
+                "error_type": "DATA_ERROR",
+                "status_type": "ERROR"  # For use with StatusFormatter
             }
 
 # For backward compatibility
@@ -367,4 +376,28 @@ compute_lead_conversion_rate = InsightFunctions().compute_lead_conversion_rate
 compute_gross_profit_summary = InsightFunctions().compute_gross_profit_summary
 compute_salesperson_performance = InsightFunctions().compute_salesperson_performance
 compute_total_sales = InsightFunctions().compute_total_sales
-compute_average_gross_profit_per_sale = InsightFunctions().compute_average_gross_profit_per_sale 
+compute_average_gross_profit_per_sale = InsightFunctions().compute_average_gross_profit_per_sale
+
+# Helper function to format status response using the StatusFormatter
+def format_insight_status(response):
+    """
+    Format an insight response for display using StatusFormatter.
+    
+    Args:
+        response: The insight response dictionary
+        
+    Returns:
+        Updated response with formatted status text
+    """
+    if "status_type" in response:
+        try:
+            from watchdog_ai.ui.utils.status_formatter import format_status_text, StatusType
+            status_type = getattr(StatusType, response["status_type"])
+            response["formatted_summary"] = format_status_text(
+                status_type, 
+                custom_text=response["summary"]
+            )
+        except (ImportError, AttributeError) as e:
+            # If StatusFormatter is not available, keep original summary
+            pass
+    return response

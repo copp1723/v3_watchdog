@@ -17,6 +17,7 @@ import logging
 
 from ...delivery.smart_delivery_engine import DeliveryMetrics, DeliveryPriority, DeliveryTrigger, DeliveryChannel
 from ...utils.upload_tracker import UploadTracker
+from ...ui.utils.status_formatter import StatusType, format_status_text
 
 logger = logging.getLogger(__name__)
 
@@ -505,15 +506,20 @@ class DeliveryAnalyticsDashboard:
             top_failure = failure_df.iloc[0]['failure_type']
             
             if top_failure == "Invalid Email":
-                st.info("📧 Consider implementing an email validation system to catch invalid emails before sending.")
+                recommendation = format_status_text(StatusType.INFO, custom_text="Consider implementing an email validation system to catch invalid emails before sending.")
+                st.markdown(recommendation, unsafe_allow_html=True)
             elif top_failure == "Server Error":
-                st.info("🖥️ Check server logs for errors and consider increasing server resources.")
+                recommendation = format_status_text(StatusType.WARNING, custom_text="Check server logs for errors and consider increasing server resources.")
+                st.markdown(recommendation, unsafe_allow_html=True)
             elif top_failure == "Timeout":
-                st.info("⏱️ Review network connectivity and consider increasing timeout thresholds.")
+                recommendation = format_status_text(StatusType.INFO, custom_text="Review network connectivity and consider increasing timeout thresholds.")
+                st.markdown(recommendation, unsafe_allow_html=True)
             elif top_failure == "Mailbox Full":
-                st.info("📬 Implement a system to detect and handle full mailboxes before sending.")
+                recommendation = format_status_text(StatusType.INFO, custom_text="Implement a system to detect and handle full mailboxes before sending.")
+                st.markdown(recommendation, unsafe_allow_html=True)
             else:
-                st.info("🔍 Review system logs to identify and address the most common failure patterns.")
+                recommendation = format_status_text(StatusType.INFO, custom_text="Review system logs to identify and address the most common failure patterns.")
+                st.markdown(recommendation, unsafe_allow_html=True)
     
     def render(self) -> None:
         """Render the delivery analytics dashboard."""
@@ -551,10 +557,12 @@ class DeliveryAnalyticsDashboard:
         st.sidebar.header("Export")
         
         if st.sidebar.button("Export as PDF"):
-            st.sidebar.success("Dashboard exported as PDF")
+            success_text = format_status_text(StatusType.SUCCESS, custom_text="Dashboard exported as PDF")
+            st.sidebar.markdown(success_text, unsafe_allow_html=True)
         
         if st.sidebar.button("Export as CSV"):
-            st.sidebar.success("Data exported as CSV")
+            success_text = format_status_text(StatusType.SUCCESS, custom_text="Data exported as CSV")
+            st.sidebar.markdown(success_text, unsafe_allow_html=True)
 
 
 def render_delivery_analytics():

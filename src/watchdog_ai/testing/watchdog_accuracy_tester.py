@@ -16,6 +16,13 @@ import time
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 
+# Try to import StatusFormatter
+try:
+    from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
+    HAS_STATUS_FORMATTER = True
+except ImportError:
+    HAS_STATUS_FORMATTER = False
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -345,6 +352,12 @@ class WatchdogTester:
                             "processing_time": 0,
                             "full_response": None
                         })
+                        
+                        # Format status message for console output using StatusFormatter if available
+                        if HAS_STATUS_FORMATTER:
+                            status_type = StatusType.SUCCESS if is_correct else StatusType.ERROR
+                            formatted_status = format_status_text(status_type, custom_text=result_status)
+                            logger.info(f"Formatted status: {formatted_status}")
                 else:
                     # In mock mode, just record the expected answer
                     self.results.append({
@@ -394,9 +407,13 @@ class WatchdogTester:
                 f.write("## Detailed Results\n\n")
                 
                 for result in sorted(self.results, key=lambda x: x["id"]):
+                for result in sorted(self.results, key=lambda x: x["id"]):
+                    # Keep using emojis in Markdown reports for readability
                     status_emoji = "✅" if result["status"] == "PASS" else "❌" if result["status"] == "FAIL" else "⚠️"
-                    
-                    f.write(f"### Question {result['id']}: {result['question']} {status_emoji}\n\n")
+                    # Alternative text-based indicators
+                    status_text = "[PASS]" if result["status"] == "PASS" else "[FAIL]" if result["status"] == "FAIL" else "[WARNING]"
+                    # Use emoji in heading for visualization and text indicator for accessibility
+                    f.write(f"### Question {result['id']}: {result['question']} {status_emoji} {status_text}\n\n")
                     f.write(f"**Status:** {result['status']}\n\n")
                     
                     if "processing_time" in result and result["processing_time"] > 0:
@@ -440,10 +457,10 @@ class WatchdogTester:
                     if errors > 0:
                         f.write("\n### Error Analysis\n\n")
                         f.write("- Fix errors in the processing pipeline to handle all question types reliably\n")
+                        f.write("- Fix errors in the processing pipeline to handle all question types reliably\n")
                         f.write("- Add better error handling and fallback mechanisms\n")
                 else:
-                    f.write("✅ All tests passed! No immediate improvements needed.\n")
-            
+                    f.write("✅ [SUCCESS] All tests passed! No immediate improvements needed.\n")
             logger.info(f"Report generated at {output_file}")
             return output_file
             
@@ -479,8 +496,17 @@ def main():
             total = len(results)
             passed = sum(1 for r in results if r["status"] == "PASS")
             print(f"\nTest Summary: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+            # Format summary message
+            status_indicator = ""
+            if HAS_STATUS_FORMATTER:
+                status_type = StatusType.SUCCESS if passed == total else StatusType.WARNING if passed > 0 else StatusType.ERROR
+                status_indicator = format_status_text(status_type, custom_text=f"Test Results: {passed}/{total}")
+                print(f"\n{status_indicator} ({passed/total*100:.1f}%)")
+            else:
+                status_indicator = "[SUCCESS]" if passed == total else "[PARTIAL]" if passed > 0 else "[FAILURE]"
+                print(f"\nTest Summary {status_indicator}: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+                
             print(f"Detailed report saved to: {report_file}")
-        else:
             print(f"\nMock mode: Expected answers saved to: {report_file}")
         
         return 0

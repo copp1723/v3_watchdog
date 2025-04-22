@@ -1,3 +1,4 @@
+README.md
 pyproject.toml
 setup.py
 src/ml/__init__.py
@@ -57,6 +58,7 @@ src/utils/log_utils_config.py
 src/utils/logging_config.py
 src/utils/metrics_logger.py
 src/utils/openai_client.py
+src/utils/pdf_generator.py
 src/utils/psutil.py
 src/utils/schema.py
 src/utils/session.py
@@ -70,11 +72,14 @@ src/validators/__init__.py
 src/validators/base_validator.py
 src/validators/column_mapper.py
 src/validators/customer_validator.py
+src/validators/data_validation.py
+src/validators/exec_schema_profiles.py
 src/validators/financial_validator.py
 src/validators/insight_validator.py
 src/validators/lead_flow_optimizer.py
 src/validators/lead_source_roi.py
 src/validators/registry.py
+src/validators/rule_engine.py
 src/validators/schema_manager.py
 src/validators/validation_profile.py
 src/validators/validator_registry.py
@@ -190,14 +195,17 @@ src/watchdog_ai/utils/schema_detector.py
 src/watchdog_ai/utils/schema_profile_editor.py
 src/watchdog_ai/utils/upload_tracker.py
 src/watchdog_ai/utils/validation.py
+src/watchdog_ai/validators/__init__.py
 src/watchdog_ai/viz/__init__.py
 src/watchdog_ai/viz/constants.py
 src/watchdog_ai/viz/demo.py
+src/watchdog_ai/viz/demo_legacy.py
 src/watchdog_ai/viz/utils.py
 src/watchdog_ai/workers/__init__.py
 src/watchdog_ai/workers/scheduler.py
 tests/test_adaptive_schema.py
 tests/test_app.py
+tests/test_base.py
 tests/test_benchmarking.py
 tests/test_business_queries.py
 tests/test_conversation_integration.py

@@ -1,4 +1,122 @@
-    })
+"""
+Pytest configuration file for Watchdog AI testing.
+
+This file contains shared fixtures and configuration for all test modules.
+"""
+
+import os
+import sys
+import time
+import json
+import shutil
+import tempfile
+import pytest
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Tuple, Any, Optional, Callable, Generator, Union, ContextManager
+from datetime import datetime, timedelta
+import asyncio
+import logging
+from contextlib import contextmanager
+from unittest.mock import Mock, patch, MagicMock
+import sqlalchemy as sa
+import io
+import random
+from pathlib import Path
+from faker import Faker
+
+# Ensure src is in sys.path for imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Import validator components - these imports will be available to all tests
+from src.validators.base_validator import BaseValidator
+from src.validators.validator_registry import get_validator_classes, get_validators, get_validator_by_name
+from src.validators.validator_service import ValidatorService
+
+# Configure logging to prevent log noise during tests
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("watchdog_ai").setLevel(logging.WARNING)
+
+# Initialize faker instance for data generation
+faker = Faker()
+
+# Get project root directory
+PROJECT_ROOT = str(Path(__file__).parent.parent.absolute())
+
+# Paths for test assets
+ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'assets')
+
+# Ensure assets directory exists
+os.makedirs(ASSETS_DIR, exist_ok=True)
+
+# Export all fixtures and utilities
+__all__ = [
+    # Existing fixtures
+    'event_loop', 'sample_dataframe', 'mock_file', 'mock_validator', 'validator_service',
+    'mock_llm_response', 'cleanup_test_files', 'test_data_dir', 'performance_thresholds',
+    'mock_feedback_data', 'assets_dir', 'clean_csv_data', 'messy_csv_data',
+    'create_sample_csv', 'sample_clean_csv_path', 'sample_messy_csv_path',
+    'sample_excel_path', 'empty_dataframe', 'sample_metadata',
+    # New fixtures
+    'mock_db_connection', 'capture_detailed_logs', 'perf_monitor', 'data_factory',
+    'mock_redis', 'mock_mongodb', 'mock_requests', 'temp_directory', 'timing',
+    'mock_insight', 'mock_streamlit', 'sample_sales_data', 'sample_metrics', 'mock_openai',
+    'error_tracker'
+]
+
+# Test Categories
+def pytest_configure(config):
+    """Configure custom pytest markers."""
+    config.addinivalue_line(
+        "markers",
+        "dashboard: marks tests related to dashboard functionality"
+    )
+    config.addinivalue_line(
+        "markers",
+        "integration: marks integration tests"
+    )
+    config.addinivalue_line(
+        "markers",
+        "performance: marks performance tests"
+    )
+    config.addinivalue_line(
+        "markers",
+        "error_handling: marks error handling tests"
+    )
+    config.addinivalue_line(
+        "markers",
+        "unit: Unit tests"
+    )
+    config.addinivalue_line(
+        "markers",
+        "e2e: End-to-end tests"
+    )
+    config.addinivalue_line(
+        "markers",
+        "slow: Tests that take longer to run"
+    )
+    config.addinivalue_line(
+        "markers",
+        "flaky: Test that may fail occasionally"
+    )
+    config.addinivalue_line(
+        "markers",
+        "critical: Critical path tests that must never fail"
+    )
+    config.addinivalue_line(
+        "markers",
+        "data_validation: Tests that validate data integrity and quality"
+    )
+    config.addinivalue_line(
+        "markers",
+        "security: Tests for security aspects of the codebase"
+    )
+    config.addinivalue_line(
+        "markers",
+        "api: Tests that verify API endpoints and behavior"
+    )
+
+# --- Sample Data Fixtures ---
 
 @pytest.fixture
 def mock_insight() -> Dict[str, Any]:
@@ -14,7 +132,30 @@ def mock_insight() -> Dict[str, Any]:
         })
     }
 
-# Streamlit mock fixtures
+@pytest.fixture
+def sample_sales_data():
+    """Create sample sales data for testing."""
+    return pd.DataFrame({
+        'date': pd.date_range('2024-01-01', periods=100),
+        'product': np.random.choice(['A', 'B', 'C'], 100),
+        'quantity': np.random.randint(1, 100, 100),
+        'price': np.random.uniform(10, 1000, 100),
+        'cost': np.random.uniform(5, 800, 100)
+    })
+
+@pytest.fixture
+def sample_metrics():
+    """Create sample metrics for testing."""
+    return {
+        'total_sales': 150000,
+        'avg_profit_margin': 0.25,
+        'conversion_rate': 0.15,
+        'top_product': 'Product A',
+        'growth_rate': 0.08
+    }
+
+# --- Streamlit mock fixtures ---
+
 @pytest.fixture
 def mock_streamlit():
     """Mock streamlit for testing UI components."""
@@ -39,145 +180,6 @@ def mock_streamlit():
         mp.setattr('streamlit.session_state', {})
         
         yield mocks
-
-# Sample data fixtures
-@pytest.fixture
-def sample_sales_data():
-    """Create sample sales data for testing."""
-    return pd.DataFrame({
-        'date': pd.date_range('2024-01-01', periods=100),
-        'product': np.random.choice(['A', 'B', 'C'], 100),
-        'quantity': np.random.randint(1, 100, 100),
-        'price': np.random.uniform(10, 1000, 100),
-        'cost': np.random.uniform(5, 800, 100)
-    })
-
-@pytest.fixture
-def sample_metrics():
-    """Create sample metrics for testing."""
-    return {
-        'total_sales': 150000,
-        'avg_profit_margin': 0.25,
-        'conversion_rate': 0.15,
-        'top_product': 'Product A',
-        'growth_rate': 0.08
-    }
-
-@pytest.fixture
-def mock_openai():
-    """Mock OpenAI API for testing."""
-    class MockOpenAIResponse:
-        def __init__(self, content):
-            self.content = content
-            self.choices = [type('Choice', (), {'message': type('Message', (), {'content': content})()})]
-    
-    class MockOpenAI:
-        def __init__(self):
-            self.chat = type('ChatCompletion', (), {
-                'create': lambda **kwargs: MockOpenAIResponse("Test response")
-            })
-    
-    with pytest.MonkeyPatch() as mp:
-        mp.setattr('openai.OpenAI', MockOpenAI)
-        yield MockOpenAI()
-
-# Error tracking fixtures
-@pytest.fixture
-def error_tracker():
-    """Track errors during test execution."""
-    class ErrorTracker:
-        def __init__(self):
-            self.errors = []
-            self.warnings = []
-        
-        def add_error(self, error):
-            self.errors.append(error)
-        
-        def add_warning(self, warning):
-            self.warnings.append(warning)
-    
-    return ErrorTracker()
-
-# Helper functions
-def create_test_profile(profile_dir, profile_id="test_profile", is_default=True):
-    """
-    Helper function to create a test validation profile.
-    
-    Args:
-        profile_dir: Directory to create the profile in
-        profile_id: ID for the profile
-        is_default: Whether this is the default profile
-        
-    Returns:
-        Path to the created profile file
-    """
-    import json
-    
-    profile_data = {
-        "id": profile_id,
-        "name": "Test Profile",
-        "description": "Profile for testing",
-        "is_default": is_default,
-        "rules": [
-            {
-                "column": "Gross_Profit",
-                "rule_type": "range",
-                "min_value": 0,
-                "flag_name": "negative_gross"
-            },
-            {
-                "column": "Lead_Source",
-                "rule_type": "not_empty",
-                "flag_name": "missing_lead_source"
-            },
-            {
-                "column": "VIN",
-                "rule_type": "unique",
-                "flag_name": "duplicate_vin"
-            }
-        ]
-    }
-    
-    # Ensure directory exists
-    os.makedirs(profile_dir, exist_ok=True)
-    
-    # Write profile to file
-    profile_path = os.path.join(profile_dir, f"{profile_id}.json")
-    with open(profile_path, "w") as f:
-        json.dump(profile_data, f, indent=2)
-    
-    return profile_path
-
-
-# --- Performance Testing Fixtures ---
-
-@pytest.fixture
-def perf_monitor():
-    """
-    Fixture for performance monitoring during tests.
-    
-    Returns:
-        A performance monitoring object with methods to track execution time
-        and memory usage.
-        
-    Example:
-        def test_large_data_processing(perf_monitor):
-            with perf_monitor.measure('data_processing'):
-                result = process_
-MISSING_COLUMNS_FILE = os.path.join(SALES_DATA_DIR, 'missing_columns.csv')
-EMPTY_FILE = os.path.join(SALES_DATA_DIR, 'empty.csv')
-
-# Expected column names and values
-EXPECTED_COLUMNS = DEFAULT_REQUIRED_COLUMNS
-EXPECTED_LEAD_SOURCES = ['Web', 'Referral', 'Direct', 'Social', 'Email']
-EXPECTED_SALES_PEOPLE = ['John Doe', 'Jane Smith', 'Bob Johnson', 'Alice Brown', 'Carlos Rodriguez']
-
-
-# Path helper fixtures
-@pytest.fixture
-def test_data_dir():
-    """Return the path to the test data directory."""
-    return TEST_DATA_DIR
 
 
 @pytest.fixture

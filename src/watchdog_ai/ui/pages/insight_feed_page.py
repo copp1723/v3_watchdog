@@ -8,6 +8,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 import sys
 import base64
+from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
 from io import BytesIO
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -195,23 +196,31 @@ def display_insight(insight: Dict[str, Any], all_insights: List[Dict[str, Any]])
     }
     badge_color = priority_color_map.get(insight['priority'], "secondary")
     
-    # Determine icon based on insight content
-    icon = "📊"  # Default icon
+    # Determine status type based on insight content
+    insight_type = "INSIGHT"  # Default label
+    status_type = StatusType.INFO  # Default status type
     summary_lower = insight['summary'].lower()
     if any(kw in summary_lower for kw in ['sales', 'revenue', 'profit']):
-        icon = "💰"
+        insight_type = "SALES"
+        status_type = StatusType.SUCCESS
     elif any(kw in summary_lower for kw in ['inventory', 'stock']):
-        icon = "📦"
+        insight_type = "INVENTORY"
+        status_type = StatusType.INFO
     elif any(kw in summary_lower for kw in ['service', 'repair']):
-        icon = "🔧"
+        insight_type = "SERVICE"
+        status_type = StatusType.INFO
     elif any(kw in summary_lower for kw in ['lead', 'customer']):
-        icon = "👥"
+        insight_type = "CUSTOMER"
+        status_type = StatusType.INFO
+        
+    # Format status text
+    status_label = format_status_text(status_type, custom_text=insight_type)
 
     with st.container(border=True):
         # --- Header ---
         col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
         with col1:
-            st.subheader(f"{icon} {insight['dealership_name']}")
+            st.markdown(f"{status_label} {insight['dealership_name']}", unsafe_allow_html=True)
             st.caption(f"Insight ID: {insight['id']}")
         with col2:
             st.markdown(f"**Priority:** <span class='badge-{badge_color}'>{insight['priority']}</span>", unsafe_allow_html=True)
@@ -219,14 +228,14 @@ def display_insight(insight: Dict[str, Any], all_insights: List[Dict[str, Any]])
             st.caption(f"Generated: {insight['timestamp'].strftime('%Y-%m-%d %H:%M')}")
         with col4:
             # Export button for this insight
+            # Export button for this insight
             st.download_button(
-                "📥 Export JSON",
+                "Export JSON",
                 export_insight_as_json(insight),
                 file_name=f"insight_{insight['id']}.json",
                 mime="application/json",
                 help="Download this insight as a JSON file"
             )
-
         st.divider()
         
         # --- Body ---
@@ -246,9 +255,10 @@ def display_insight(insight: Dict[str, Any], all_insights: List[Dict[str, Any]])
                     )
 
         # Breakdown Chart/Table in expander
+        # Breakdown Chart/Table in expander
         if insight.get("breakdown"):
-            with st.expander("📊 View Breakdown", expanded=False):
-                breakdown = insight["breakdown"]
+            breakdown_label = format_status_text(StatusType.INFO, custom_text="View Breakdown")
+            with st.expander(f"{breakdown_label}", unsafe_allow_html=True, expanded=False):
                 st.markdown(f"**{breakdown.get('title', 'Breakdown')}:**")
                 if breakdown.get("type") == "bar_chart" and isinstance(breakdown.get("data"), dict):
                     df_breakdown = pd.DataFrame.from_dict(breakdown["data"], orient='index', columns=['Value'])
@@ -260,14 +270,16 @@ def display_insight(insight: Dict[str, Any], all_insights: List[Dict[str, Any]])
                     st.write("Breakdown data not available or in unsupported format.")
                 
         # Recommendations in expander
+        # Recommendations in expander
         if insight.get("recommendations"):
-            with st.expander("💡 View Recommendations", expanded=False):
-                for rec in insight["recommendations"]:
+            recommendations_label = format_status_text(StatusType.SUCCESS, custom_text="View Recommendations")
+            with st.expander(f"{recommendations_label}", unsafe_allow_html=True, expanded=False):
                     st.markdown(f"- {rec}")
 
         # Drill-Down Section
-        with st.expander("🔍 Explore Details", expanded=False):
-            tab1, tab2, tab3 = st.tabs(["Raw Metrics", "Related Data", "Similar Insights"])
+        # Drill-Down Section
+        details_label = format_status_text(StatusType.INFO, custom_text="Explore Details")
+        with st.expander(f"{details_label}", unsafe_allow_html=True, expanded=False):
             
             with tab1:
                 if insight.get("raw_data"):
@@ -307,8 +319,9 @@ def display_insight(insight: Dict[str, Any], all_insights: List[Dict[str, Any]])
         col1, col2 = st.columns([1, 1])
         with col1:
             # JSON export
+            # JSON export
             st.download_button(
-                "📥 Export as JSON",
+                "Export as JSON",
                 export_insight_as_json(insight),
                 file_name=f"insight_{insight['id']}.json",
                 mime="application/json",
@@ -318,13 +331,12 @@ def display_insight(insight: Dict[str, Any], all_insights: List[Dict[str, Any]])
             # PDF export
             pdf_bytes = generate_insight_pdf(insight)
             st.download_button(
-                "📄 Export as PDF",
+                "Export as PDF",
                 pdf_bytes,
                 file_name=f"insight_{insight['id']}.pdf",
                 mime="application/pdf",
                 help="Download this insight as a PDF report"
             )
-
 def render_page():
     """Renders the full Insight Feed page."""
     # Apply caching to load_insights_data here
@@ -332,7 +344,7 @@ def render_page():
     def cached_load_insights():
         return load_insights_data()
     
-    st.title("💡 Insight Feed")
+    st.title("Insight Feed")
     
     # Load insights using cached function
     insights = cached_load_insights()
@@ -364,7 +376,8 @@ def render_page():
     
     # --- What-If Simulation ---
     st.sidebar.header("What-If Simulation")
-    with st.sidebar.expander("🔮 Simulate Scenarios"):
+    simulation_label = format_status_text(StatusType.INFO, custom_text="Simulate Scenarios")
+    with st.sidebar.expander(f"{simulation_label}", unsafe_allow_html=True):
         st.caption("Adjust variables to simulate potential outcomes")
         inventory_change = st.slider("Inventory Level Change", -50, 50, 0, 5, format="%d%%")
         price_change = st.slider("Price Adjustment", -30, 30, 0, 5, format="%d%%")
@@ -421,7 +434,7 @@ def render_page():
     with col2:
         if filtered_insights:
             st.download_button(
-                "📥 Export All as CSV",
+                "Export All as CSV",
                 export_insights_as_csv(filtered_insights),
                 file_name="insights_export.csv",
                 mime="text/csv",

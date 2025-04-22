@@ -7,6 +7,13 @@ import re
 from ..models import InsightResponse
 from .columns import find_metric_column, find_category_column
 
+# Import StatusFormatter if available
+try:
+    from watchdog_ai.ui.utils.status_formatter import StatusType
+    HAS_STATUS_FORMATTER = True
+except ImportError:
+    HAS_STATUS_FORMATTER = False
+
 def parse_llm_response(raw: str) -> InsightResponse:
     """
     Try to coerce raw JSON from the LLM into our schema.
@@ -62,18 +69,25 @@ def parse_llm_response(raw: str) -> InsightResponse:
         return InsightResponse(**payload)
     except Exception as e:
         logging.error(f"LLM response parse error: {e}\nRaw response: {raw}")
-        # Return a more informative mock insight
-        return InsightResponse(
-            summary="⚠️ This insight was generated from fallback due to a formatting error from the LLM.",
-            metrics={"Error": 1},
-            recommendations=[
+        # Return a more informative mock insight without emoji
+        fallback_summary = "This insight was generated from fallback due to a formatting error from the LLM."
+        
+        # Create fallback response
+        fallback_response = {
+            "summary": fallback_summary,
+            "metrics": {"Error": 1},
+            "recommendations": [
                 "The LLM response could not be parsed correctly",
                 "Check the logs for more details about the parsing error"
             ],
-            confidence="low",
-            is_error=True,
-            error=f"Parsing error: {str(e)}",
-            is_mock=True
-        )
+            "confidence": "low",
+            "is_error": True,
+            "error": f"Parsing error: {str(e)}",
+            "is_mock": True,
+            "status_type": "WARNING"  # For use with StatusFormatter
+        }
+        
+        # Convert dictionary to InsightResponse
+        return InsightResponse(**fallback_response)
 
 __all__ = ['find_metric_column', 'find_category_column', 'parse_llm_response']

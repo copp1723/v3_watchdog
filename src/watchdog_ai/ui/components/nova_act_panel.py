@@ -12,6 +12,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 
+from watchdog_ai.ui.utils.status_formatter import StatusFormatter, StatusType, format_status_text
+
 # Add parent directories to path to import Nova Act modules
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 if parent_dir not in sys.path:
@@ -89,13 +91,16 @@ def render_status_tab():
             "Dealer": status.get("dealer_id", ""),
             "Report Type": status.get("report_type", ""),
             "Last Sync": last_sync,
-            "Status": "✅ Success" if status.get("success", False) else "❌ Failed",
+            "Status": format_status_text(StatusType.SUCCESS, custom_text="Success") if status.get("success", False) else format_status_text(StatusType.FAILED, custom_text="Failed"),
             "Error": status.get("error", "")
         })
     
     # Convert to DataFrame for display
     df = pd.DataFrame(status_list)
-    st.dataframe(df, use_container_width=True)
+    
+    # Display DataFrame with safe-to-render text (Streamlit will render the HTML in the Status column)
+    st.markdown("### Sync Status")
+    st.dataframe(df, use_container_width=True, unsafe_allow_html=True)
     
     # Add refresh button
     if st.button("Refresh", key="refresh_status"):
@@ -340,9 +345,9 @@ def render_settings_tab():
         bridge_running = False
     
     if bridge_running:
-        st.success("Nova Act system is running")
+        st.markdown(f"System Status: {format_status_text(StatusType.ACTIVE, custom_text='Running')}", unsafe_allow_html=True)
     else:
-        st.warning("Nova Act system is not running")
+        st.markdown(f"System Status: {format_status_text(StatusType.INACTIVE, custom_text='Not Running')}", unsafe_allow_html=True)
         
         # Add start button
         if st.button("Start Nova Act System"):

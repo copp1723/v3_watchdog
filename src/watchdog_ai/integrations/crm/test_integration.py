@@ -27,6 +27,9 @@ logging.basicConfig(level=logging.INFO,
                    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 logger = logging.getLogger("crm_integration_test")
 
+# Import the status formatter utility for UI display (commented out but available when needed)
+# from watchdog_ai.ui.utils.status_formatter import StatusType, format_status_text
+
 # Import our integration components
 from watchdog_ai.integrations.crm import NovaActAdapter
 from watchdog_ai.workers.scheduler import (
@@ -49,19 +52,19 @@ def test_nova_act_adapter():
     
     # Verify mock mode is enabled
     assert adapter.use_mock_data is True, "Adapter should be in mock mode"
-    logger.info("✓ Adapter initialized in mock mode")
+    logger.info("[PASS] Adapter initialized in mock mode")
     
     # Test authentication
     adapter.authenticate()
     assert adapter.authenticated is True, "Authentication failed"
     assert adapter.auth_token is not None, "Auth token not set"
-    logger.info(f"✓ Mock authentication successful, token: {adapter.auth_token}")
+    logger.info(f"[PASS] Mock authentication successful, token: {adapter.auth_token}")
     
     # Test pulling sales data
     sales_data = adapter.pull_sales()
     assert isinstance(sales_data, list), "Sales data should be a list"
     assert len(sales_data) > 0, "Sales data should not be empty"
-    logger.info(f"✓ Successfully pulled {len(sales_data)} mock sales records")
+    logger.info(f"[PASS] Successfully pulled {len(sales_data)} mock sales records")
     
     # Display a sample sales record
     if sales_data:
@@ -90,7 +93,7 @@ def test_nova_act_adapter():
     ]
     
     adapter.push_insights(test_insights)
-    logger.info(f"✓ Successfully pushed {len(test_insights)} mock insights")
+    logger.info(f"[PASS] Successfully pushed {len(test_insights)} mock insights")
     
     return True
 
@@ -130,7 +133,7 @@ def test_crm_sync_scheduler():
         with open(insights_dir / "latest.json", "w") as f:
             json.dump(sample_insights, f, indent=2)
         
-        logger.info(f"✓ Created test directories in {temp_path}")
+        logger.info(f"[PASS] Created test directories in {temp_path}")
         
         # Create adapter for testing
         crm_adapter = NovaActAdapter(
@@ -150,7 +153,7 @@ def test_crm_sync_scheduler():
         )
         
         assert scheduler.is_running is False, "Scheduler should not be running yet"
-        logger.info("✓ Initialized scheduler with test configuration")
+        logger.info("[PASS] Initialized scheduler with test configuration")
         
         # Test direct job functions instead of using the scheduler
         # This avoids serialization issues with APScheduler
@@ -158,28 +161,28 @@ def test_crm_sync_scheduler():
         # Test sales sync job
         sales_result = hourly_pull_sales_job(crm_adapter, data_dir, log_dir)
         assert sales_result["status"] == "success", f"Sales job failed: {sales_result}"
-        logger.info(f"✓ Sales sync job successful: {sales_result['record_count']} records")
+        logger.info(f"[PASS] Sales sync job successful: {sales_result['record_count']} records")
         
         # Verify data file was created
         if sales_result.get("data_file"):
             assert Path(sales_result["data_file"]).exists(), "Data file not created"
-            logger.info(f"✓ Data file created at: {sales_result['data_file']}")
+            logger.info(f"[PASS] Data file created at: {sales_result['data_file']}")
             
             # Check file contents
             with open(sales_result["data_file"], "r") as f:
                 saved_data = json.load(f)
                 assert len(saved_data) > 0, "Saved data should not be empty"
-                logger.info(f"✓ Data file contains {len(saved_data)} records")
+                logger.info(f"[PASS] Data file contains {len(saved_data)} records")
         
         # Test insights sync job
         insights_result = daily_push_insights_job(crm_adapter, insights_dir, log_dir)
         assert insights_result["status"] == "success", f"Insights job failed: {insights_result}"
-        logger.info(f"✓ Insights sync job successful")
+        logger.info(f"[PASS] Insights sync job successful")
         
         # Verify archive file was created
         if insights_result.get("archive_file"):
             assert Path(insights_result["archive_file"]).exists(), "Archive file not created"
-            logger.info(f"✓ Archive file created at: {insights_result['archive_file']}")
+            logger.info(f"[PASS] Archive file created at: {insights_result['archive_file']}")
         
         # Now test the scheduler job registration without starting
         scheduler._register_jobs()
@@ -190,7 +193,7 @@ def test_crm_sync_scheduler():
         job_ids = [job.id for job in jobs]
         assert "sales_sync" in job_ids, "Sales sync job missing"
         assert "insights_sync" in job_ids, "Insights sync job missing"
-        logger.info(f"✓ Jobs registered successfully")
+        logger.info(f"[PASS] Jobs registered successfully")
         
         return True
         
@@ -204,7 +207,7 @@ def test_crm_sync_scheduler():
         if temp_dir and Path(temp_dir).exists():
             try:
                 shutil.rmtree(temp_dir, ignore_errors=True)
-                logger.info(f"✓ Cleaned up temporary test directory")
+                logger.info(f"[PASS] Cleaned up temporary test directory")
             except Exception as e:
                 logger.warning(f"Failed to clean up temporary directory: {str(e)}")
 
@@ -239,9 +242,9 @@ def main():
             all_passed = False
     
     if all_passed:
-        logger.info("\n✅ All tests passed successfully!")
+        logger.info("\n[SUCCESS] All tests passed successfully!")
     else:
-        logger.error("\n❌ Some tests failed. See logs for details.")
+        logger.error("\n[FAILURE] Some tests failed. See logs for details.")
 
     return all_passed
 
