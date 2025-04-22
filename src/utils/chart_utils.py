@@ -4,11 +4,27 @@ Chart utilities for Watchdog AI.
 This module provides functions for creating, formatting, and displaying charts
 using Plotly and other visualization libraries.
 """
-
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from typing import Dict, Any, List, Optional, Union, Tuple
+
+# Import from new location for backward compatibility
+try:
+    from watchdog_ai.core.visualization import (
+        ChartConfig,
+        render_chart as _render_chart,
+        build_chart as _build_chart
+    )
+except ImportError:
+    # If import fails, log a warning but don't fail
+    warnings.warn(
+        "Could not import from 'watchdog_ai.core.visualization'. "
+        "Using deprecated local implementations.",
+        ImportWarning
+    )
+    _render_chart = None
+    _build_chart = None
 from typing import Dict, Any, List, Optional, Tuple, Union
 import logging
 import sentry_sdk
@@ -117,15 +133,76 @@ def determine_chart_type(df: pd.DataFrame, columns: Dict[str, str] = None) -> st
         logger.error(f"Error determining chart type: {str(e)}")
         sentry_sdk.capture_exception(e)
         return 'bar'  # Default fallback
-
-def create_chart(
-    df: pd.DataFrame, 
-    chart_type: str = None, 
-    x: str = None, 
-    y: str = None,
-    color: str = None,
-    title: str = None,
-    x_title: str = None,
+def create_pie_chart(
+    df: pd.DataFrame,
+    names_column: str,
+    values_column: str,
+    title: Optional[str] = None
+) -> go.Figure:
+    """
+    DEPRECATED: This function is deprecated.
+    Please use watchdog_ai.core.visualization.render_chart instead.
+    """
+    warnings.warn(
+        "create_pie_chart() is deprecated. "
+        "Please use watchdog_ai.core.visualization.render_chart instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
+    # Try using the new implementation
+    if _render_chart is not None:
+        try:
+            config = ChartConfig(
+                chart_type='pie',
+                title=title,
+                x_column=names_column,
+                y_column=values_column
+            )
+            
+            # Note: The new system may return a different chart object
+            # that won't work with code expecting a go.Figure
+            chart = _build_chart(df, 'pie', config)
+            if isinstance(chart, go.Figure):
+                return chart
+        except Exception as e:
+            warnings.warn(
+                f"Error using new implementation: {str(e)}. Falling back to legacy implementation.",
+                RuntimeWarning
+            )
+    DEPRECATED: This function is deprecated. 
+    Please use watchdog_ai.core.visualization.render_chart instead.
+    """
+    warnings.warn(
+        "create_pie_chart() is deprecated. "
+        "Please use watchdog_ai.core.visualization.render_chart instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+ Optional[str] = None
+) -> go.Figure:
+    """
+    DEPRECATED: This function is deprecated. 
+    Please use watchdog_ai.core.visualization.render_chart instead.
+    """
+    warnings.warn(
+        "create_line_chart() is deprecated. "
+        "Please use watchdog_ai.core.visualization.render_chart instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+   orientation: str = 'v'
+) -> go.Figure:
+    """
+    DEPRECATED: This function is deprecated. 
+    Please use watchdog_ai.core.visualization.render_chart instead.
+    """
+    warnings.warn(
+        "create_bar_chart() is deprecated. "
+        "Please use watchdog_ai.core.visualization.render_chart instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
     y_title: str = None,
     legend_title: str = None,
     **kwargs

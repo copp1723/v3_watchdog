@@ -1,13 +1,102 @@
 """
 Chart utilities for Watchdog AI.
 Provides functions for building and extracting chart data.
+
+DEPRECATED: This module is deprecated and will be removed in v4.0.0.
+Please use 'watchdog_ai.core.visualization' instead.
 """
+
+import json
+import pandas as pd
+from typing import Dict, Any, List, Optional
+import warnings
+
+warnings.warn(
+    "The 'chart_utils' module is deprecated and will be removed in v4.0.0. "
+    "Please use 'watchdog_ai.core.visualization' instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+# Import from new location for backward compatibility
+try:
+    from watchdog_ai.core.visualization import (
+        build_chart_data as _build_chart_data,
+        extract_chart_data_from_llm_response as _extract_chart_data_from_llm_response,
+        build_chart as _build_chart,
+        render_chart as _render_chart,
+        ChartConfig
+    )
+except ImportError:
+    # If import fails, log a warning but don't fail
+    warnings.warn(
+        "Could not import from 'watchdog_ai.core.visualization'. "
+        "Using deprecated local implementations.",
+        ImportWarning
+    )
+    _build_chart_data = None
+    _extract_chart_data_from_llm_response = None
+    _build_chart = None
+    _render_chart = None
+import warnings
+
+warnings.warn(
+    "The 'chart_utils' module is deprecated and will be removed in v4.0.0. "
+    "Please use 'watchdog_ai.core.visualization' instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 import pandas as pd
 import json
 from typing import Dict, Any, Optional, List, Tuple
 
+
+# Import from new location for backward compatibility
+try:
+    from watchdog_ai.core.visualization.chart_utils import (
+        build_chart_data as _build_chart_data,
+        extract_chart_data_from_llm_response as _extract_chart_data_from_llm_response,
+        _determine_chart_type,
+        _identify_target_field,
+        _identify_time_field,
+        _generate_pie_chart_data,
+        _generate_bar_chart_data,
+        _generate_line_chart_data,
+        _get_default_chart_data
+    )
+except ImportError:
+    # If import fails, log a warning but don't fail
+    warnings.warn(
+        "Could not import from 'watchdog_ai.core.visualization'. "
+        "Using deprecated local implementations.",
+        ImportWarning
+    )
+    _build_chart_data = None
+    _extract_chart_data_from_llm_response = None
+
+
 def build_chart_data(df: pd.DataFrame, chart_type: str, x_col: str, y_col: str) -> Dict[str, Any]:
+    """
+    DEPRECATED: This function is deprecated.
+    Please use watchdog_ai.core.visualization.build_chart_data instead.
+    """
+    warnings.warn(
+        "build_chart_data() is deprecated. "
+        "Please use watchdog_ai.core.visualization.build_chart_data instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
+    # Use new implementation if available
+    if _build_chart_data is not None:
+        try:
+            return _build_chart_data(df, x_col, y_col, chart_type)
+        except Exception as e:
+            warnings.warn(
+                f"Error using new implementation: {str(e)}. Falling back to legacy implementation.",
+                RuntimeWarning
+            )
     """
     Build chart data dictionary for visualization.
     
@@ -20,6 +109,22 @@ def build_chart_data(df: pd.DataFrame, chart_type: str, x_col: str, y_col: str) 
     Returns:
         Dictionary containing chart data
     """
+    """
+    DEPRECATED: This function is deprecated. 
+    Please use watchdog_ai.core.visualization.build_chart_data instead.
+    """
+    warnings.warn(
+        "build_chart_data() is deprecated. "
+        "Please use watchdog_ai.core.visualization.build_chart_data instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
+    # Use new implementation if available
+    if _build_chart_data is not None:
+        return _build_chart_data(df, x_col, y_col, chart_type)
+    
+    # Legacy implementation for backward compatibility
     try:
         if chart_type == 'pie':
             # For pie charts, we need labels and values
@@ -47,7 +152,6 @@ def build_chart_data(df: pd.DataFrame, chart_type: str, x_col: str, y_col: str) 
             'type': 'error',
             'data': {'error': str(e)}
         }
-
 def _determine_chart_type(data: Dict[str, Any]) -> str:
     """
     Determine the best chart type based on the data.
@@ -189,7 +293,28 @@ def _get_default_chart_data() -> Dict[str, Any]:
         }
     }
 
+
 def extract_chart_data_from_llm_response(response: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    DEPRECATED: This function is deprecated.
+    Please use watchdog_ai.core.visualization.extract_chart_data_from_llm_response instead.
+    """
+    warnings.warn(
+        "extract_chart_data_from_llm_response() is deprecated. "
+        "Please use watchdog_ai.core.visualization.extract_chart_data_from_llm_response instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
+    # Use new implementation if available
+    if _extract_chart_data_from_llm_response is not None:
+        try:
+            return _extract_chart_data_from_llm_response(response)
+        except Exception as e:
+            warnings.warn(
+                f"Error using new implementation: {str(e)}. Falling back to legacy implementation.",
+                RuntimeWarning
+            )
     """
     Extract chart data from LLM response.
     
@@ -199,6 +324,21 @@ def extract_chart_data_from_llm_response(response: Dict[str, Any]) -> Dict[str, 
     Returns:
         Chart data dictionary
     """
+    DEPRECATED: This function is deprecated. 
+    Please use watchdog_ai.core.visualization.extract_chart_data_from_llm_response instead.
+    """
+    warnings.warn(
+        "extract_chart_data_from_llm_response() is deprecated. "
+        "Please use watchdog_ai.core.visualization.extract_chart_data_from_llm_response instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
+    # Use new implementation if available
+    if _extract_chart_data_from_llm_response is not None:
+        return _extract_chart_data_from_llm_response(response)
+    
+    # Legacy implementation for backward compatibility
     try:
         # Check if response contains chart data
         if 'chart_data' not in response:
