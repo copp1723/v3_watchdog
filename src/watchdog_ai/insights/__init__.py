@@ -1,7 +1,16 @@
 """
-Insights package for Watchdog AI.
+Insight generation and processing modules.
 """
 
-from .insight_conversation import ConversationManager
+from .intent_manager import IntentManager
+from .intents import Intent, TopMetricIntent, BottomMetricIntent, AverageMetricIntent
+from .engine import InsightEngine
 
-__all__ = ['ConversationManager']
+__all__ = [
+    'IntentManager',
+    'Intent',
+    'TopMetricIntent',
+    'BottomMetricIntent',
+    'AverageMetricIntent',
+    'InsightEngine'
+]

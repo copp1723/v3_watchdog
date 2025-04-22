@@ -12,11 +12,26 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import logging
+import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 import altair as alt
 
+# Import new visualization system
+from watchdog_ai.core.visualization import (
+    render_chart, ChartConfig, ChartType, extract_chart_data
+)
+from watchdog_ai.core.insights.card import InsightCard as CoreInsightCard
 # Import chart utilities
+
+# Deprecation warning for this module
+warnings.warn(
+    "The 'insight_card' module is deprecated and will be removed in v4.0.0. "
+    "Please use 'watchdog_ai.core.insights.card' instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
+
 from src.chart_utils import extract_chart_data_from_llm_response, build_chart_data
 
 # Configure logging
@@ -271,16 +286,35 @@ def format_insight_for_display(insight: Dict[str, Any]) -> Dict[str, Any]:
     """
     formatter = InsightOutputFormatter()
     return formatter.format_response(insight['summary'])
-
 def render_insight_card(insight: Dict[str, Any], index: int = 0, show_buttons: bool = True) -> None:
     """
     Render a structured insight as a card in the UI.
+    
+    DEPRECATED: Please use watchdog_ai.core.insights.card.InsightCard.render() instead.
     
     Args:
         insight: The insight dictionary to render
         index: The index of this insight in the conversation (for button keys)
         show_buttons: Whether to show interaction buttons
     """
+    warnings.warn(
+        "render_insight_card() is deprecated. "
+        "Please use watchdog_ai.core.insights.card.InsightCard.render() instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    
+    # Check if we can use the new implementation
+    try:
+        # Try to use the new implementation
+        CoreInsightCard.render(insight, index, show_buttons)
+        return
+    except Exception as e:
+        # Fall back to legacy implementation
+        logger.warning(f"Falling back to legacy insight card rendering: {str(e)}")
+    
+    # Legacy implementation (for backward compatibility)
+    
     # Ensure insight is properly formatted
     if not isinstance(insight, dict) or "summary" not in insight:
         st.error("Invalid insight data format")
@@ -314,6 +348,24 @@ def render_insight_card(insight: Dict[str, Any], index: int = 0, show_buttons: b
             st.markdown("**Action items:**")
             for flag in actionable_flags:
                 st.markdown(f"- {flag}")
+        
+        # Check for chart data and render it using the new visualization system
+        chart_data = insight.get("chart_data")
+        if chart_data:
+            try:
+                # Use the new visualization system
+                config = ChartConfig(
+                    chart_type='auto',  # Let the system determine the best chart type
+                    title=insight.get("chart_title", "Data Visualization"),
+                )
+                render_chart(chart_data, config=config)
+            except Exception as e:
+                logger.warning(f"Could not render chart with new system: {str(e)}")
+                # Fallback to basic rendering
+                if isinstance(chart_data, pd.DataFrame):
+                    st.line_chart(chart_data)
+                elif isinstance(chart_data, dict):
+                    st.json(chart_data)
         
         # Metadata
         if is_mock:

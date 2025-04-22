@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #004d99;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 10px 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        .insight {
+            background-color: #f9f9f9;
+            border-left: 4px solid #004d99;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .insight-title {
+            font-weight: bold;
+            color: #004d99;
+        }
+        .insight-summary {
+            margin-top: 10px;
+        }
+        .metrics {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .metric {
+            background-color: #e6f2ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 45%;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #004d99;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .cta {
+            background-color: #004d99;
+            color: white;
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ title }}</h1>
+        <p>Daily Insights for {{ date }}</p>
+    </div>
+    
+    <div class="content">
+        <p>Here is your daily insight summary from Watchdog AI:</p>
+        
+        {% for insight in insights %}
+        <div class="insight">
+            <div class="insight-title">{{ insight.title }}</div>
+            <div class="insight-summary">{{ insight.summary }}</div>
+            
+            {% if insight.metrics %}
+            <div class="metrics">
+                {% for metric in insight.metrics %}
+                <div class="metric">
+                    <div class="metric-value">{{ metric.value }}</div>
+                    <div class="metric-label">{{ metric.label }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if insight.recommendations %}
+            <div class="recommendations">
+                <strong>Recommendations:</strong>
+                <ul>
+                    {% for rec in insight.recommendations %}
+                    <li>{{ rec }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <p>For more detailed analysis, access your full dashboard in Watchdog AI.</p>
+        <a href="{{ dashboard_url }}" class="cta">View Dashboard</a>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated message from Watchdog AI. Please do not reply to this email.</p>
+        <p>&copy; {{ year }} Watchdog AI. All rights reserved.</p>
+    </div>
+</body>
+</html>

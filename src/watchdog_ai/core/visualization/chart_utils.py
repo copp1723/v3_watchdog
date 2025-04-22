@@ -265,4 +265,19 @@ def extract_chart_data_from_llm_response(response: Union[Dict[str, Any], str]) -
                 return None
         
         # If chart type is specified, use it
+        chart_type = data.get('type', _determine_chart_type(data))
+        
+        # Generate chart data based on type
+        if chart_type == 'pie':
+            return _generate_pie_chart_data(data)
+        elif chart_type == 'bar':
+            return _generate_bar_chart_data(data)
+        elif chart_type == 'line':
+            return _generate_line_chart_data(data)
+        else:
+            return _get_default_chart_data()
+            
+    except Exception as e:
+        logger.error(f"Error extracting chart data: {str(e)}")
+        return None
 

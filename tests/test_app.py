@@ -6,13 +6,13 @@ import pytest
 import pandas as pd
 import streamlit as st
 from datetime import datetime
-from src.app import (
+from watchdog_ai.app import (
     process_uploaded_file,
     initialize_session_state,
     render_data_validation,
     render_insight_generation
 )
-from src.utils.errors import ValidationError
+from watchdog_ai.utils.errors import ValidationError
 
 # --- Test Data Fixtures ---
 

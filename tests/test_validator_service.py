@@ -5,7 +5,7 @@ Tests for the validator service module.
 import pytest
 import pandas as pd
 import io
-from ..src.validators.validator_service import (
+from src.validators.validator_service import (
     process_uploaded_file,
     ValidatorService,
     FileValidationError,

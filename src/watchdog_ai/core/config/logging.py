@@ -144,5 +144,70 @@ def configure_logger(
     logger_name: str, 
     log_level: str = "info", 
     log_file: Optional[str] = None, 
-    log_
-
+    log_format: str = DETAILED_LOG_FORMAT,
+    date_format: str = DEFAULT_DATE_FORMAT,
+    max_bytes: int = 10_485_760,  # 10MB
+    backup_count: int = 5,
+    console_output: bool = True
+) -> logging.Logger:
+    """
+    Configure a specific logger with custom settings.
+    
+    Args:
+        logger_name: Name of the logger to configure
+        log_level: Logging level (debug, info, warning, error, critical)
+        log_file: Optional path to log file
+        log_format: Format string for log messages
+        date_format: Format string for timestamps
+        max_bytes: Maximum size of log file before rotation
+        backup_count: Number of backup files to keep
+        console_output: Whether to output logs to console
+        
+    Returns:
+        Configured logger instance
+    """
+    # Get or create logger
+    logger = logging.getLogger(logger_name)
+    
+    # Set log level
+    level = get_log_level(log_level)
+    logger.setLevel(level)
+    
+    # Remove existing handlers
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+    
+    # Create formatters
+    detailed_formatter = logging.Formatter(log_format, datefmt=date_format)
+    simple_formatter = logging.Formatter(SIMPLE_LOG_FORMAT, datefmt=date_format)
+    
+    # Add console handler if requested
+    if console_output:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(simple_formatter)
+        logger.addHandler(console_handler)
+    
+    # Add file handler if log file specified
+    if log_file:
+        # Create log directory if needed
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        
+        # Create rotating file handler
+        file_handler = logging.handlers.RotatingFileHandler(
+            log_file,
+            maxBytes=max_bytes,
+            backupCount=backup_count
+        )
+        file_handler.setFormatter(detailed_formatter)
+        logger.addHandler(file_handler)
+    
+    # Prevent propagation to root logger to avoid duplicate logs
+    logger.propagate = False
+    
+    # Log configuration
+    logger.debug(
+        f"Logger configured: name={logger_name}, level={log_level}, "
+        f"file={log_file if log_file else 'None'}"
+    )
+    
+    return logger

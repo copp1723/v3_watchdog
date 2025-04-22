@@ -1,5 +1,5 @@
 """
-UI pages package.
+UI page modules.
 """
 
 from .chat_tab import render

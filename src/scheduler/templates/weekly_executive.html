@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .dealership-name {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .content {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .kpi-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .kpi {
+            width: 48%;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .kpi-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .kpi-delta {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .delta-up {
+            color: #2ecc71;
+        }
+        .delta-down {
+            color: #e74c3c;
+        }
+        .delta-neutral {
+            color: #95a5a6;
+        }
+        .summary-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2c3e50;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .top-performers {
+            margin-top: 20px;
+        }
+        .performer {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .performer-name {
+            font-weight: bold;
+        }
+        .performer-metric {
+            color: #2c3e50;
+        }
+        .insights {
+            margin-top: 20px;
+        }
+        .insight {
+            background-color: #f9f9f9;
+            border-left: 4px solid #2980b9;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .insight-title {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .insight-body {
+            margin-top: 10px;
+        }
+        .insight-priority-critical {
+            border-left-color: #e74c3c;
+        }
+        .insight-priority-critical .insight-title {
+            color: #e74c3c;
+        }
+        .insight-priority-recommended {
+            border-left-color: #f39c12;
+        }
+        .insight-priority-recommended .insight-title {
+            color: #f39c12;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 15px 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+        .system-stats {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ title }}</h1>
+        <p>Week of {{ start_date }} to {{ end_date }}</p>
+        <div class="dealership-name">{{ dealership_name }}</div>
+    </div>
+    
+    <div class="content">
+        <div class="section">
+            <h2 class="section-title">Weekly Performance Summary</h2>
+            <div class="summary-box">
+                <p>{{ summary }}</p>
+            </div>
+            
+            <div class="kpi-grid">
+                {% for kpi in kpis %}
+                <div class="kpi">
+                    <div class="kpi-label">{{ kpi.label }}</div>
+                    <div class="kpi-value">{{ kpi.value }}</div>
+                    {% if kpi.delta %}
+                    <div class="kpi-delta {% if kpi.delta > 0 %}delta-up{% elif kpi.delta < 0 %}delta-down{% else %}delta-neutral{% endif %}">
+                        {% if kpi.delta > 0 %}↑{% elif kpi.delta < 0 %}↓{% else %}→{% endif %} {{ kpi.delta_formatted }} vs previous week
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Top Performers</h2>
+            <div class="top-performers">
+                {% for performer in top_performers %}
+                <div class="performer">
+                    <div class="performer-name">{{ performer.name }}</div>
+                    <div class="performer-metric">{{ performer.value }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Key Insights</h2>
+            <div class="insights">
+                {% for insight in insights %}
+                <div class="insight {% if insight.priority %}insight-priority-{{ insight.priority }}{% endif %}">
+                    <div class="insight-title">{{ insight.title }}</div>
+                    <div class="insight-body">{{ insight.summary }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This report was automatically generated by Watchdog AI.</p>
+        <p>For more detailed analysis, please access your full dashboard.</p>
+        <div class="system-stats">
+            <p>Uptime: {{ uptime }} | Data Freshness: {{ data_freshness }} | Report ID: {{ report_id }}</p>
+        </div>
+        <p>&copy; {{ year }} Watchdog AI. All rights reserved.</p>
+    </div>
+</body>
+</html>

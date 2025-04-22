@@ -1,0 +1,50 @@
+# Example queries configuration for Watchdog AI
+# Each query includes metadata for better organization and display
+
+sales_performance:
+  - query: "What are our top performing sales reps by revenue this quarter?"
+    category: "Sales Performance"
+    tags: ["revenue", "sales_reps", "quarterly"]
+    description: "Analyze top sales performers"
+    
+  - query: "Show me the sales trend over the last 6 months"
+    category: "Sales Performance"
+    tags: ["trends", "sales", "timeline"]
+    description: "View sales timeline analysis"
+    
+  - query: "Which products have the highest profit margins?"
+    category: "Sales Performance"
+    tags: ["products", "margins", "profitability"]
+    description: "Identify most profitable products"
+
+lead_analysis:
+  - query: "What are our best performing lead sources by conversion rate?"
+    category: "Lead Analysis"
+    tags: ["leads", "conversion", "sources"]
+    description: "Evaluate lead source effectiveness"
+    
+  - query: "Show me the average time to close by lead source"
+    category: "Lead Analysis"
+    tags: ["time_to_close", "efficiency", "sources"]
+    description: "Analyze closing efficiency"
+    
+  - query: "Which regions have the highest lead generation rates?"
+    category: "Lead Analysis"
+    tags: ["regional", "leads", "geography"]
+    description: "Geographic lead analysis"
+
+business_insights:
+  - query: "What are our key growth opportunities based on current data?"
+    category: "Business Insights"
+    tags: ["growth", "opportunities", "strategy"]
+    description: "Strategic growth analysis"
+    
+  - query: "Show me the main factors affecting our conversion rates"
+    category: "Business Insights"
+    tags: ["conversion", "factors", "analysis"]
+    description: "Conversion factor analysis"
+    
+  - query: "What are our strongest and weakest performing segments?"
+    category: "Business Insights"
+    tags: ["segments", "performance", "comparison"]
+    description: "Segment performance analysis" 

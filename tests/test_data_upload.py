@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import streamlit as st
 
 # This will test importing the component 
-from ..src.ui.components.data_upload import render_file_upload, render_sample_data_option, render_data_upload
+from src.ui.components.data_upload import render_file_upload, render_sample_data_option, render_data_upload
 
 def main():
     """Verify that the data_upload component imports work correctly."""

@@ -1,0 +1,23 @@
+{
+  "delivery": {
+    "frequency": "weekly",
+    "day_of_week": "Monday",
+    "time": "08:00"
+  },
+  "insight_types": {
+    "roi_analysis": true,
+    "sales_performance": true,
+    "inventory_health": true,
+    "lead_conversion": true,
+    "trending_models": false,
+    "price_competitiveness": false
+  },
+  "notifications": {
+    "email": true,
+    "dashboard": true,
+    "alerts_only": false
+  },
+  "recipients": [],
+  "updated_at": "2025-04-21T13:17:15.292563",
+  "last_run": null
+}

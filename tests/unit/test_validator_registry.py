@@ -3,15 +3,90 @@ Tests for the validator registry module.
 """
 
 import pytest
+import pandas as pd
+import numpy as np
 from src.validators.validator_registry import (
     get_validator_classes,
     get_validators,
     get_validator_by_name,
     get_available_validator_names
 )
-from src.validators.base_validator import BaseValidator
+from src.validators.base_validator import BaseValidator, BaseRule
 from src.validators.financial_validator import FinancialValidator
 from src.validators.customer_validator import CustomerValidator
+
+# Test fixtures
+@pytest.fixture
+def sample_dataframe():
+    """Create a sample DataFrame for testing validators."""
+    return pd.DataFrame({
+        "Gross_Profit": [1000, -100, 500, 0, 2000],
+        "Lead_Source": ["Website", None, "Google", "", "Facebook"],
+        "Salesperson": ["John", "Jane", "Bob", None, "Alice"],
+        "SaleDate": ["2023-01-01", "2023-02-15", "invalid-date", None, "2023-05-30"],
+        "VIN": ["1HGCM82633A123456", "5TDZA23C13S012345", None, "", "WBAFG01070L123456"]
+    })
+
+@pytest.fixture
+def mock_validator_instance():
+    """Create a mock validator instance for testing."""
+    class MockValidator(BaseValidator):
+        def __init__(self, data=None):
+            super().__init__(data)
+            self._name = "Mock Validator"
+            self._description = "A mock validator for testing"
+        
+        def validate(self):
+            return []
+            
+        def get_name(self):
+            return self._name
+            
+        def get_description(self):
+            return self._description
+    
+    return MockValidator()
+
+@pytest.fixture
+def base_rule_instance():
+    """Create a test BaseRule instance."""
+    return BaseRule(
+        id="test_rule",
+        name="Test Rule",
+        description="A test rule for validation",
+        enabled=True,
+        severity="Medium",
+        category="Test",
+        column_mapping={"test_column": "TestColumn"},
+        threshold_value=100,
+        threshold_operator=">"
+    )
+
+
+def test_base_rule():
+    """Test that BaseRule can be instantiated with parameters."""
+    rule = BaseRule(
+        id="test_rule",
+        name="Test Rule",
+        description="A test rule for validation",
+        enabled=True,
+        severity="Medium",
+        category="Test",
+        column_mapping={"test_column": "TestColumn"},
+        threshold_value=100,
+        threshold_operator=">"
+    )
+    
+    # Check that attributes are set correctly
+    assert rule.id == "test_rule"
+    assert rule.name == "Test Rule"
+    assert rule.description == "A test rule for validation"
+    assert rule.enabled is True
+    assert rule.severity == "Medium"
+    assert rule.category == "Test"
+    assert rule.column_mapping == {"test_column": "TestColumn"}
+    assert rule.threshold_value == 100
+    assert rule.threshold_operator == ">"
 
 
 def test_get_validator_classes():
@@ -97,3 +172,49 @@ def test_validator_registration_consistency():
     # Check that each validator's name is in the list of names
     for validator in validators:
         assert validator.get_name() in validator_names
+
+
+def test_validator_rule_creation():
+    """Test that validators can create rules properly."""
+    # Create a financial validator
+    financial_validator = FinancialValidator()
+    
+    # Test that rules are created
+    rules = financial_validator._create_financial_rules()
+    assert isinstance(rules, list)
+    assert len(rules) > 0
+    
+    # Check that rules have proper attributes
+    for rule in rules:
+        assert isinstance(rule, BaseRule)
+        assert hasattr(rule, 'id')
+        assert hasattr(rule, 'name')
+        assert hasattr(rule, 'description')
+        assert hasattr(rule, 'enabled')
+
+
+def test_mock_validator_methods(mock_validator_instance):
+    """Test that the mock validator works as expected."""
+    validator = mock_validator_instance
+    
+    # Test name and description methods
+    assert validator.get_name() == "Mock Validator"
+    assert validator.get_description() == "A mock validator for testing"
+    
+    # Test validate method
+    assert validator.validate() == []
+
+
+def test_validator_with_sample_data(sample_dataframe):
+    """Test that validators can work with sample data."""
+    # Create validators with sample data
+    financial_validator = FinancialValidator(sample_dataframe)
+    customer_validator = CustomerValidator(sample_dataframe)
+    
+    # Check that data was assigned
+    assert financial_validator.data is not None
+    assert customer_validator.data is not None
+    
+    # Get validator names
+    assert financial_validator.get_name() == "Financial Validator"
+    assert customer_validator.get_name() == "Customer Validator"

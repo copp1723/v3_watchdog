@@ -1,0 +1,495 @@
+"""
+Main application page for Watchdog AI.
+
+This module serves as the entry point for the Watchdog AI UI,
+integrating all UI components, pages, and analysis features.
+"""
+
+import streamlit as st
+import pandas as pd
+import os
+from datetime import datetime
+import logging
+import time
+import json
+
+# Import direct query components
+from src.watchdog_ai.insights.direct_query_handler import handle_direct_query_ui, initialize_direct_processor
+
+# Import standard components
+from src.watchdog_ai.ui.components.header import render_header
+from src.watchdog_ai.ui.components.data_upload import render_data_upload
+from src.watchdog_ai.ui.components.sidebar import render_sidebar
+from src.watchdog_ai.ui.components.sales_report_renderer import SalesReportRenderer
+
+# Import new ROI and Admin pages
+from .lead_source_roi_dashboard import render_lead_source_roi_dashboard
+from .admin_preferences import render_admin_preferences_page
+from .insight_feed_page import render_page as render_insight_feed
+
+logger = logging.getLogger(__name__)
+
+def render_system_connect():
+    """Render the System Connect tab."""
+    st.header("System Connect")
+    
+    # Connection status
+    status = st.session_state.get('nova_act_status', 'disconnected')
+    if status == 'connected':
+        st.success("✅ Connected to Nova Act")
+    else:
+        st.warning("⚠️ Not connected to Nova Act")
+        
+        # Add connect button
+        if st.button("Connect to Nova Act"):
+            # This would trigger the Nova Act connection flow
+            # For now, just show a message
+            st.info("Connection flow will be implemented by Dev 3")
+    
+    # Sales Report Section
+    st.subheader("Sales Report Insights")
+    
+    # Initialize renderer
+    renderer = SalesReportRenderer()
+    
+    # Get report data if connected
+    report_data = None
+    if status == 'connected':
+        # This would come from Nova Act in production
+        # For now, use mock data
+        report_data = {
+            "summary": {
+                "title": "Monthly Sales Performance",
+                "description": "Sales are trending upward with a 15% increase over last month."
+            },
+            "chart_data": {
+                "type": "bar",
+                "data": {
+                    "x": ["Jan", "Feb", "Mar", "Apr"],
+                    "y": [100, 120, 115, 140]
+                }
+            },
+            "metrics": [
+                {
+                    "label": "Total Sales",
+                    "value": "$140,000",
+                    "delta": "15%"
+                },
+                {
+                    "label": "Units Sold",
+                    "value": "45",
+                    "delta": "5"
+                }
+            ],
+            "recommendations": [
+                "Focus on high-margin vehicle segments showing growth",
+                "Review pricing strategy for luxury vehicles",
+                "Increase marketing for top-performing models"
+            ]
+        }
+    
+    # Render the insight block
+    renderer.render_insight_block(report_data)
+
+# Import Nova Act connector for system integration
+from src.utils.datasource.novact import NovaActConnector
+from src.nova_act.constants import TwoFactorMethod
+
+# Define CSS styles (Tailwind-inspired)
+STYLES = {
+    "card": """
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+    """,
+    "success": """
+        background-color: #10B981;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    """,
+    "error": """
+        background-color: #EF4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    """,
+    "warning": """
+        background-color: #F59E0B;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    """,
+    "info": """
+        background-color: #3B82F6;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    """,
+    "button": """
+        background-color: #2563EB;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+    """,
+    "button_secondary": """
+        background-color: #6B7280;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+    """,
+    "badge": """
+        background-color: #E5E7EB;
+        color: #374151;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    """,
+    "badge_success": """
+        background-color: #D1FAE5;
+        color: #065F46;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    """,
+    "badge_error": """
+        background-color: #FEE2E2;
+        color: #991B1B;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    """
+}
+
+def initialize_session_state():
+    """Initialize session state variables if they don't exist."""
+    if 'nova_act_connected' not in st.session_state:
+        st.session_state.nova_act_connected = False
+    
+    if 'last_sync_timestamp' not in st.session_state:
+        st.session_state.last_sync_timestamp = None
+    
+    if 'sync_in_progress' not in st.session_state:
+        st.session_state.sync_in_progress = False
+    
+    if 'dealer_name' not in st.session_state:
+        st.session_state.dealer_name = "Your Dealership"
+    
+    if 'credentials' not in st.session_state:
+        st.session_state.credentials = {
+            "vendor": "",
+            "email": "",
+            "password": "",
+            "dealership_id": "",
+            "2fa_method": "",
+            "reports": []
+        }
+    
+    if 'sync_frequency' not in st.session_state:
+        st.session_state.sync_frequency = "daily"
+    
+    if 'sync_result' not in st.session_state:
+        st.session_state.sync_result = None
+
+def render_connect_systems_form():
+    """Render the 'Connect My Systems' form."""
+    st.markdown("<h2 style='text-align: center;'>Connect My Systems</h2>", unsafe_allow_html=True)
+    
+    with st.container():
+        st.markdown(f"<div style='{STYLES['card']}'>", unsafe_allow_html=True)
+        
+        # Vendor selection
+        vendor = st.selectbox(
+            "Select Vendor", 
+            ["", "DealerSocket", "VinSolutions", "CDK", "Reynolds & Reynolds", "DealerTrack"],
+            index=0,
+            help="Select your DMS or CRM vendor"
+        )
+        
+        if vendor:
+            # Create two columns for credentials
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                email = st.text_input(
+                    "Email", 
+                    value=st.session_state.credentials.get("email", ""),
+                    help="Your login email for the vendor system"
+                )
+                
+                dealership_id = st.text_input(
+                    "Dealership ID",
+                    value=st.session_state.credentials.get("dealership_id", ""),
+                    help="Your dealership identifier"
+                )
+                
+                dealer_name = st.text_input(
+                    "Dealership Name",
+                    value=st.session_state.dealer_name,
+                    help="Your dealership's display name"
+                )
+            
+            with col2:
+                password = st.text_input(
+                    "Password", 
+                    type="password",
+                    help="Your login password for the vendor system"
+                )
+                
+                two_factor_method = st.selectbox(
+                    "2FA Method",
+                    ["None", "SMS", "Email", "Authenticator"],
+                    index=0,
+                    help="Two-factor authentication method"
+                )
+            
+            # Report selection
+            st.subheader("Select Reports to Sync")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                sales_report = st.checkbox("Sales Reports", value=True)
+                inventory_report = st.checkbox("Inventory Reports", value=True)
+            
+            with col2:
+                leads_report = st.checkbox("Lead Reports")
+                service_report = st.checkbox("Service Reports")
+            
+            # Collect selected reports
+            selected_reports = []
+            if sales_report:
+                selected_reports.append("sales")
+            if inventory_report:
+                selected_reports.append("inventory")
+            if leads_report:
+                selected_reports.append("leads")
+            if service_report:
+                selected_reports.append("service")
+            
+            # Sync frequency
+            sync_frequency = st.selectbox(
+                "Sync Frequency",
+                ["Hourly", "Daily", "Weekly", "Monthly"],
+                index=1,
+                help="How often to automatically sync data"
+            )
+            
+            # Submit button
+            if st.button("Connect System", key="connect_system"):
+                with st.spinner("Connecting to vendor system..."):
+                    # Store values in session state
+                    st.session_state.credentials = {
+                        "vendor": vendor,
+                        "email": email,
+                        "password": password,
+                        "dealership_id": dealership_id,
+                        "2fa_method": two_factor_method.lower() if two_factor_method != "None" else "",
+                        "reports": selected_reports
+                    }
+                    st.session_state.sync_frequency = sync_frequency.lower()
+                    st.session_state.dealer_name = dealer_name
+                    
+                    # Simulate connection (in real implementation, this would connect to NovaActConnector)
+                    time.sleep(1.5)  # Simulate API call
+                    
+                    # Update connection state
+                    st.session_state.nova_act_connected = True
+                    st.session_state.last_sync_timestamp = datetime.now().isoformat()
+                    
+                    st.success(f"✅ Successfully connected to {vendor}!")
+                    st.session_state.sync_result = {
+                        "status": "success",
+                        "message": f"Connected to {vendor} successfully.",
+                        "timestamp": datetime.now().isoformat()
+                    }
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+
+def render_system_status():
+    """Render the system connection status panel."""
+    st.markdown("<h2 style='text-align: center;'>System Status</h2>", unsafe_allow_html=True)
+    
+    with st.container():
+        st.markdown(f"<div style='{STYLES['card']}'>", unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            if st.session_state.nova_act_connected:
+                st.markdown(f"<div style='{STYLES['badge_success']}'>Connected</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div style='{STYLES['badge_error']}'>Disconnected</div>", unsafe_allow_html=True)
+            
+            if st.session_state.last_sync_timestamp:
+                last_sync = datetime.fromisoformat(st.session_state.last_sync_timestamp)
+                st.markdown(f"Last Sync: {last_sync.strftime('%Y-%m-%d %H:%M:%S')}")
+            else:
+                st.markdown("Last Sync: Never")
+        
+        with col2:
+            if st.session_state.nova_act_connected:
+                st.markdown(f"**Vendor**: {st.session_state.credentials.get('vendor', 'Unknown')}")
+                st.markdown(f"**Reports**: {', '.join(st.session_state.credentials.get('reports', ['None']))}")
+                st.markdown(f"**Sync Frequency**: {st.session_state.sync_frequency.capitalize()}")
+        
+        if st.session_state.nova_act_connected:
+            col1, col2 = st.columns([1, 2])
+            
+            with col1:
+                if st.button("Sync Now", key="sync_now"):
+                    with st.spinner("Syncing data from vendor system..."):
+                        # Simulate sync operation
+                        st.session_state.sync_in_progress = True
+                        time.sleep(2)  # Simulate API call
+                        
+                        # Update sync timestamp
+                        st.session_state.last_sync_timestamp = datetime.now().isoformat()
+                        st.session_state.sync_in_progress = False
+                        
+                        st.session_state.sync_result = {
+                            "status": "success",
+                            "message": "Data synchronized successfully.",
+                            "files": [
+                                {"name": "sales_report.csv", "records": 128},
+                                {"name": "inventory_report.csv", "records": 76}
+                            ],
+                            "timestamp": datetime.now().isoformat()
+                        }
+                        
+                        st.success("✅ Data synchronized successfully!")
+            
+            with col2:
+                if st.button("Disconnect", key="disconnect"):
+                    st.session_state.nova_act_connected = False
+                    st.session_state.last_sync_timestamp = None
+                    st.warning("System disconnected. You can reconnect at any time.")
+        
+        if st.session_state.sync_result:
+            st.subheader("Latest Sync Result")
+            
+            result = st.session_state.sync_result
+            if result["status"] == "success":
+                status_style = STYLES["badge_success"]
+            else:
+                status_style = STYLES["badge_error"]
+            
+            st.markdown(f"<div style='{status_style}'>{result['status'].upper()}</div>", unsafe_allow_html=True)
+            st.markdown(f"**Message**: {result['message']}")
+            
+            if "files" in result:
+                for file in result["files"]:
+                    st.markdown(f"• {file['name']} ({file['records']} records)")
+            
+            if "timestamp" in result:
+                timestamp = datetime.fromisoformat(result["timestamp"])
+                st.markdown(f"**Time**: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+
+def render_app():
+    """Render the main application."""
+    # Initialize the direct query processor
+    initialize_direct_processor()
+    
+    # Initialize session state
+    initialize_session_state()
+    
+    # Render header with dealer name
+    st.markdown(
+        f"<div style='display: flex; align-items: center; margin-bottom: 1rem;'>"
+        f"<img src='/Users/joshcopp/Desktop/v3watchdog_ai/assets/watchdog_logo.png' style='width: 60px; margin-right: 1rem;'>"
+        f"<div>"
+        f"<h1 style='margin: 0; font-size: 1.8rem;'>Watchdog AI</h1>"
+        f"<p style='margin: 0; color: #6B7280;'>{st.session_state.dealer_name}</p>"
+        f"</div>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+    
+    if st.session_state.last_sync_timestamp:
+        last_sync = datetime.fromisoformat(st.session_state.last_sync_timestamp)
+        st.markdown(
+            f"<p style='text-align: right; color: #6B7280; font-size: 0.8rem;'>"
+            f"Last data update: {last_sync.strftime('%Y-%m-%d %H:%M')}"
+            f"</p>",
+            unsafe_allow_html=True
+        )
+    # Render sidebar with settings and tools
+    render_sidebar()
+    
+    # Main content in tabs
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "Data Upload", 
+        "Analysis", 
+        "Lead Source ROI", 
+        "Insights Feed",
+        "System Connect",  # New tab
+        "Admin"
+    ])
+    
+    # Tab 1: Data upload
+    
+    # Tab 5: System Connect
+        render_system_connect()
+    
+    # Tab 6: Admin Preferences
+    with tab6:
+    tabs = st.tabs([
+        "Connect Systems",
+    with tabs[0]:
+        # Render data upload component
+        render_data_upload()
+    
+    # Tab 2: Connect Systems (new tab)
+    with tabs[1]:
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            render_connect_systems_form()
+        
+        with col2:
+            render_system_status()
+    
+    # Tab 3: Analysis
+    with tabs[2]:
+        # Use the direct querying interface
+        handle_direct_query_ui()
+    
+    # Tab 4: Lead Source ROI Dashboard
+    with tabs[3]:
+        # Render the ROI dashboard
+        render_lead_source_roi_dashboard()
+    
+    # Tab 5: Insights Feed
+    with tabs[4]:
+        # Render the insights feed
+        render_insight_feed()
+    
+    # Tab 6: Admin Preferences
+    with tabs[5]:
+        # Render the admin preferences page
+        render_admin_preferences_page()
+    
+    # Footer
+    st.markdown("---")
+    st.markdown(
+        f"<div style='text-align: center;'>"
+        f"<p>Watchdog AI v3.0 | {datetime.now().strftime('%Y-%m-%d')}</p>"
+        f"</div>", 
+        unsafe_allow_html=True
+    )

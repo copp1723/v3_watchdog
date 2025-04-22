@@ -1,47 +1,57 @@
 """
-Main application entry point for Watchdog AI.
+Main entry point for Watchdog AI application.
+
+This module initializes and runs the Watchdog AI application,
+including the UI and all related services.
 """
 
 import streamlit as st
+import os
 import logging
 import sys
-import os
-from pathlib import Path
-from watchdog_ai.ui.pages.data_insights_tab import render_data_insights_tab as render_data_tab
-from watchdog_ai.ui.pages.chat_tab import render as render_chat_tab
-from watchdog_ai.config import SessionKeys
-from watchdog_ai.ui.components.chat_interface import ChatInterface
+from datetime import datetime
+from src.watchdog_ai.ui.pages.main_app import render_app
 
-# Add the src directory to the Python path
-src_dir = Path(__file__).parent
-sys.path.append(str(src_dir))
-
-# Add src directory to Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Page config must be the first Streamlit command
+# Set page config - must be first Streamlit command
 st.set_page_config(
-    page_title="Watchdog AI",
-    page_icon="🛡️",
+    page_title="Watchdog AI - Data Insights",
+    page_icon="🔍",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
-from watchdog_ai.ui.components.data_uploader import render_data_uploader
-
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
-def main():
-    """Main application entry point."""
-    try:
-        chat_interface = ChatInterface()
-        chat_interface.render_chat_interface()
+# Create log directory if it doesn't exist
+logs_dir = os.path.join(os.path.dirname(__file__), 'logs')
+if not os.path.exists(logs_dir):
+    os.makedirs(logs_dir)
 
-    except Exception as e:
-        logger.error(f"Application error: {str(e)}")
-        st.error(f"An error occurred: {str(e)}")
+# Add file handler
+log_file = os.path.join(logs_dir, f'watchdog_{datetime.now().strftime("%Y%m%d")}.log')
+file_handler = logging.FileHandler(log_file)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+
+# Get root logger and add handler
+logger = logging.getLogger("watchdog_ai")
+logger.addHandler(file_handler)
 
 if __name__ == "__main__":
-    main()
+    # Log startup
+    logger.info("Starting Watchdog AI application")
+    
+    try:
+        # Run the application
+        logger.info("Launching Streamlit UI")
+        render_app()
+        
+    except Exception as e:
+        logger.error(f"Error starting application: {e}", exc_info=True)
+        sys.exit(1)

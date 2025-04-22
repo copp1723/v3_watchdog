@@ -15,7 +15,7 @@ from typing import Dict, Any, Optional, List, Union
 from botocore.exceptions import ClientError
 from datetime import datetime
 
-from .logging_config import get_logger
+from .log_utils_config import get_logger
 
 logger = get_logger(__name__)
 

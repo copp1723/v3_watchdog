@@ -6,7 +6,7 @@ import pytest
 import pandas as pd
 import streamlit as st
 from unittest.mock import patch, MagicMock
-from ..src.insight_card import (
+from src.insight_card import (
     extract_metadata,
     format_markdown_with_highlights,
     InsightMetadata,

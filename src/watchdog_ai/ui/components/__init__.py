@@ -1,5 +1,5 @@
 """
-UI components for Watchdog AI.
+UI component modules.
 """
 
 from .chat_interface import ChatInterface

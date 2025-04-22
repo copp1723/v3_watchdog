@@ -25,7 +25,7 @@ import contextlib
 from io import StringIO
 
 # Import user-defined modules
-from .logging_config import get_logger
+from .log_utils_config import get_logger
 from .errors import ValidationError
 
 # Configure logger

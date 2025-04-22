@@ -1,0 +1,27 @@
+# Optional Feature Dependencies
+-r requirements-core.txt
+
+# Nova Act Integration
+schedule>=1.2.0
+playwright>=1.41.0
+aiohttp>=3.9.0
+cryptography>=42.0.0
+asyncio>=3.4.3
+nest_asyncio>=1.6.0
+
+# AWS Integration
+boto3>=1.34.0
+botocore>=1.34.0
+
+# Vault Integration
+hvac>=1.2.0  # HashiCorp Vault client
+
+# Monitoring and Observability
+sentry-sdk>=1.26.0
+statsmodels>=0.13.0
+matplotlib>=3.8.0
+
+# Business Integrations
+slack-sdk>=3.27.0
+python-Levenshtein>=0.23.0  # For fuzzy matching
+
