@@ -1,3 +1,397 @@
+# Watchdog AI - Insight Generation System
+
+## Table of Contents
+- [Overview](#overview)
+- [Installation and Setup](#installation-and-setup)
+- [Usage Examples](#usage-examples)
+- [API Reference](#api-reference)
+- [Configuration Options](#configuration-options)
+- [Troubleshooting](#troubleshooting)
+
+## Overview
+
+The Insight Generation System is a powerful component of Watchdog AI that analyzes dealership data and produces actionable insights using OpenAI's large language models. The system takes analytics summaries as input and generates structured insights with specific recommendations for dealership management.
+
+### Key Features
+
+- **Data-Driven Analysis**: Processes dealership analytics data to extract meaningful patterns and trends
+- **Chart Generation**: Automatically suggests appropriate visualizations for insights (bar, line, or pie charts)
+- **Actionable Recommendations**: Provides specific, practical advice based on the analysis
+- **Risk Flagging**: Identifies potential issues requiring urgent attention
+- **Confidence Scoring**: Assigns a confidence level to each insight based on data quality and analysis certainty
+- **Custom Reports**: Supports specialized reports with user-defined parameters
+
+### System Architecture
+
+The Insight Generation System consists of two main components:
+
+1. **Prompt Templates** (`prompts.py`): Defines the structure and content of prompts sent to the OpenAI API
+2. **Insight Generator** (`insight_generator.py`): Handles API interaction, validation, and error handling
+
+The system integrates with the broader Watchdog AI pipeline, processing analytics data and returning structured insights that can be displayed in the UI or incorporated into reports.
+
+## Installation and Setup
+
+### Prerequisites
+
+- Python 3.9+
+- OpenAI API key
+- Required Python packages:
+  - openai>=1.0.0
+  - tiktoken
+  - jsonschema
+  - backoff
+
+### Installation
+
+1. Ensure Watchdog AI is installed:
+
+```bash
+git clone https://github.com/your-org/v3watchdog_ai.git
+cd v3watchdog_ai
+pip install -e .
+```
+
+2. Set up environment variables:
+
+```bash
+export OPENAI_API_KEY="your-api-key-here"
+```
+
+Alternatively, you can create a `.env` file in the project root:
+
+```
+OPENAI_API_KEY=your-api-key-here
+```
+
+### Dependencies
+
+Install required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage Examples
+
+### Basic Usage
+
+Generate a basic insight from analytics data:
+
+```python
+from watchdog_ai.insights.insight_generator import InsightGenerator
+
+# Initialize the generator
+generator = InsightGenerator()
+
+# Load analytics data
+with open("analytics_summary.json", "r") as f:
+    analytics_data = f.read()
+
+# Generate an insight
+query = "Which sales representative has the highest number of deals this month?"
+insight = generator.generate_insight(analytics_data, query)
+
+# Access the insight components
+print(f"Summary: {insight['summary']}")
+print(f"Recommendation: {insight['recommendation']}")
+print(f"Risk Flag: {insight['risk_flag']}")
+print(f"Confidence Score: {insight['confidence_score']}")
+
+# Access chart data
+chart_data = insight['chart_data']
+print(f"Chart Type: {chart_data['type']}")
+print(f"Chart Title: {chart_data['title']}")
+```
+
+### Custom Report Generation
+
+Generate a report with specific parameters:
+
+```python
+# Define report parameters
+report_params = {
+    "time_period": "last_quarter",
+    "metrics": ["gross_profit", "units_sold"],
+    "comparisons": "previous_period",
+    "chart_type": "bar"
+}
+
+# Generate custom report
+query = "Analyze performance trends by vehicle make"
+custom_insight = generator.generate_custom_report(analytics_data, query, report_params)
+
+# Process results
+# ...
+```
+
+### Error Handling
+
+Properly handle potential errors:
+
+```python
+from watchdog_ai.insights.insight_generator import (
+    InsightGenerator, 
+    InputValidationError,
+    TokenLimitError,
+    APIError,
+    ResponseValidationError
+)
+
+generator = InsightGenerator()
+
+try:
+    insight = generator.generate_insight(analytics_data, query)
+    # Process the insight
+    # ...
+except InputValidationError as e:
+    print(f"Input validation error: {str(e)}")
+    # Handle input issues
+except TokenLimitError as e:
+    print(f"Token limit exceeded: {str(e)}")
+    # Handle by reducing input size
+except APIError as e:
+    print(f"API error: {str(e)}")
+    # Handle API issues
+except ResponseValidationError as e:
+    print(f"Response validation error: {str(e)}")
+    # Handle invalid responses
+except Exception as e:
+    print(f"Unexpected error: {str(e)}")
+    # Handle other errors
+```
+
+## API Reference
+
+### `InsightGenerator` Class
+
+The main class for generating insights.
+
+#### Constructor
+
+```python
+InsightGenerator(
+    api_key=None,             # OpenAI API key (optional, defaults to env var)
+    model="gpt-4o",           # OpenAI model to use
+    max_output_tokens=4096,   # Maximum tokens for the response
+    log_to_file=False,        # Whether to log costs to a file
+    log_file_path=None        # Path to the log file
+)
+```
+
+#### Methods
+
+##### `generate_insight`
+
+```python
+generate_insight(
+    analytics_summary,   # Analytics data (str or dict)
+    query,               # Analysis question or request
+    custom_params=None   # Optional custom parameters
+) -> dict
+```
+
+Generates an insight based on analytics data and a query.
+
+**Returns:** Dictionary containing the generated insight with the following structure:
+```json
+{
+    "summary": "A clear, concise summary of the main insight",
+    "chart_data": {
+        "type": "bar|line|pie",
+        "data": {"x": ["label1", "label2"], "y": [value1, value2]} OR {"labels": [], "values": []},
+        "title": "Chart title",
+        "x_axis_label": "Label for X-axis",
+        "y_axis_label": "Label for Y-axis"
+    },
+    "recommendation": "A specific, actionable recommendation",
+    "risk_flag": true|false,
+    "confidence_score": 0.95,
+    "_metadata": {
+        "usage": {
+            "input_tokens": 1234,
+            "output_tokens": 567,
+            "total_tokens": 1801,
+            "request_id": "req-abc123"
+        },
+        "model": "gpt-4o",
+        "timestamp": 1650000000.0
+    }
+}
+```
+
+##### `generate_custom_report`
+
+```python
+generate_custom_report(
+    analytics_summary,   # Analytics data (str or dict)
+    query,               # Analysis question or request
+    report_params        # Report parameters
+) -> dict
+```
+
+Generates a custom report with specific parameters.
+
+**report_params fields:**
+- `time_period`: The time period to analyze (e.g., "last_month", "last_quarter")
+- `metrics`: List of metrics to focus on
+- `comparisons`: What to compare against (e.g., "previous_period", "target")
+- `segments`: Specific customer segments to analyze
+- `chart_type`: Type of chart to use
+
+### `prompts` Module
+
+#### Functions
+
+##### `build_prompt`
+
+```python
+build_prompt(
+    analytics_summary,   # Analytics data (str or dict)
+    query,               # Analysis question or request
+    custom_params=None   # Optional custom parameters
+) -> str
+```
+
+Builds a prompt for the OpenAI API to generate insights.
+
+##### `validate_insight_response`
+
+```python
+validate_insight_response(response) -> None
+```
+
+Validates that an insight response adheres to the expected schema. Raises `jsonschema.exceptions.ValidationError` if validation fails.
+
+## Configuration Options
+
+### OpenAI Models
+
+The system supports multiple OpenAI models with different capabilities and costs:
+
+| Model | Description | Token Limit | Use Case |
+|-------|-------------|-------------|----------|
+| gpt-4o | Latest OpenAI model with optimal performance | 128,000 | Default choice for most analyses |
+| gpt-4 | Powerful but more expensive | 8,192 | Complex analyses requiring deep reasoning |
+| gpt-3.5-turbo | Faster and cheaper | 16,384 | Simple analyses, high-volume processing |
+
+### Token Limits and Management
+
+Token limits are managed automatically:
+
+- Input is truncated if it exceeds the model's context limit (with 15% headroom for the response)
+- Output token limit defaults to 4,096 but can be configured
+- Token counting uses tiktoken for accurate estimates
+
+### Cost Logging
+
+Cost logging provides transparency into API usage:
+
+- Console logging is always enabled
+- File logging can be enabled by setting `log_to_file=True`
+- CSV log includes timestamp, request ID, model, token counts, and costs
+
+### Custom Parameters
+
+The `custom_params` dictionary can include:
+
+- `focus_metric`: The specific metric to focus on (e.g., "gross_profit")
+- `timeframe`: The time period to analyze (e.g., "last_30_days")
+- `chart_type`: Override the default chart type (e.g., "bar")
+- `depth`: Level of detail in the analysis (e.g., "high", "medium", "low")
+- `comparison`: What to compare against (e.g., "previous_period", "industry_average")
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### API Authentication Errors
+
+**Issue:** `APIError: Authentication error`
+
+**Solution:** 
+- Check that your OpenAI API key is valid
+- Ensure the API key is properly set in the environment or passed to the constructor
+- Verify API key permissions and usage limits in the OpenAI dashboard
+
+#### Token Limit Errors
+
+**Issue:** `TokenLimitError: Generated prompt exceeds token limit`
+
+**Solution:**
+- Reduce the size of the analytics data
+- Simplify the query
+- Limit custom parameters
+- Use a model with a larger context window
+
+#### Response Validation Errors
+
+**Issue:** `ResponseValidationError: Failed to parse response as JSON`
+
+**Solution:**
+- The system automatically attempts to fix invalid responses
+- If issues persist, try:
+  - Simplifying your query
+  - Using a different OpenAI model
+  - Checking if your analytics data is properly formatted
+
+#### Slow Response Times
+
+**Issue:** Insights take too long to generate
+
+**Solution:**
+- Reduce the size of the input data
+- Use a faster model like gpt-3.5-turbo for less complex analyses
+- Implement caching for commonly requested insights
+
+### Logging and Debugging
+
+Enhanced logging is available by setting the log level:
+
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+This will show detailed information about:
+- Token counts
+- API requests and responses
+- Validation issues
+- Cost information
+
+### Self-Diagnosis
+
+To diagnose issues with the system:
+
+```python
+from watchdog_ai.insights.insight_generator import InsightGenerator
+import json
+
+# Initialize with debug output
+generator = InsightGenerator(log_to_file=True)
+
+# Test the system
+test_data = {"metric1": 123, "metric2": 456}
+try:
+    insight = generator.generate_insight(test_data, "Test query")
+    print(json.dumps(insight, indent=2))
+    print("Success!")
+except Exception as e:
+    print(f"Error: {type(e).__name__}: {str(e)}")
+```
+
+### Getting Help
+
+If you encounter persistent issues:
+
+1. Check the logs for detailed error messages
+2. Search existing issues in the GitHub repository
+3. File a new issue with:
+   - Complete error message and stack trace
+   - Minimal example to reproduce the issue
+   - System information (Python version, OS)
+   - OpenAI model being used
+
 # Watchdog AI Insights Framework
 
 This document provides a comprehensive overview of the Watchdog AI Insights Framework, its components, and instructions for extending it with new insights.

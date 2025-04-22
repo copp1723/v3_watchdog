@@ -1,85 +1,61 @@
 # Watchdog AI Knowledge Base
 
-## Architecture
+## Metrics & Debug Dashboard
 
-The system follows a three-phase pipeline:
+### Metrics Logger
+- Use JSON format for structured logging
+- Implement log rotation (10MB files, keep 5 backups)
+- Track execution time, memory usage, token counts, cache hits
+- Use trace IDs to link related operations
+- Store logs in logs/metrics directory
 
-1. Schema & Validation
-   - Required sheets: sales (required), inventory, leads
-   - Core required columns: gross, lead_source
-   - Optional columns with fallbacks: date, sales_rep, vin
-   - Automatic date column creation if missing
-   - Validation before any analysis
+### Debug Dashboard
+- Three main sections: Execution Metrics, Trace Analysis, Cache Statistics
+- Mobile-responsive layout with collapsible sections
+- Use plotly for interactive visualizations
+- Cache hit rate target: >80%
+- Response time target: <1000ms
+- Memory usage target: <500MB
 
-2. Core Insight Engine
-   - Direct pandas operations (no LLM)
-   - Keyword-driven analysis
-   - Structured InsightResult output
-   - Automatic currency handling (strips $, commas)
-   - Numeric conversion with error handling
+### Traceability System
+- Use watchdog_ai.insights.traceability.TraceabilityEngine for comprehensive tracing
+- Store traces with steps, input/output data, and metrics
+- Support trace versioning and comparison
+- Persist traces to disk in JSON format
+- Include query context and metadata
 
-3. Streamlit UI
-   - Simple file upload and validation
-   - Chat-like question interface
-   - Chart visualization
-   - Insight history
+### Performance Thresholds
+- Log slow operations (>5s) as warnings
+- Alert on high error rates (>5%)
+- Monitor cache hit rates hourly
+- Track memory usage trends
 
-## Data Requirements
+### Best Practices
+- Use trace IDs for all operations
+- Record both success and error metrics
+- Implement log rotation
+- Keep UI responsive on mobile
+- Add comprehensive test coverage
 
-### Sales Sheet (Required)
-Required columns:
-- gross: total_gross, front_gross, gross_profit (numeric or currency format)
-- lead_source: leadsource, source, lead_type
+## DataFrame Display in Streamlit
+- Most reliable approaches for displaying DataFrames with problematic types:
+  1. Use st_aggrid package for interactive tables (best UX)
+  2. Convert to records and use st.json() (most reliable)
+  3. Use st.table() with pre-converted string data (simple but works)
+  4. Use st.markdown() with DataFrame.to_markdown() (good for static data)
+- Always convert data to strings at load time, not display time
+- Use csv.reader for initial load to bypass pandas type inference
+- Handle null values and complex types (dict/list) explicitly
+- Provide fallback display options for each visualization
 
-Optional columns with fallbacks:
-- date: sale_date, transaction_date, deal_date (auto-created if missing)
-- sales_rep: salesperson, rep_name, employee (defaults to "Unknown")
-- vin: vin_number, vehicle_id (optional)
+## Project Structure
+- Main application entry: src/app.py
+- UI components in watchdog_ai/ui/components/
+- Page layouts in watchdog_ai/ui/pages/
+- Core logic in watchdog_ai/
 
-### Data Handling
-- Currency values: Automatically strips $ and , characters
-- Numeric conversion: Uses pd.to_numeric with errors='coerce'
-- Invalid values: Replaced with NaN and excluded from calculations
-- String normalization: Lowercase for matching, Title case for display
-
-### Inventory Sheet (Optional)
-- vin: vin_number, vehicle_id
-- days_in_stock: age, days_on_lot
-- price: list_price, asking_price, msrp
-
-### Leads Sheet (Optional)
-- date: lead_date, inquiry_date
-- source: lead_source, origin, channel
-- status: lead_status, state
-
-## Supported Questions
-
-The system can analyze:
-1. Lead source performance
-   - "How many sales from CarGurus?"
-   - "Show me AutoTrader performance"
-   - "Compare all lead sources"
-
-2. Sales rep metrics
-   - "Who are the top sales reps?"
-   - "Show me bottom performers"
-   - "Sales rep leaderboard"
-
-3. Gross profit analysis
-   - "Show me negative gross deals"
-   - "Average gross by lead source"
-   - "Gross profit trends"
-
-4. Time-based analysis
-   - "How many sales today?"
-   - "Show me last week's performance"
-   - "This month's gross profit"
-
-## Response Format
-
-All insights include:
-- Title: Clear description of the analysis
-- Summary: One-line overview with key metrics
-- Metrics: Detailed numbers and calculations
-- Chart: Visual representation when applicable
-- Recommendations: Action items based on findings
+## Best Practices
+- Use session state for data persistence
+- Handle file uploads with proper validation
+- Provide clear user feedback for data processing issues
+- Include fallback display options for visualization errors

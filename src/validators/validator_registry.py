@@ -6,7 +6,8 @@ providing a centralized registry for validator management.
 """
 
 import inspect
-from typing import Dict, Any, List, Type, Optional
+import logging
+from typing import Dict, Any, List, Type, Optional, Set
 
 from src.validators.base_validator import BaseValidator
 from src.validators.financial_validator import FinancialValidator
@@ -21,19 +22,20 @@ def get_validator_classes() -> List[Type[BaseValidator]]:
     Returns:
         List of validator class types
     """
-    validators = []
+    # Use a set to automatically avoid duplicates
+    validator_set: Set[Type[BaseValidator]] = set()
     
     # Add the explicitly imported validators
-    validators.append(FinancialValidator)
-    validators.append(CustomerValidator)
+    validator_set.add(FinancialValidator)
+    validator_set.add(CustomerValidator)
     
     # Dynamically discover any additional validators
     # This will find all loaded subclasses of BaseValidator
     for subclass in BaseValidator.__subclasses__():
-        if subclass not in validators:
-            validators.append(subclass)
+        validator_set.add(subclass)
     
-    return validators
+    # Convert back to a list for backward compatibility
+    return list(validator_set)
 
 def get_validators() -> List[BaseValidator]:
     """
@@ -47,11 +49,11 @@ def get_validators() -> List[BaseValidator]:
     
     for validator_class in validator_classes:
         try:
-            # Instantiate the validator
+            # Instantiate the validator without data (BaseValidator now has optional data parameter)
             validator = validator_class()
             validators.append(validator)
         except Exception as e:
-            print(f"[ERROR] Failed to instantiate validator {validator_class.__name__}: {str(e)}")
+            logging.error(f"Failed to instantiate validator {validator_class.__name__}: {str(e)}")
     
     return validators
 
@@ -68,9 +70,14 @@ def get_validator_by_name(name: str) -> Optional[BaseValidator]:
     validators = get_validators()
     
     for validator in validators:
-        if validator.get_name() == name:
-            return validator
+        try:
+            # Use get_name() method that is now abstractly defined in BaseValidator
+            if validator.get_name() == name:
+                return validator
+        except Exception as e:
+            logging.warning(f"Validator {type(validator).__name__} failed to provide name: {str(e)}")
     
+    logging.debug(f"No validator found with name: {name}")
     return None
 
 def get_available_validator_names() -> List[str]:
@@ -81,4 +88,12 @@ def get_available_validator_names() -> List[str]:
         List of validator names
     """
     validators = get_validators()
-    return [validator.get_name() for validator in validators]
+    validator_names = []
+    
+    for validator in validators:
+        try:
+            validator_names.append(validator.get_name())
+        except Exception as e:
+            logging.warning(f"Validator {type(validator).__name__} failed to provide name: {str(e)}")
+            
+    return validator_names

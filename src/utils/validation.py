@@ -13,7 +13,7 @@ import json
 import logging
 
 from .errors import ValidationError
-from .logging_config import get_logger
+from .log_utils_config import get_logger
 
 logger = get_logger(__name__)
 

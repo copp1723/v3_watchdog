@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "watchdog_ai"
+version = "0.1.0"
+authors = [
+  { name="Josh Copp", email="noreply@codebuff.com" },
+]
+description = "AI-powered dealership analytics"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "streamlit>=1.31.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "python-dotenv>=1.0.0",
+    "plotly>=5.18.0",
+    "python-dateutil>=2.8.2",
+    "altair>=5.2.0",
+    "openai>=1.12.0",
+    "pydantic>=2.5.0",
+    "requests>=2.31.0",
+    "pyyaml>=6.0",
+    "rapidfuzz>=3.6.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.12.1",
+    "isort>=5.13.2",
+    "mypy>=1.8.0",
+    "flake8>=7.0.0",
+    "pre-commit>=3.6.0"
+]
+
+test = [
+    "pytest>=8.0.0",
+    "pytest-mock>=3.12.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-playwright>=0.4.0",
+    "pytest-cov>=4.1.0",
+    "markdown>=3.5.0"
+]
+
+docs = [
+    "mkdocs>=1.5.3",
+    "mkdocs-material>=9.5.8"
+]
+
+aws = [
+    "boto3>=1.34.0",
+    "botocore>=1.34.0"
+]
+
+vault = [
+    "hvac>=1.2.0"
+]
+
+nova_act = [
+    "schedule>=1.2.0",
+    "playwright>=1.41.0",
+    "aiohttp>=3.9.0",
+    "cryptography>=42.0.0",
+    "asyncio>=3.4.3",
+    "nest_asyncio>=1.6.0"
+]
+
+monitoring = [
+    "sentry-sdk>=1.26.0",
+    "statsmodels>=0.13.0",
+    "matplotlib>=3.8.0"
+]
+
+all = [
+    "boto3>=1.34.0",
+    "botocore>=1.34.0",
+    "hvac>=1.2.0",
+    "schedule>=1.2.0",
+    "playwright>=1.41.0",
+    "aiohttp>=3.9.0",
+    "cryptography>=42.0.0",
+    "asyncio>=3.4.3",
+    "nest_asyncio>=1.6.0",
+    "sentry-sdk>=1.26.0",
+    "statsmodels>=0.13.0",
+    "matplotlib>=3.8.0",
+    "slack-sdk>=3.27.0",
+    "python-Levenshtein>=0.23.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/copp1723/v3watchdog_ai"

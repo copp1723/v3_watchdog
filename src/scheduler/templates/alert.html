@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #c0392b;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .alert {
+            background-color: #faeaea;
+            border-left: 4px solid #c0392b;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .alert-title {
+            font-weight: bold;
+            color: #c0392b;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .alert-description {
+            margin-bottom: 15px;
+        }
+        .alert-metrics {
+            background-color: #f9f9f9;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 3px;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .metric-label {
+            font-weight: bold;
+        }
+        .recommendations {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 3px;
+        }
+        .cta {
+            background-color: #c0392b;
+            color: white;
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 10px 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ title }}</h1>
+        <p>Alert Time: {{ alert_time }}</p>
+    </div>
+    
+    <div class="content">
+        <div class="alert">
+            <div class="alert-title">{{ alert.title }}</div>
+            <div class="alert-description">{{ alert.description }}</div>
+            
+            {% if alert.metrics %}
+            <div class="alert-metrics">
+                {% for metric in alert.metrics %}
+                <div class="metric">
+                    <span class="metric-label">{{ metric.label }}:</span>
+                    <span class="metric-value">{{ metric.value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if alert.recommendations %}
+            <div class="recommendations">
+                <strong>Recommended Actions:</strong>
+                <ul>
+                    {% for rec in alert.recommendations %}
+                    <li>{{ rec }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        
+        <p>This alert requires your attention. Please review the details and take appropriate action.</p>
+        <a href="{{ dashboard_url }}" class="cta">View Details</a>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated alert from Watchdog AI. Please do not reply to this email.</p>
+        <p>Alert ID: {{ alert_id }} | System: {{ system_name }}</p>
+        <p>&copy; {{ year }} Watchdog AI. All rights reserved.</p>
+    </div>
+</body>
+</html>

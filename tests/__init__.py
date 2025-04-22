@@ -1,3 +1,5 @@
+"""Test suite for Watchdog AI."""
+
 """
 Test package for Watchdog AI.
 

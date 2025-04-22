@@ -1,0 +1,72 @@
+{
+  "id": "general_manager",
+  "name": "General Manager Schema Profile",
+  "description": "Complete access to all metrics and columns with business rule enforcement",
+  "role": "general_manager",
+  "columns": [
+    {
+      "name": "total_gross_profit",
+      "display_name": "Total Gross Profit",
+      "description": "Total gross profit including front and back end",
+      "data_type": "float",
+      "metric_type": "financial",
+      "visibility": "public",
+      "format": "${:,.2f}",
+      "aliases": ["total_gross", "gross_profit", "total_profit"],
+      "aggregations": ["sum", "mean", "max", "min"],
+      "business_rules": [
+        {
+          "type": "comparison",
+          "operator": ">=",
+          "threshold": 0,
+          "message": "Gross profit should not be negative",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "name": "days_in_inventory",
+      "display_name": "Days in Inventory",
+      "description": "Number of days vehicle has been in inventory",
+      "data_type": "integer",
+      "metric_type": "inventory",
+      "visibility": "public",
+      "format": "{:,}",
+      "aliases": ["age", "inventory_age", "days_aged"],
+      "aggregations": ["mean", "max", "min"],
+      "business_rules": [
+        {
+          "type": "comparison",
+          "operator": "<=",
+          "threshold": 90,
+          "message": "Days in inventory should not exceed 90 days",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "name": "be_penetration",
+      "display_name": "Back End Penetration",
+      "description": "Percentage of deals with back end products",
+      "data_type": "float",
+      "metric_type": "financial",
+      "visibility": "public",
+      "format": "{:.1f}%",
+      "aliases": ["backend_penetration", "fi_penetration"],
+      "aggregations": ["mean"],
+      "business_rules": [
+        {
+          "type": "comparison",
+          "operator": ">=",
+          "threshold": 70,
+          "message": "Back end penetration should be at least 70%",
+          "severity": "medium"
+        }
+      ]
+    }
+  ],
+  "default_metrics": ["total_gross_profit", "be_penetration"],
+  "default_dimensions": ["sales_rep", "lead_source"],
+  "created_at": "2025-04-20T00:00:00Z",
+  "updated_at": "2025-04-20T00:00:00Z"
+}

@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import streamlit as st
-from src.utils.columns import (
+from watchdog_ai.utils.columns import (
     find_column,
     find_metric_column,
     find_category_column,
@@ -15,7 +15,7 @@ from src.utils.columns import (
     _compute_hash,
     _get_cache_key
 )
-from src.insights.intents import TopMetricIntent, BottomMetricIntent, AverageMetricIntent
+from watchdog_ai.insights.intents import TopMetricIntent, BottomMetricIntent, AverageMetricIntent
 
 # --- Column Finder Tests ---
 
@@ -148,7 +148,7 @@ def test_average_metric_intent_matches():
 
 def test_end_to_end_insight_generation(sample_data):
     """Test the complete insight generation flow."""
-    from src.insight_conversation import ConversationManager
+    from watchdog_ai.insight_conversation import ConversationManager
     
     manager = ConversationManager()
     result = manager.generate_insight(

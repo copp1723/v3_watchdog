@@ -1,0 +1,3633 @@
+{
+  "generated_at": "2025-04-21T21:12:07.233106",
+  "module_count": 403,
+  "modules": [
+    {
+      "path": "examples/agent_sandbox_example.py",
+      "size_bytes": 7200,
+      "size_formatted": "7,200 bytes",
+      "import_name": "examples.agent_sandbox_example",
+      "sha1": "9d4d46b139b56f7ddfa1790273ec6f46649a15a3",
+      "last_modified": "2025-04-20T10:50:29.971019",
+      "is_package": false
+    },
+    {
+      "path": "examples/csv_pdf_ingestion_example.py",
+      "size_bytes": 6171,
+      "size_formatted": "6,171 bytes",
+      "import_name": "examples.csv_pdf_ingestion_example",
+      "sha1": "e9172a8e74338ce18e7bb350b6ed5c5125935683",
+      "last_modified": "2025-04-21T10:00:22.574675",
+      "is_package": false
+    },
+    {
+      "path": "examples/flag_panel_example.py",
+      "size_bytes": 5446,
+      "size_formatted": "5,446 bytes",
+      "import_name": "examples.flag_panel_example",
+      "sha1": "a4deb501a7b64895896a745355a1173bdb9c101b",
+      "last_modified": "2025-04-17T10:57:34.177883",
+      "is_package": false
+    },
+    {
+      "path": "examples/ingestion_dashboard.py",
+      "size_bytes": 13574,
+      "size_formatted": "13,574 bytes",
+      "import_name": "examples.ingestion_dashboard",
+      "sha1": "6fa6f388268e9c0ffe1de668773adde79d73c8bc",
+      "last_modified": "2025-04-20T11:07:43.531818",
+      "is_package": false
+    },
+    {
+      "path": "examples/insight_validator_example.py",
+      "size_bytes": 5597,
+      "size_formatted": "5,597 bytes",
+      "import_name": "examples.insight_validator_example",
+      "sha1": "a858339c952e3aed71b79eb7b5d85c01ebc67e0c",
+      "last_modified": "2025-04-15T11:21:52.212511",
+      "is_package": false
+    },
+    {
+      "path": "examples/lead_flow_example.py",
+      "size_bytes": 13988,
+      "size_formatted": "13,988 bytes",
+      "import_name": "examples.lead_flow_example",
+      "sha1": "3084f13ff44cbf3226f40172df9137cbb8906b5d",
+      "last_modified": "2025-04-21T11:35:15.347401",
+      "is_package": false
+    },
+    {
+      "path": "examples/nova_act_demo.py",
+      "size_bytes": 9177,
+      "size_formatted": "9,177 bytes",
+      "import_name": "examples.nova_act_demo",
+      "sha1": "a3a9640a90a5cf9fe747f2eee8ba857cc3b48948",
+      "last_modified": "2025-04-21T15:47:02.343594",
+      "is_package": false
+    },
+    {
+      "path": "examples/validate_business_queries.py",
+      "size_bytes": 6198,
+      "size_formatted": "6,198 bytes",
+      "import_name": "examples.validate_business_queries",
+      "sha1": "80413fee68d98fa21060561dd846ea5068f56f7a",
+      "last_modified": "2025-04-16T11:23:22.612607",
+      "is_package": false
+    },
+    {
+      "path": "scripts/check_performance.py",
+      "size_bytes": 3898,
+      "size_formatted": "3,898 bytes",
+      "import_name": "scripts.check_performance",
+      "sha1": "881c594769406f5fed7bc3c91f37ad940607369a",
+      "last_modified": "2025-04-20T14:44:36.776551",
+      "is_package": false
+    },
+    {
+      "path": "scripts/create_default_profile.py",
+      "size_bytes": 940,
+      "size_formatted": "940 bytes",
+      "import_name": "scripts.create_default_profile",
+      "sha1": "51374525d89e44ccc38fcc4efa01c36271ccee33",
+      "last_modified": "2025-04-15T10:58:43.124252",
+      "is_package": false
+    },
+    {
+      "path": "scripts/list_modules.py",
+      "size_bytes": 5436,
+      "size_formatted": "5,436 bytes",
+      "import_name": "scripts.list_modules",
+      "sha1": "a9ad89543d5cb7461f012cd227025ff02d1acf0a",
+      "last_modified": "2025-04-21T21:12:02.415939",
+      "is_package": false
+    },
+    {
+      "path": "scripts/smoke_insights.py",
+      "size_bytes": 5914,
+      "size_formatted": "5,914 bytes",
+      "import_name": "scripts.smoke_insights",
+      "sha1": "54b8ce89c170010a00e1480c657e30a970473f03",
+      "last_modified": "2025-04-19T12:33:57.136721",
+      "is_package": false
+    },
+    {
+      "path": "scripts/start_nova_act.py",
+      "size_bytes": 5066,
+      "size_formatted": "5,066 bytes",
+      "import_name": "scripts.start_nova_act",
+      "sha1": "c8d3eeea03ff764c9707c3f11c6f801f0a91c131",
+      "last_modified": "2025-04-21T13:52:33.795973",
+      "is_package": false
+    },
+    {
+      "path": "scripts/update_imports.py",
+      "size_bytes": 5453,
+      "size_formatted": "5,453 bytes",
+      "import_name": "scripts.update_imports",
+      "sha1": "cf2c7d7649609a30ebcece69630f7d494854a864",
+      "last_modified": "2025-04-20T15:30:53.813878",
+      "is_package": false
+    },
+    {
+      "path": "src/__init__.py",
+      "size_bytes": 51,
+      "size_formatted": "51 bytes",
+      "import_name": "__init__",
+      "sha1": "e2934b50a53b8d3c05be2be62389fdf3e5ebd45c",
+      "last_modified": "2025-04-21T20:08:54.354405",
+      "is_package": true
+    },
+    {
+      "path": "src/app.py",
+      "size_bytes": 1564,
+      "size_formatted": "1,564 bytes",
+      "import_name": "app",
+      "sha1": "652ae2e56e1168c894ea71d6f7b7bcb518128923",
+      "last_modified": "2025-04-21T20:08:54.930099",
+      "is_package": true
+    },
+    {
+      "path": "src/audit_log.py",
+      "size_bytes": 1197,
+      "size_formatted": "1,197 bytes",
+      "import_name": "audit_log",
+      "sha1": "04851e88e55c1c8f9b3622ebf79a770eebaf05e5",
+      "last_modified": "2025-04-21T20:08:55.109232",
+      "is_package": true
+    },
+    {
+      "path": "src/baselines.py",
+      "size_bytes": 1473,
+      "size_formatted": "1,473 bytes",
+      "import_name": "baselines",
+      "sha1": "eac1d0dfa186e8b26881cb16cd14e7bf3d0b5ab1",
+      "last_modified": "2025-04-21T20:08:52.877429",
+      "is_package": true
+    },
+    {
+      "path": "src/celery_app.py",
+      "size_bytes": 1147,
+      "size_formatted": "1,147 bytes",
+      "import_name": "celery_app",
+      "sha1": "fc15c65df8f5ec8074aa1a114dd6719b298735d4",
+      "last_modified": "2025-04-21T20:08:54.076291",
+      "is_package": true
+    },
+    {
+      "path": "src/chart_utils.py",
+      "size_bytes": 6680,
+      "size_formatted": "6,680 bytes",
+      "import_name": "chart_utils",
+      "sha1": "9c0ff7bb2421d46a343dbfc7c451c53b9597fc89",
+      "last_modified": "2025-04-21T20:08:54.898327",
+      "is_package": true
+    },
+    {
+      "path": "src/data_validation.py",
+      "size_bytes": 5559,
+      "size_formatted": "5,559 bytes",
+      "import_name": "data_validation",
+      "sha1": "6b17da111e5cd305f049343d293604ab2499eb78",
+      "last_modified": "2025-04-21T20:08:54.850670",
+      "is_package": true
+    },
+    {
+      "path": "src/digest_bot.py",
+      "size_bytes": 9820,
+      "size_formatted": "9,820 bytes",
+      "import_name": "digest_bot",
+      "sha1": "06f88855b89706312dafc486287569b4fee0b0c6",
+      "last_modified": "2025-04-21T20:08:54.930562",
+      "is_package": true
+    },
+    {
+      "path": "src/digest_system.py",
+      "size_bytes": 33010,
+      "size_formatted": "33,010 bytes",
+      "import_name": "digest_system",
+      "sha1": "f372b38d37824c87e8e084db6d4956c15aa87101",
+      "last_modified": "2025-04-21T20:08:52.882114",
+      "is_package": true
+    },
+    {
+      "path": "src/direct_processors.py",
+      "size_bytes": 5191,
+      "size_formatted": "5,191 bytes",
+      "import_name": "direct_processors",
+      "sha1": "1c025c46645a9215a7212c8673459d3e90466e1b",
+      "last_modified": "2025-04-21T20:08:52.572517",
+      "is_package": true
+    },
+    {
+      "path": "src/exec_schema_profiles.py",
+      "size_bytes": 60121,
+      "size_formatted": "60,121 bytes",
+      "import_name": "exec_schema_profiles",
+      "sha1": "fc901b6bd59c3af08609dc2e48edb01e03d52c02",
+      "last_modified": "2025-04-21T20:08:54.862236",
+      "is_package": true
+    },
+    {
+      "path": "src/fallback_renderer.py",
+      "size_bytes": 10250,
+      "size_formatted": "10,250 bytes",
+      "import_name": "fallback_renderer",
+      "sha1": "3f35d1f126e4b50a8ad0bfae396f4321593beb9b",
+      "last_modified": "2025-04-21T20:08:55.077856",
+      "is_package": true
+    },
+    {
+      "path": "src/insight_card.py",
+      "size_bytes": 12366,
+      "size_formatted": "12,366 bytes",
+      "import_name": "insight_card",
+      "sha1": "76942ff9a5dcaf110e34523d465e18820a7555a6",
+      "last_modified": "2025-04-21T20:08:54.112571",
+      "is_package": true
+    },
+    {
+      "path": "src/insight_conversation.py",
+      "size_bytes": 17159,
+      "size_formatted": "17,159 bytes",
+      "import_name": "insight_conversation",
+      "sha1": "e8b436f1ae823c1be074a8425fde1fa29c5a06d9",
+      "last_modified": "2025-04-21T20:08:54.850166",
+      "is_package": true
+    },
+    {
+      "path": "src/insight_flow.py",
+      "size_bytes": 21037,
+      "size_formatted": "21,037 bytes",
+      "import_name": "insight_flow",
+      "sha1": "0309272a03d20b67a6466fda454f45eb520636f8",
+      "last_modified": "2025-04-21T20:08:54.894374",
+      "is_package": true
+    },
+    {
+      "path": "src/insight_tagger.py",
+      "size_bytes": 40439,
+      "size_formatted": "40,439 bytes",
+      "import_name": "insight_tagger",
+      "sha1": "4415c18b4668fef65659bca1ab2db5ebcae2a851",
+      "last_modified": "2025-04-21T20:08:52.650326",
+      "is_package": true
+    },
+    {
+      "path": "src/insight_templates.py",
+      "size_bytes": 26057,
+      "size_formatted": "26,057 bytes",
+      "import_name": "insight_templates",
+      "sha1": "782a8ad3d7634a1eb25fb0ee6d1233fa20f89e71",
+      "last_modified": "2025-04-21T20:08:54.109276",
+      "is_package": true
+    },
+    {
+      "path": "src/insights/benchmarking.py",
+      "size_bytes": 8007,
+      "size_formatted": "8,007 bytes",
+      "import_name": "insights.benchmarking",
+      "sha1": "4a6e04928d4b39858e64268dd0c9e9142e059314",
+      "last_modified": "2025-04-21T20:08:52.838488",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/debug_dashboard.py",
+      "size_bytes": 10498,
+      "size_formatted": "10,498 bytes",
+      "import_name": "insights.debug_dashboard",
+      "sha1": "ebb26301002789d51084456069c1a7a56022e54b",
+      "last_modified": "2025-04-21T20:08:52.828668",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/feedback_analyzer.py",
+      "size_bytes": 8580,
+      "size_formatted": "8,580 bytes",
+      "import_name": "insights.feedback_analyzer",
+      "sha1": "ba158915764f2aeb72f05818fb8ca0f97fb1f42f",
+      "last_modified": "2025-04-21T20:08:52.700624",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/feedback_engine.py",
+      "size_bytes": 24364,
+      "size_formatted": "24,364 bytes",
+      "import_name": "insights.feedback_engine",
+      "sha1": "a7013543c338d637417b0a24689bc1c5753781d0",
+      "last_modified": "2025-04-21T20:08:52.797833",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/feedback_prompt.py",
+      "size_bytes": 5416,
+      "size_formatted": "5,416 bytes",
+      "import_name": "insights.feedback_prompt",
+      "sha1": "5099e5da3f729d3ba6df0850e24d29123f976021",
+      "last_modified": "2025-04-21T20:08:52.705060",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/insight_delivery_manager.py",
+      "size_bytes": 11340,
+      "size_formatted": "11,340 bytes",
+      "import_name": "insights.insight_delivery_manager",
+      "sha1": "2a8f1f219c0313d463948cfac361fb1a810f65b3",
+      "last_modified": "2025-04-21T20:08:52.662506",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/insight_formatter.py",
+      "size_bytes": 6082,
+      "size_formatted": "6,082 bytes",
+      "import_name": "insights.insight_formatter",
+      "sha1": "fd542c19d3f583959f1ffce5d06810f2716a1ebb",
+      "last_modified": "2025-04-21T20:08:52.795918",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/insight_predictor.py",
+      "size_bytes": 37999,
+      "size_formatted": "37,999 bytes",
+      "import_name": "insights.insight_predictor",
+      "sha1": "e4e6f3442f088c69eaf80c8966529d2342ad2c47",
+      "last_modified": "2025-04-21T20:08:52.738894",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/intent_manager.py",
+      "size_bytes": 6840,
+      "size_formatted": "6,840 bytes",
+      "import_name": "insights.intent_manager",
+      "sha1": "819fc61e942150642bd2e42b4ca1d5b493e5d495",
+      "last_modified": "2025-04-21T20:08:52.680690",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/intent_processor.py",
+      "size_bytes": 3087,
+      "size_formatted": "3,087 bytes",
+      "import_name": "insights.intent_processor",
+      "sha1": "c6d932768d7262415c25bf4c8b0b36602b652f3c",
+      "last_modified": "2025-04-21T20:08:52.770511",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/intents.py",
+      "size_bytes": 22819,
+      "size_formatted": "22,819 bytes",
+      "import_name": "insights.intents",
+      "sha1": "a6c8dbe7a25f89509acc561ebd3f7e7bc78458eb",
+      "last_modified": "2025-04-21T20:08:52.652451",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/models.py",
+      "size_bytes": 1250,
+      "size_formatted": "1,250 bytes",
+      "import_name": "insights.models",
+      "sha1": "73f0326f8f412b720c1715abd95f04eee5d95320",
+      "last_modified": "2025-04-21T20:08:52.662124",
+      "is_package": false
+    },
+    {
+      "path": "src/insights/traceability.py",
+      "size_bytes": 4370,
+      "size_formatted": "4,370 bytes",
+      "import_name": "insights.traceability",
+      "sha1": "8800fd63f590c0adca4d0468c75629e52784f4dc",
+      "last_modified": "2025-04-21T20:08:52.754251",
+      "is_package": false
+    },
+    {
+      "path": "src/insights_digest.py",
+      "size_bytes": 16842,
+      "size_formatted": "16,842 bytes",
+      "import_name": "insights_digest",
+      "sha1": "c4f3f90afa57eff93b9ea374f2cce42bbd9ee1ec",
+      "last_modified": "2025-04-21T20:08:54.139184",
+      "is_package": true
+    },
+    {
+      "path": "src/insights_integration.py",
+      "size_bytes": 17450,
+      "size_formatted": "17,450 bytes",
+      "import_name": "insights_integration",
+      "sha1": "52ed754063d9b1c0b01f6a2fb3daf0aac161a47e",
+      "last_modified": "2025-04-21T20:08:54.863961",
+      "is_package": true
+    },
+    {
+      "path": "src/llm_engine.py",
+      "size_bytes": 20278,
+      "size_formatted": "20,278 bytes",
+      "import_name": "llm_engine",
+      "sha1": "43ffd1d64ba672b202ae3ef8ad4f38708cda2ba2",
+      "last_modified": "2025-04-21T20:08:54.288373",
+      "is_package": true
+    },
+    {
+      "path": "src/middleware/rate_limit.py",
+      "size_bytes": 4089,
+      "size_formatted": "4,089 bytes",
+      "import_name": "middleware.rate_limit",
+      "sha1": "07a68fa96b77f3d39d9498257972c37a4d8014bb",
+      "last_modified": "2025-04-21T20:08:52.839227",
+      "is_package": false
+    },
+    {
+      "path": "src/ml/__init__.py",
+      "size_bytes": 109,
+      "size_formatted": "109 bytes",
+      "import_name": "ml.__init__",
+      "sha1": "3e4ad7b0dd6a3dfe588a4c9a0364176dbbc3d866",
+      "last_modified": "2025-04-21T20:08:54.862659",
+      "is_package": true
+    },
+    {
+      "path": "src/ml/lead_model.py",
+      "size_bytes": 28874,
+      "size_formatted": "28,874 bytes",
+      "import_name": "ml.lead_model",
+      "sha1": "378fe8b1081e5b542618122e6043a5d0b743d648",
+      "last_modified": "2025-04-21T20:08:54.863375",
+      "is_package": true
+    },
+    {
+      "path": "src/notification_demo.py",
+      "size_bytes": 16085,
+      "size_formatted": "16,085 bytes",
+      "import_name": "notification_demo",
+      "sha1": "eba859735019b22c25a81959bbeef75d428382a9",
+      "last_modified": "2025-04-21T20:08:54.200675",
+      "is_package": true
+    },
+    {
+      "path": "src/notifications/__init__.py",
+      "size_bytes": 121,
+      "size_formatted": "121 bytes",
+      "import_name": "notifications.__init__",
+      "sha1": "fe4d3cdc9c6c37f1259abf2cd6ed15a86e844ced",
+      "last_modified": "2025-04-21T20:08:55.111763",
+      "is_package": true
+    },
+    {
+      "path": "src/notifications/escalation.py",
+      "size_bytes": 37072,
+      "size_formatted": "37,072 bytes",
+      "import_name": "notifications.escalation",
+      "sha1": "e6eedb053d6e0effa09469a1d483f78a46b0b018",
+      "last_modified": "2025-04-21T20:08:55.112615",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/__init__.py",
+      "size_bytes": 105,
+      "size_formatted": "105 bytes",
+      "import_name": "nova_act.__init__",
+      "sha1": "9e4392e884c52138ec4fa1676ecf06ba5935c901",
+      "last_modified": "2025-04-21T20:08:53.979648",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/collectors/__init__.py",
+      "size_bytes": 122,
+      "size_formatted": "122 bytes",
+      "import_name": "nova_act.collectors.__init__",
+      "sha1": "daf1b4d80f4e28f35bdafbc51554fa531ba215ad",
+      "last_modified": "2025-04-21T20:08:53.860547",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/collectors/dealersocket.py",
+      "size_bytes": 528,
+      "size_formatted": "528 bytes",
+      "import_name": "nova_act.collectors.dealersocket",
+      "sha1": "10c7a0406356def822ff715719a3c06311535fcb",
+      "last_modified": "2025-04-21T20:08:53.876441",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/collectors/vinsolutions.py",
+      "size_bytes": 6156,
+      "size_formatted": "6,156 bytes",
+      "import_name": "nova_act.collectors.vinsolutions",
+      "sha1": "e2912b86bd68a00062030512a57555e6117f7694",
+      "last_modified": "2025-04-21T20:08:53.860909",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/constants.py",
+      "size_bytes": 2740,
+      "size_formatted": "2,740 bytes",
+      "import_name": "nova_act.constants",
+      "sha1": "ea4c7c7d747804e499f5782833c65edc616c4579",
+      "last_modified": "2025-04-21T20:08:53.942659",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/core.py",
+      "size_bytes": 947,
+      "size_formatted": "947 bytes",
+      "import_name": "nova_act.core",
+      "sha1": "61b7fdd3c75ec8f541769741e8818ef80478e6a1",
+      "last_modified": "2025-04-21T20:08:53.979961",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/credentials.py",
+      "size_bytes": 17199,
+      "size_formatted": "17,199 bytes",
+      "import_name": "nova_act.credentials",
+      "sha1": "173ec198ec5b5048c969da42918cff8ab9841610",
+      "last_modified": "2025-04-21T20:08:53.921563",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/crm_templates/__init__.py",
+      "size_bytes": 528,
+      "size_formatted": "528 bytes",
+      "import_name": "nova_act.crm_templates.__init__",
+      "sha1": "48321ac51081901394a78a034621e821e445dd18",
+      "last_modified": "2025-04-21T20:08:53.858989",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/crm_templates/dealersocket.py",
+      "size_bytes": 1334,
+      "size_formatted": "1,334 bytes",
+      "import_name": "nova_act.crm_templates.dealersocket",
+      "sha1": "fa7e421a9c96ce549e8341c3a82fec2130d18a88",
+      "last_modified": "2025-04-21T20:08:53.859782",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/crm_templates/vinsolutions.py",
+      "size_bytes": 1294,
+      "size_formatted": "1,294 bytes",
+      "import_name": "nova_act.crm_templates.vinsolutions",
+      "sha1": "de110efc1c17f00d71535740ceea9ae709023ebe",
+      "last_modified": "2025-04-21T20:08:53.859432",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/enhanced_credentials.py",
+      "size_bytes": 35617,
+      "size_formatted": "35,617 bytes",
+      "import_name": "nova_act.enhanced_credentials",
+      "sha1": "7de86ff25beaf377f050e68179a797bfa9b6f5b6",
+      "last_modified": "2025-04-21T20:08:53.997957",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/enhanced_scheduler.py",
+      "size_bytes": 38499,
+      "size_formatted": "38,499 bytes",
+      "import_name": "nova_act.enhanced_scheduler",
+      "sha1": "93c6c2f3041bd4dc54415cccc728daa38997e880",
+      "last_modified": "2025-04-21T20:08:53.916117",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/exceptions.py",
+      "size_bytes": 503,
+      "size_formatted": "503 bytes",
+      "import_name": "nova_act.exceptions",
+      "sha1": "19c59ef32e7a7f960c862c6743aef94bd9a43c57",
+      "last_modified": "2025-04-21T20:08:54.039910",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/fallback.py",
+      "size_bytes": 11286,
+      "size_formatted": "11,286 bytes",
+      "import_name": "nova_act.fallback",
+      "sha1": "80228bcb20b4b8cb6ae9a33efaa37a3c6d1c202b",
+      "last_modified": "2025-04-21T20:08:54.059600",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/health_check.py",
+      "size_bytes": 5358,
+      "size_formatted": "5,358 bytes",
+      "import_name": "nova_act.health_check",
+      "sha1": "81beb09ab1eaa4370042364efc05f2d9479fe0a6",
+      "last_modified": "2025-04-21T20:08:54.040380",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/ingestion_pipeline.py",
+      "size_bytes": 34824,
+      "size_formatted": "34,824 bytes",
+      "import_name": "nova_act.ingestion_pipeline",
+      "sha1": "a57af8e4e37e8771f2d5b612eedb125000d59d0b",
+      "last_modified": "2025-04-21T20:08:53.980757",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/logging_config.py",
+      "size_bytes": 3282,
+      "size_formatted": "3,282 bytes",
+      "import_name": "nova_act.logging_config",
+      "sha1": "33c9178d775ec7adc29e0567d701245372866267",
+      "last_modified": "2025-04-21T20:08:53.877003",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/metrics.py",
+      "size_bytes": 5063,
+      "size_formatted": "5,063 bytes",
+      "import_name": "nova_act.metrics",
+      "sha1": "f3c407208759e81aa15176553e24f3664a11dc57",
+      "last_modified": "2025-04-21T20:08:53.813421",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/monitoring.py",
+      "size_bytes": 30605,
+      "size_formatted": "30,605 bytes",
+      "import_name": "nova_act.monitoring",
+      "sha1": "91112399f49f8b83b20b178faa921f1fa617cf01",
+      "last_modified": "2025-04-21T20:08:53.926883",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/nova_act.py",
+      "size_bytes": 19973,
+      "size_formatted": "19,973 bytes",
+      "import_name": "nova_act.nova_act",
+      "sha1": "1ff144816357305557424e9aa6e092f5b0506a92",
+      "last_modified": "2025-04-21T20:08:53.897249",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/rate_limiter.py",
+      "size_bytes": 3356,
+      "size_formatted": "3,356 bytes",
+      "import_name": "nova_act.rate_limiter",
+      "sha1": "eff9ad70c291dacb26460220ad5d3c68a24d50c1",
+      "last_modified": "2025-04-21T20:08:53.962266",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/scheduler.py",
+      "size_bytes": 1975,
+      "size_formatted": "1,975 bytes",
+      "import_name": "nova_act.scheduler",
+      "sha1": "331e393798cf318f30fea95e960d89ed48a6eca4",
+      "last_modified": "2025-04-21T20:08:54.057150",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/scheduler_bridge.py",
+      "size_bytes": 12079,
+      "size_formatted": "12,079 bytes",
+      "import_name": "nova_act.scheduler_bridge",
+      "sha1": "63d3077fee904ed5152cea617a489fda9a6dd26f",
+      "last_modified": "2025-04-21T20:08:53.860217",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/task.py",
+      "size_bytes": 15569,
+      "size_formatted": "15,569 bytes",
+      "import_name": "nova_act.task",
+      "sha1": "e71197a50c008f32ad57ca1fe0a9b350b7491c9a",
+      "last_modified": "2025-04-21T20:08:53.834020",
+      "is_package": true
+    },
+    {
+      "path": "src/nova_act/watchdog_upload.py",
+      "size_bytes": 30772,
+      "size_formatted": "30,772 bytes",
+      "import_name": "nova_act.watchdog_upload",
+      "sha1": "9b65c8ac02332b39595570605e9337606db39cd4",
+      "last_modified": "2025-04-21T20:08:54.011351",
+      "is_package": true
+    },
+    {
+      "path": "src/pdf_generator.py",
+      "size_bytes": 23946,
+      "size_formatted": "23,946 bytes",
+      "import_name": "pdf_generator",
+      "sha1": "89bf5dd28839fb97cf961b3105ff24c05fb65428",
+      "last_modified": "2025-04-21T20:08:54.173749",
+      "is_package": true
+    },
+    {
+      "path": "src/precision_scoring.py",
+      "size_bytes": 30341,
+      "size_formatted": "30,341 bytes",
+      "import_name": "precision_scoring",
+      "sha1": "afb80ed4e5ddb37c566cd7709c4c0af2f47bfdc8",
+      "last_modified": "2025-04-21T20:08:55.113362",
+      "is_package": true
+    },
+    {
+      "path": "src/query_debug_panel.py",
+      "size_bytes": 22029,
+      "size_formatted": "22,029 bytes",
+      "import_name": "query_debug_panel",
+      "sha1": "8ebdf921f4f9144a94a3962ae371fc0c609ec51e",
+      "last_modified": "2025-04-21T20:08:52.894777",
+      "is_package": true
+    },
+    {
+      "path": "src/query_rewriter.py",
+      "size_bytes": 27488,
+      "size_formatted": "27,488 bytes",
+      "import_name": "query_rewriter",
+      "sha1": "7d6d676cd1fec14e33ce63d8b2359059cf9b2331",
+      "last_modified": "2025-04-21T20:08:52.445692",
+      "is_package": true
+    },
+    {
+      "path": "src/report_scheduler.py",
+      "size_bytes": 50289,
+      "size_formatted": "50,289 bytes",
+      "import_name": "report_scheduler",
+      "sha1": "92376c41a3616974d0e1b86f373fb1f27f298356",
+      "last_modified": "2025-04-21T20:08:55.055772",
+      "is_package": true
+    },
+    {
+      "path": "src/rule_engine.py",
+      "size_bytes": 26611,
+      "size_formatted": "26,611 bytes",
+      "import_name": "rule_engine",
+      "sha1": "46a0dc13eda21707303d2e3ce6fe571792feb563",
+      "last_modified": "2025-04-21T20:08:54.355242",
+      "is_package": true
+    },
+    {
+      "path": "src/run_app.py",
+      "size_bytes": 2259,
+      "size_formatted": "2,259 bytes",
+      "import_name": "run_app",
+      "sha1": "b67dede6c7bf510837d336247cbfabb89234e590",
+      "last_modified": "2025-04-21T20:08:52.876899",
+      "is_package": true
+    },
+    {
+      "path": "src/scheduler/__init__.py",
+      "size_bytes": 589,
+      "size_formatted": "589 bytes",
+      "import_name": "scheduler.__init__",
+      "sha1": "6707dfc2207d8b82c7cc89f43b014823f3f4a504",
+      "last_modified": "2025-04-21T20:08:54.311691",
+      "is_package": true
+    },
+    {
+      "path": "src/scheduler/base_scheduler.py",
+      "size_bytes": 11659,
+      "size_formatted": "11,659 bytes",
+      "import_name": "scheduler.base_scheduler",
+      "sha1": "e2a54d10359eb50b1bec7ea50e4ecf52e67b6a55",
+      "last_modified": "2025-04-21T20:08:54.288871",
+      "is_package": true
+    },
+    {
+      "path": "src/scheduler/notification_service.py",
+      "size_bytes": 4719,
+      "size_formatted": "4,719 bytes",
+      "import_name": "scheduler.notification_service",
+      "sha1": "464730c286f1c7023ed888ec58ed4e8ead2486dc",
+      "last_modified": "2025-04-21T20:08:54.311333",
+      "is_package": true
+    },
+    {
+      "path": "src/scheduler/report_scheduler.py",
+      "size_bytes": 20294,
+      "size_formatted": "20,294 bytes",
+      "import_name": "scheduler.report_scheduler",
+      "sha1": "e655d4cdcb9cc69edb17876021960b6227991be5",
+      "last_modified": "2025-04-21T20:08:54.312535",
+      "is_package": true
+    },
+    {
+      "path": "src/scheduler/reports/__init__.py",
+      "size_bytes": 668,
+      "size_formatted": "668 bytes",
+      "import_name": "scheduler.reports.__init__",
+      "sha1": "7913d3ba0d8b413116145c5f96fe75faea4d3ce4",
+      "last_modified": "2025-04-21T20:08:54.316962",
+      "is_package": true
+    },
+    {
+      "path": "src/scheduler/reports/inventory_report.py",
+      "size_bytes": 6561,
+      "size_formatted": "6,561 bytes",
+      "import_name": "scheduler.reports.inventory_report",
+      "sha1": "594f46374f344d59b5ccd13b810910ab885decb7",
+      "last_modified": "2025-04-21T20:08:54.314055",
+      "is_package": true
+    },
+    {
+      "path": "src/scheduler/reports/sales_report.py",
+      "size_bytes": 6354,
+      "size_formatted": "6,354 bytes",
+      "import_name": "scheduler.reports.sales_report",
+      "sha1": "d9577370d20234f79a0e9c7d301f18d4dfe6beba",
+      "last_modified": "2025-04-21T20:08:54.316337",
+      "is_package": true
+    },
+    {
+      "path": "src/semantic_layer.py",
+      "size_bytes": 44192,
+      "size_formatted": "44,192 bytes",
+      "import_name": "semantic_layer",
+      "sha1": "72a0e80d9da2ac386cb7d3e781985876b639e761",
+      "last_modified": "2025-04-21T20:08:54.325703",
+      "is_package": true
+    },
+    {
+      "path": "src/server.py",
+      "size_bytes": 12178,
+      "size_formatted": "12,178 bytes",
+      "import_name": "server",
+      "sha1": "24d4c020cdf21aaa7af32691d2c9c882f04cd217",
+      "last_modified": "2025-04-21T20:08:52.882696",
+      "is_package": true
+    },
+    {
+      "path": "src/session.py",
+      "size_bytes": 1422,
+      "size_formatted": "1,422 bytes",
+      "import_name": "session",
+      "sha1": "0e67c4ba1ea536686e0dbed9b3f1dda0d725f923",
+      "last_modified": "2025-04-21T20:08:54.279167",
+      "is_package": true
+    },
+    {
+      "path": "src/tests/test_fallback_renderer.py",
+      "size_bytes": 5249,
+      "size_formatted": "5,249 bytes",
+      "import_name": "tests.test_fallback_renderer",
+      "sha1": "dce2a54894b88634a23fe37818bfad74c1a79c7f",
+      "last_modified": "2025-04-21T20:08:54.213644",
+      "is_package": false
+    },
+    {
+      "path": "src/tests/test_fallback_renderer_integration.py",
+      "size_bytes": 8691,
+      "size_formatted": "8,691 bytes",
+      "import_name": "tests.test_fallback_renderer_integration",
+      "sha1": "1fb1cd42f1b2e7ea33b5e1e009a0f169adcc2f83",
+      "last_modified": "2025-04-21T20:08:54.221672",
+      "is_package": false
+    },
+    {
+      "path": "src/tests/test_query_independence.py",
+      "size_bytes": 4410,
+      "size_formatted": "4,410 bytes",
+      "import_name": "tests.test_query_independence",
+      "sha1": "cf02668a40471b842ee2ee6bdca5b595b5b62eed",
+      "last_modified": "2025-04-21T20:08:54.246487",
+      "is_package": false
+    },
+    {
+      "path": "src/trend_analysis.py",
+      "size_bytes": 25284,
+      "size_formatted": "25,284 bytes",
+      "import_name": "trend_analysis",
+      "sha1": "5e9f07ed0360d0ba6793feb8a9411cf9b3ede939",
+      "last_modified": "2025-04-21T20:08:55.097395",
+      "is_package": true
+    },
+    {
+      "path": "src/ui/pages/story_view.py",
+      "size_bytes": 403,
+      "size_formatted": "403 bytes",
+      "import_name": "ui.pages.story_view",
+      "sha1": "edcbcab6ec5f6ed17b902c772835698c428f1786",
+      "last_modified": "2025-04-21T20:08:52.838883",
+      "is_package": false
+    },
+    {
+      "path": "src/user_management.py",
+      "size_bytes": 26811,
+      "size_formatted": "26,811 bytes",
+      "import_name": "user_management",
+      "sha1": "1f4f4d3710b4649f61f9dcb28b3a0a215287c4e7",
+      "last_modified": "2025-04-21T20:08:55.057488",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/__init__.py",
+      "size_bytes": 257,
+      "size_formatted": "257 bytes",
+      "import_name": "utils.__init__",
+      "sha1": "11057007bfdc70ec1d4ac54d43cd1204b023bee1",
+      "last_modified": "2025-04-21T20:08:55.136913",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/adaptive_schema.py",
+      "size_bytes": 6943,
+      "size_formatted": "6,943 bytes",
+      "import_name": "utils.adaptive_schema",
+      "sha1": "138a805dcf548f249e382e936341d92a20e204e0",
+      "last_modified": "2025-04-21T20:08:55.137172",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/agent_sandbox.py",
+      "size_bytes": 21949,
+      "size_formatted": "21,949 bytes",
+      "import_name": "utils.agent_sandbox",
+      "sha1": "b9770da5c950209d219eb3e0700e18c3a4acde90",
+      "last_modified": "2025-04-21T20:08:55.137835",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/agentops_config.py",
+      "size_bytes": 4303,
+      "size_formatted": "4,303 bytes",
+      "import_name": "utils.agentops_config",
+      "sha1": "6bfef51224be59c2dc7ef9e4a7c70de8cbe62589",
+      "last_modified": "2025-04-21T20:08:55.138091",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/audit_log.py",
+      "size_bytes": 2659,
+      "size_formatted": "2,659 bytes",
+      "import_name": "utils.audit_log",
+      "sha1": "60898650d4efa121a42eaac290fe08462c63eb56",
+      "last_modified": "2025-04-21T20:08:55.138334",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/aws_secrets.py",
+      "size_bytes": 18596,
+      "size_formatted": "18,596 bytes",
+      "import_name": "utils.aws_secrets",
+      "sha1": "ce8f46097889375826f22f5b937bfda17de6c398",
+      "last_modified": "2025-04-21T20:08:55.138727",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/chart_utils.py",
+      "size_bytes": 17349,
+      "size_formatted": "17,349 bytes",
+      "import_name": "utils.chart_utils",
+      "sha1": "581a851c9452457273321510a7b201ed3ad0402c",
+      "last_modified": "2025-04-21T20:08:55.139130",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/cleanup.py",
+      "size_bytes": 48589,
+      "size_formatted": "48,589 bytes",
+      "import_name": "utils.cleanup",
+      "sha1": "ad6021e479d75e7f007fd43c2dacb295d8c50e3f",
+      "last_modified": "2025-04-21T20:08:55.139911",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/columns.py",
+      "size_bytes": 7384,
+      "size_formatted": "7,384 bytes",
+      "import_name": "utils.columns",
+      "sha1": "faa077b0bf91d8b4f0f11731b21b1a932cde6c39",
+      "last_modified": "2025-04-21T20:08:55.140161",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/config.py",
+      "size_bytes": 9034,
+      "size_formatted": "9,034 bytes",
+      "import_name": "utils.config",
+      "sha1": "6198b21868ddbbcc643c39c014d339131d5c35c7",
+      "last_modified": "2025-04-21T20:08:55.140472",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/data_io.py",
+      "size_bytes": 5585,
+      "size_formatted": "5,585 bytes",
+      "import_name": "utils.data_io",
+      "sha1": "c17107a79f2ea66f391e820679a6c3d1aca5dc67",
+      "last_modified": "2025-04-21T20:08:55.140762",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/data_lineage.py",
+      "size_bytes": 9044,
+      "size_formatted": "9,044 bytes",
+      "import_name": "utils.data_lineage",
+      "sha1": "669c385228d3fd055a8414811f39ea289b56cae2",
+      "last_modified": "2025-04-21T20:08:55.141073",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/data_normalization.py",
+      "size_bytes": 3648,
+      "size_formatted": "3,648 bytes",
+      "import_name": "utils.data_normalization",
+      "sha1": "d53b9bbad043724a9c7e735cfa875acefc3c3d10",
+      "last_modified": "2025-04-21T20:08:55.141308",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/datasource/__init__.py",
+      "size_bytes": 146,
+      "size_formatted": "146 bytes",
+      "import_name": "utils.datasource.__init__",
+      "sha1": "3d3381c2f1471d4211ede88e09b280dab06e7733",
+      "last_modified": "2025-04-21T20:08:54.378795",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/datasource/novact.py",
+      "size_bytes": 682,
+      "size_formatted": "682 bytes",
+      "import_name": "utils.datasource.novact",
+      "sha1": "89dc313e974c214c785b055082a1309a862e5bea",
+      "last_modified": "2025-04-21T20:08:54.380324",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/encryption.py",
+      "size_bytes": 8509,
+      "size_formatted": "8,509 bytes",
+      "import_name": "utils.encryption",
+      "sha1": "2c6553d4c8304a109e68fb24d212789c07c6f324",
+      "last_modified": "2025-04-21T20:08:55.141572",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/errors.py",
+      "size_bytes": 5860,
+      "size_formatted": "5,860 bytes",
+      "import_name": "utils.errors",
+      "sha1": "4ca2d2386493bd2dfabbcf9f4b3d50af4afae579",
+      "last_modified": "2025-04-21T20:08:55.141825",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/log_utils.py",
+      "size_bytes": 802,
+      "size_formatted": "802 bytes",
+      "import_name": "utils.log_utils",
+      "sha1": "ad7a99e57e11502437734327785f8d8a7a94aa97",
+      "last_modified": "2025-04-21T20:08:55.142031",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/log_utils_config.py",
+      "size_bytes": 3750,
+      "size_formatted": "3,750 bytes",
+      "import_name": "utils.log_utils_config",
+      "sha1": "5855aac7e1fa4456f41972905a04855b0e9c264b",
+      "last_modified": "2025-04-21T20:15:11.792455",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/logging_config.py",
+      "size_bytes": 2235,
+      "size_formatted": "2,235 bytes",
+      "import_name": "utils.logging_config",
+      "sha1": "cc8b927e389b0987e83dad865337178d7cc2e9c4",
+      "last_modified": "2025-04-21T20:08:55.142242",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/metrics_logger.py",
+      "size_bytes": 7680,
+      "size_formatted": "7,680 bytes",
+      "import_name": "utils.metrics_logger",
+      "sha1": "7003541a15f687aa761caa2f75369de5b3b434ec",
+      "last_modified": "2025-04-21T20:08:55.142488",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/openai_client.py",
+      "size_bytes": 2939,
+      "size_formatted": "2,939 bytes",
+      "import_name": "utils.openai_client",
+      "sha1": "0b216e85090dae818421d1f1866284fe3295513a",
+      "last_modified": "2025-04-21T20:08:55.142721",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/psutil.py",
+      "size_bytes": 484,
+      "size_formatted": "484 bytes",
+      "import_name": "utils.psutil",
+      "sha1": "41f56551d27c39f7355aeebfb900854a216083e3",
+      "last_modified": "2025-04-21T20:08:55.142913",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/schema.py",
+      "size_bytes": 8888,
+      "size_formatted": "8,888 bytes",
+      "import_name": "utils.schema",
+      "sha1": "006a7add6ceb025bb312708ffb45c780a79d059d",
+      "last_modified": "2025-04-21T20:08:55.143193",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/session.py",
+      "size_bytes": 1422,
+      "size_formatted": "1,422 bytes",
+      "import_name": "utils.session",
+      "sha1": "0e67c4ba1ea536686e0dbed9b3f1dda0d725f923",
+      "last_modified": "2025-04-21T20:08:55.143438",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/setup_env.py",
+      "size_bytes": 4082,
+      "size_formatted": "4,082 bytes",
+      "import_name": "utils.setup_env",
+      "sha1": "a3f7d4a9720a4826ce8da0dd97c23a96bd4888e3",
+      "last_modified": "2025-04-21T20:08:55.143654",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/term_normalizer.py",
+      "size_bytes": 7989,
+      "size_formatted": "7,989 bytes",
+      "import_name": "utils.term_normalizer",
+      "sha1": "6484958e06630523b4bbb7179750eb55ca7f0b12",
+      "last_modified": "2025-04-21T20:08:55.143940",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/validation.py",
+      "size_bytes": 16295,
+      "size_formatted": "16,295 bytes",
+      "import_name": "utils.validation",
+      "sha1": "4bcdcf8a5265001bd27e5ac7537d15597ac2eae0",
+      "last_modified": "2025-04-21T20:08:55.144321",
+      "is_package": true
+    },
+    {
+      "path": "src/utils/verify_setup.py",
+      "size_bytes": 12076,
+      "size_formatted": "12,076 bytes",
+      "import_name": "utils.verify_setup",
+      "sha1": "b3437f0e56cbdbc07fbf748f979964d63e316251",
+      "last_modified": "2025-04-21T20:08:55.144918",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/__init__.py",
+      "size_bytes": 630,
+      "size_formatted": "630 bytes",
+      "import_name": "validators.__init__",
+      "sha1": "04ce21046e79d23dfb68524b0fc4487b001f72b4",
+      "last_modified": "2025-04-21T20:08:54.958436",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/base_validator.py",
+      "size_bytes": 2541,
+      "size_formatted": "2,541 bytes",
+      "import_name": "validators.base_validator",
+      "sha1": "6f012447b97a370a327e4d69e9bf23d949a157dd",
+      "last_modified": "2025-04-21T20:19:43.032603",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/column_mapper.py",
+      "size_bytes": 8436,
+      "size_formatted": "8,436 bytes",
+      "import_name": "validators.column_mapper",
+      "sha1": "dcc907474efeb64be32308f571af9967194f26ed",
+      "last_modified": "2025-04-21T20:08:54.947589",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/customer_validator.py",
+      "size_bytes": 13282,
+      "size_formatted": "13,282 bytes",
+      "import_name": "validators.customer_validator",
+      "sha1": "fdf8b2e1e03b7a20682a76306901396a8478446c",
+      "last_modified": "2025-04-21T20:26:28.425392",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/financial_validator.py",
+      "size_bytes": 14913,
+      "size_formatted": "14,913 bytes",
+      "import_name": "validators.financial_validator",
+      "sha1": "208571ac549d4d126c073a1631ea91fa4e4e18ae",
+      "last_modified": "2025-04-21T20:22:10.606028",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/insight_validator.py",
+      "size_bytes": 15784,
+      "size_formatted": "15,784 bytes",
+      "import_name": "validators.insight_validator",
+      "sha1": "0242c6f06080fa3715c6fcbdb8dfef7e5ac8c18b",
+      "last_modified": "2025-04-21T20:08:55.024566",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/lead_flow_optimizer.py",
+      "size_bytes": 43773,
+      "size_formatted": "43,773 bytes",
+      "import_name": "validators.lead_flow_optimizer",
+      "sha1": "e0d20b3e054e12ff6658c710060107df311c4648",
+      "last_modified": "2025-04-21T20:08:54.959523",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/lead_source_roi.py",
+      "size_bytes": 18565,
+      "size_formatted": "18,565 bytes",
+      "import_name": "validators.lead_source_roi",
+      "sha1": "e6d9b7d1eb23ef8e79e22ec2a97ae0a37d5e3cc2",
+      "last_modified": "2025-04-21T20:08:55.003382",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/registry.py",
+      "size_bytes": 9972,
+      "size_formatted": "9,972 bytes",
+      "import_name": "validators.registry",
+      "sha1": "630b5c142ebf1e78ac8e0a8452968acada98996b",
+      "last_modified": "2025-04-21T20:08:54.949610",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/schema_manager.py",
+      "size_bytes": 8313,
+      "size_formatted": "8,313 bytes",
+      "import_name": "validators.schema_manager",
+      "sha1": "2d048710a56d880c878fb5a78ab5430936ccbe4b",
+      "last_modified": "2025-04-21T20:08:55.030745",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/validation_profile.py",
+      "size_bytes": 50662,
+      "size_formatted": "50,662 bytes",
+      "import_name": "validators.validation_profile",
+      "sha1": "9d1a99ca055694c72e35c8fdd9df842c57984ff0",
+      "last_modified": "2025-04-21T20:08:54.985326",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/validator_registry.py",
+      "size_bytes": 3080,
+      "size_formatted": "3,080 bytes",
+      "import_name": "validators.validator_registry",
+      "sha1": "a02e5be670447e8c07adbd49e5be80b3555d2472",
+      "last_modified": "2025-04-21T20:13:00.562983",
+      "is_package": true
+    },
+    {
+      "path": "src/validators/validator_service.py",
+      "size_bytes": 57406,
+      "size_formatted": "57,406 bytes",
+      "import_name": "validators.validator_service",
+      "sha1": "74ce0114f6c2dde4c5ab612104258d295f514500",
+      "last_modified": "2025-04-21T20:29:28.359303",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/__init__.py",
+      "size_bytes": 795,
+      "size_formatted": "795 bytes",
+      "import_name": "watchdog_ai.__init__",
+      "sha1": "9982883449c9517838ebc32b1cccc0969e1b9f28",
+      "last_modified": "2025-04-21T20:08:53.460680",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/analysis/__init__.py",
+      "size_bytes": 0,
+      "size_formatted": "0 bytes",
+      "import_name": "watchdog_ai.analysis.__init__",
+      "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "last_modified": "2025-04-21T20:08:53.431810",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/analysis/direct_answer_calculator.py",
+      "size_bytes": 9762,
+      "size_formatted": "9,762 bytes",
+      "import_name": "watchdog_ai.analysis.direct_answer_calculator",
+      "sha1": "0ed8bcdbf38a711894eb41f6f6ac6eb810fdf804",
+      "last_modified": "2025-04-21T20:08:53.432323",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/app.py",
+      "size_bytes": 1542,
+      "size_formatted": "1,542 bytes",
+      "import_name": "watchdog_ai.app",
+      "sha1": "b1e5ad55518f0b1b8b985bd88e179c594c8146d6",
+      "last_modified": "2025-04-21T20:08:53.794685",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/chart_utils.py",
+      "size_bytes": 838,
+      "size_formatted": "838 bytes",
+      "import_name": "watchdog_ai.chart_utils",
+      "sha1": "b502f150d7d5606bb70ade0add4c9cd16a5e0c24",
+      "last_modified": "2025-04-21T20:08:53.793243",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/config.py",
+      "size_bytes": 379,
+      "size_formatted": "379 bytes",
+      "import_name": "watchdog_ai.config",
+      "sha1": "5432866c56e4f4dcb1d8998fbd7942e67a98a9b4",
+      "last_modified": "2025-04-21T20:08:53.431555",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/core/constants.py",
+      "size_bytes": 1757,
+      "size_formatted": "1,757 bytes",
+      "import_name": "watchdog_ai.core.constants",
+      "sha1": "eacdb1584e50ad04b0a681a168f01f06acbfae43",
+      "last_modified": "2025-04-21T20:26:11.057619",
+      "is_package": false
+    },
+    {
+      "path": "src/watchdog_ai/core/data_utils.py",
+      "size_bytes": 3951,
+      "size_formatted": "3,951 bytes",
+      "import_name": "watchdog_ai.core.data_utils",
+      "sha1": "cd31f4d330652f36a13537eae81a198405befdb7",
+      "last_modified": "2025-04-21T20:27:43.337696",
+      "is_package": false
+    },
+    {
+      "path": "src/watchdog_ai/data_insights.py",
+      "size_bytes": 2282,
+      "size_formatted": "2,282 bytes",
+      "import_name": "watchdog_ai.data_insights",
+      "sha1": "094f1aef94780a594e96695eb7fe61280ed211ea",
+      "last_modified": "2025-04-21T20:08:53.448369",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/delivery/smart_delivery_engine.py",
+      "size_bytes": 40034,
+      "size_formatted": "40,034 bytes",
+      "import_name": "watchdog_ai.delivery.smart_delivery_engine",
+      "sha1": "89603ab7d5d284a18c06f5899f2be2892efcb847",
+      "last_modified": "2025-04-21T20:08:53.795824",
+      "is_package": false
+    },
+    {
+      "path": "src/watchdog_ai/insight_card.py",
+      "size_bytes": 3258,
+      "size_formatted": "3,258 bytes",
+      "import_name": "watchdog_ai.insight_card",
+      "sha1": "6f494704398c1717b02e4136d1b3d2185ec0e1d9",
+      "last_modified": "2025-04-21T20:08:53.442502",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/__init__.py",
+      "size_bytes": 359,
+      "size_formatted": "359 bytes",
+      "import_name": "watchdog_ai.insights.__init__",
+      "sha1": "6dc372cacd396f2d3604ddcd58ac1fff4b392cda",
+      "last_modified": "2025-04-21T20:08:53.004188",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/chart_renderer.py",
+      "size_bytes": 10162,
+      "size_formatted": "10,162 bytes",
+      "import_name": "watchdog_ai.insights.chart_renderer",
+      "sha1": "f56d65279f65e91657d2b88b75a944bed989b5b2",
+      "last_modified": "2025-04-21T20:08:52.950773",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/context.py",
+      "size_bytes": 7943,
+      "size_formatted": "7,943 bytes",
+      "import_name": "watchdog_ai.insights.context",
+      "sha1": "9f7314121edf087107d56a0dc3e59d6d8cc85135",
+      "last_modified": "2025-04-21T20:08:53.077321",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/contracts.py",
+      "size_bytes": 7558,
+      "size_formatted": "7,558 bytes",
+      "import_name": "watchdog_ai.insights.contracts",
+      "sha1": "05e8624a6cad540b99dce682e822dc5705d96234",
+      "last_modified": "2025-04-21T20:53:22.944925",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/data_pipeline.py",
+      "size_bytes": 5191,
+      "size_formatted": "5,191 bytes",
+      "import_name": "watchdog_ai.insights.data_pipeline",
+      "sha1": "90bf6e842c0ab1c3d6c8c156c2925ee0a9e4b0be",
+      "last_modified": "2025-04-21T20:08:52.965772",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/data_validation.py",
+      "size_bytes": 2801,
+      "size_formatted": "2,801 bytes",
+      "import_name": "watchdog_ai.insights.data_validation",
+      "sha1": "2ce7f33b3fa771ba29af2036551a19bef7185c64",
+      "last_modified": "2025-04-21T20:08:53.037813",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/delivery_handlers.py",
+      "size_bytes": 7677,
+      "size_formatted": "7,677 bytes",
+      "import_name": "watchdog_ai.insights.delivery_handlers",
+      "sha1": "c64b76639b6a63575e0bcefc7eb0ff57b4a093f3",
+      "last_modified": "2025-04-21T20:08:52.951583",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/direct_llm_query.py",
+      "size_bytes": 6882,
+      "size_formatted": "6,882 bytes",
+      "import_name": "watchdog_ai.insights.direct_llm_query",
+      "sha1": "bc6f548cf0c9302d7326ddb023e8aedddcc52cda",
+      "last_modified": "2025-04-21T20:08:53.126570",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/direct_query_handler.py",
+      "size_bytes": 72380,
+      "size_formatted": "72,380 bytes",
+      "import_name": "watchdog_ai.insights.direct_query_handler",
+      "sha1": "5b515bec58ec4b98444bbc03ad70ebd9ea512aac",
+      "last_modified": "2025-04-21T20:55:59.394835",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/engine.py",
+      "size_bytes": 326,
+      "size_formatted": "326 bytes",
+      "import_name": "watchdog_ai.insights.engine",
+      "sha1": "b3b0792a3ada7cd9e1912f7bdc73d7582c77bd8c",
+      "last_modified": "2025-04-21T20:08:53.076944",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/event_emitter.py",
+      "size_bytes": 5491,
+      "size_formatted": "5,491 bytes",
+      "import_name": "watchdog_ai.insights.event_emitter",
+      "sha1": "b6bac46d0f8c3f6b6df63241ec678ae0761ee0d3",
+      "last_modified": "2025-04-21T20:08:53.171932",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/fallback_renderer.py",
+      "size_bytes": 8437,
+      "size_formatted": "8,437 bytes",
+      "import_name": "watchdog_ai.insights.fallback_renderer",
+      "sha1": "0b94ea41be33835e7ccd96967a5718f92603d6fb",
+      "last_modified": "2025-04-21T20:08:53.184430",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/feedback_engine.py",
+      "size_bytes": 9513,
+      "size_formatted": "9,513 bytes",
+      "import_name": "watchdog_ai.insights.feedback_engine",
+      "sha1": "aaded56c4b2c5b72a7f8e7703f2a68107cece44c",
+      "last_modified": "2025-04-21T20:08:53.210797",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/insight_conversation.py",
+      "size_bytes": 508,
+      "size_formatted": "508 bytes",
+      "import_name": "watchdog_ai.insights.insight_conversation",
+      "sha1": "bcff49cf86d9a059b509a7e1343b5b39e27d6f71",
+      "last_modified": "2025-04-21T20:08:53.037471",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/insight_functions.py",
+      "size_bytes": 16794,
+      "size_formatted": "16,794 bytes",
+      "import_name": "watchdog_ai.insights.insight_functions",
+      "sha1": "9de32307297e574615798ef43371d58065ad97fb",
+      "last_modified": "2025-04-21T20:08:53.151084",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/insight_processor.py",
+      "size_bytes": 3339,
+      "size_formatted": "3,339 bytes",
+      "import_name": "watchdog_ai.insights.insight_processor",
+      "sha1": "56f47cd6a014bc80582c5c826e5b6f59ebc649c3",
+      "last_modified": "2025-04-21T20:08:53.078163",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/intent_manager.py",
+      "size_bytes": 688,
+      "size_formatted": "688 bytes",
+      "import_name": "watchdog_ai.insights.intent_manager",
+      "sha1": "32b711efa69a08d51925cc14026288b0e8bb9ced",
+      "last_modified": "2025-04-21T20:08:53.003898",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/intent_schema.py",
+      "size_bytes": 474,
+      "size_formatted": "474 bytes",
+      "import_name": "watchdog_ai.insights.intent_schema",
+      "sha1": "7ff54dff4e95d9ff661229dd4f9824b4330fbe66",
+      "last_modified": "2025-04-21T20:08:52.923560",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/intents.py",
+      "size_bytes": 4047,
+      "size_formatted": "4,047 bytes",
+      "import_name": "watchdog_ai.insights.intents",
+      "sha1": "99d38cebf001d7118ea147fce36996d4dde74158",
+      "last_modified": "2025-04-21T20:08:52.951190",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/middleware.py",
+      "size_bytes": 1515,
+      "size_formatted": "1,515 bytes",
+      "import_name": "watchdog_ai.insights.middleware",
+      "sha1": "1673116f0cfde33bc2cdb06deee2ec1c779b93e4",
+      "last_modified": "2025-04-21T20:08:53.211291",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/models.py",
+      "size_bytes": 2001,
+      "size_formatted": "2,001 bytes",
+      "import_name": "watchdog_ai.insights.models",
+      "sha1": "6a8304480c804e19eed8e55377d60a4cc47033f3",
+      "last_modified": "2025-04-21T20:08:52.981898",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/precision_scoring.py",
+      "size_bytes": 4081,
+      "size_formatted": "4,081 bytes",
+      "import_name": "watchdog_ai.insights.precision_scoring",
+      "sha1": "cff485734603ec3c8d1a9a00c1afb72a31939981",
+      "last_modified": "2025-04-21T20:08:53.216969",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/query_cache.py",
+      "size_bytes": 5288,
+      "size_formatted": "5,288 bytes",
+      "import_name": "watchdog_ai.insights.query_cache",
+      "sha1": "940766946e7d826067a94b323ca8640e3b6f37db",
+      "last_modified": "2025-04-21T20:08:52.925634",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/query_decomposer.py",
+      "size_bytes": 9550,
+      "size_formatted": "9,550 bytes",
+      "import_name": "watchdog_ai.insights.query_decomposer",
+      "sha1": "0aa42e3787d04832ef9c72dfff275f3c95ba8c81",
+      "last_modified": "2025-04-21T20:08:53.004572",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/query_manager.py",
+      "size_bytes": 6716,
+      "size_formatted": "6,716 bytes",
+      "import_name": "watchdog_ai.insights.query_manager",
+      "sha1": "b9af25470bfabe8beb2ee5068e221d3a6135444e",
+      "last_modified": "2025-04-21T20:08:52.993671",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/roi_visualizer.py",
+      "size_bytes": 10976,
+      "size_formatted": "10,976 bytes",
+      "import_name": "watchdog_ai.insights.roi_visualizer",
+      "sha1": "521b09fc75708ce169f707576928462585dfef4b",
+      "last_modified": "2025-04-21T20:08:53.003578",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/sandbox.py",
+      "size_bytes": 8707,
+      "size_formatted": "8,707 bytes",
+      "import_name": "watchdog_ai.insights.sandbox",
+      "sha1": "50d8ec82f224506a54bad73ff3628def11dc3b71",
+      "last_modified": "2025-04-21T20:08:53.060140",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/traceability.py",
+      "size_bytes": 7652,
+      "size_formatted": "7,652 bytes",
+      "import_name": "watchdog_ai.insights.traceability",
+      "sha1": "417db97a082966002c7bf5fd8bbc8979fed1f705",
+      "last_modified": "2025-04-21T20:08:53.151496",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/insights/utils.py",
+      "size_bytes": 8187,
+      "size_formatted": "8,187 bytes",
+      "import_name": "watchdog_ai.insights.utils",
+      "sha1": "8bb348de1b94c38ffba75eb25dc865ae0b7feca6",
+      "last_modified": "2025-04-21T20:08:53.077681",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/llm/__init__.py",
+      "size_bytes": 93,
+      "size_formatted": "93 bytes",
+      "import_name": "watchdog_ai.llm.__init__",
+      "sha1": "a54d512722072b3aba1f2e277afbc51125661d40",
+      "last_modified": "2025-04-21T20:08:53.408912",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/llm/llm_engine.py",
+      "size_bytes": 614,
+      "size_formatted": "614 bytes",
+      "import_name": "watchdog_ai.llm.llm_engine",
+      "sha1": "abd5a6f8bd3bbd3fc0fc2aafb7b702fa5036f281",
+      "last_modified": "2025-04-21T20:08:53.408699",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/llm/prompt_optimizer.py",
+      "size_bytes": 21765,
+      "size_formatted": "21,765 bytes",
+      "import_name": "watchdog_ai.llm.prompt_optimizer",
+      "sha1": "c7f5febe26f7fea7701ebca8c0a17903345c7f4e",
+      "last_modified": "2025-04-21T20:08:53.409660",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/llm/query_processor.py",
+      "size_bytes": 4425,
+      "size_formatted": "4,425 bytes",
+      "import_name": "watchdog_ai.llm.query_processor",
+      "sha1": "ac936efbc0bc0d872f3416538c3b25773303c7c8",
+      "last_modified": "2025-04-21T20:08:53.430930",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/llm_engine.py",
+      "size_bytes": 2675,
+      "size_formatted": "2,675 bytes",
+      "import_name": "watchdog_ai.llm_engine",
+      "sha1": "ea16d3dc2a4a7a5d51eb50bfd240c4f446b895f0",
+      "last_modified": "2025-04-21T20:08:53.454841",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/models.py",
+      "size_bytes": 1653,
+      "size_formatted": "1,653 bytes",
+      "import_name": "watchdog_ai.models",
+      "sha1": "2f7edb6d0c19a512bb564dcc2c1113a5a832a4f3",
+      "last_modified": "2025-04-21T20:08:53.442152",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/models/__init__.py",
+      "size_bytes": 307,
+      "size_formatted": "307 bytes",
+      "import_name": "watchdog_ai.models.__init__",
+      "sha1": "148fe384d74ee92dc287d59edc434e59bff651c5",
+      "last_modified": "2025-04-21T20:08:53.714639",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/models/insight.py",
+      "size_bytes": 2098,
+      "size_formatted": "2,098 bytes",
+      "import_name": "watchdog_ai.models.insight",
+      "sha1": "1fad050a55098b53b8fa56faf8d608cb4644f4b4",
+      "last_modified": "2025-04-21T20:08:53.738402",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/models/intent.py",
+      "size_bytes": 775,
+      "size_formatted": "775 bytes",
+      "import_name": "watchdog_ai.models.intent",
+      "sha1": "e2e6add21524e4bc27bca5f8698cf08b7ac9b1be",
+      "last_modified": "2025-04-21T20:08:53.692849",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/models/query_models.py",
+      "size_bytes": 4301,
+      "size_formatted": "4,301 bytes",
+      "import_name": "watchdog_ai.models.query_models",
+      "sha1": "80f9d0002d82e66328defe0f5dbb6059b0efd258",
+      "last_modified": "2025-04-21T20:45:59.003959",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/prompts/__init__.py",
+      "size_bytes": 0,
+      "size_formatted": "0 bytes",
+      "import_name": "watchdog_ai.prompts.__init__",
+      "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "last_modified": "2025-04-21T20:08:53.794796",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/schema/__init__.py",
+      "size_bytes": 0,
+      "size_formatted": "0 bytes",
+      "import_name": "watchdog_ai.schema.__init__",
+      "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "last_modified": "2025-04-21T20:08:53.792454",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/schema/demo_schema_processor.py",
+      "size_bytes": 9183,
+      "size_formatted": "9,183 bytes",
+      "import_name": "watchdog_ai.schema.demo_schema_processor",
+      "sha1": "3f7896342ef873df01fa6432da716d77d5be2587",
+      "last_modified": "2025-04-21T20:08:53.764127",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/schema/verify_column_mapping.py",
+      "size_bytes": 1387,
+      "size_formatted": "1,387 bytes",
+      "import_name": "watchdog_ai.schema.verify_column_mapping",
+      "sha1": "5b7f8c405f97dbbafe2bfbe56dd2cf132ceac555",
+      "last_modified": "2025-04-21T20:08:53.758511",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/testing/__init__.py",
+      "size_bytes": 0,
+      "size_formatted": "0 bytes",
+      "import_name": "watchdog_ai.testing.__init__",
+      "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "last_modified": "2025-04-21T20:08:53.751930",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/testing/watchdog_accuracy_tester.py",
+      "size_bytes": 22949,
+      "size_formatted": "22,949 bytes",
+      "import_name": "watchdog_ai.testing.watchdog_accuracy_tester",
+      "sha1": "3f4f391d6bd0bd0d2e87d919157c5e1931148ff6",
+      "last_modified": "2025-04-21T20:08:53.752677",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/__init__.py",
+      "size_bytes": 291,
+      "size_formatted": "291 bytes",
+      "import_name": "watchdog_ai.ui.__init__",
+      "sha1": "eb3873d8299856c48efb00c3f869805dfb3e68ca",
+      "last_modified": "2025-04-21T20:08:53.228855",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/__init__.py",
+      "size_bytes": 183,
+      "size_formatted": "183 bytes",
+      "import_name": "watchdog_ai.ui.components.__init__",
+      "sha1": "fa300e01e53304208e14540586adcbf43bd94af5",
+      "last_modified": "2025-04-21T20:08:53.245615",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/chat_interface.py",
+      "size_bytes": 415,
+      "size_formatted": "415 bytes",
+      "import_name": "watchdog_ai.ui.components.chat_interface",
+      "sha1": "10fcdba54796f60689fe353762353d448bd2b668",
+      "last_modified": "2025-04-21T20:08:53.245291",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/data_upload.py",
+      "size_bytes": 2755,
+      "size_formatted": "2,755 bytes",
+      "import_name": "watchdog_ai.ui.components.data_upload",
+      "sha1": "513f9f1740c62dba7a1ae9dee6eeb39e5c8109a0",
+      "last_modified": "2025-04-21T20:08:53.246950",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/data_uploader.py",
+      "size_bytes": 906,
+      "size_formatted": "906 bytes",
+      "import_name": "watchdog_ai.ui.components.data_uploader",
+      "sha1": "f3db7cfb3247f39f226864b88d11665b616ddfbd",
+      "last_modified": "2025-04-21T20:08:53.251717",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/debug_panel.py",
+      "size_bytes": 7962,
+      "size_formatted": "7,962 bytes",
+      "import_name": "watchdog_ai.ui.components.debug_panel",
+      "sha1": "d32473734eb931011898096ede54d23dcc24fc9f",
+      "last_modified": "2025-04-21T20:08:53.246482",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/error_feedback_ui.py",
+      "size_bytes": 17803,
+      "size_formatted": "17,803 bytes",
+      "import_name": "watchdog_ai.ui.components.error_feedback_ui",
+      "sha1": "e00bbd36e606fdf635b569c0604c0c70f483fedc",
+      "last_modified": "2025-04-21T20:08:53.252273",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/header.py",
+      "size_bytes": 12617,
+      "size_formatted": "12,617 bytes",
+      "import_name": "watchdog_ai.ui.components.header",
+      "sha1": "1783360f08283a44cc7c0d48ee6416cc844ef049",
+      "last_modified": "2025-04-21T21:06:36.343375",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/mapping_feedback.py",
+      "size_bytes": 2861,
+      "size_formatted": "2,861 bytes",
+      "import_name": "watchdog_ai.ui.components.mapping_feedback",
+      "sha1": "61509803a66938a56f888773fc86989089f186d4",
+      "last_modified": "2025-04-21T20:08:53.231635",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/nova_act_panel.py",
+      "size_bytes": 15289,
+      "size_formatted": "15,289 bytes",
+      "import_name": "watchdog_ai.ui.components.nova_act_panel",
+      "sha1": "e1a9c432e5e2ad66a1048a7ec3cf268aab3711fb",
+      "last_modified": "2025-04-21T20:08:53.244026",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/sales_report_renderer.py",
+      "size_bytes": 473,
+      "size_formatted": "473 bytes",
+      "import_name": "watchdog_ai.ui.components.sales_report_renderer",
+      "sha1": "21c341ea99aec75cc01b63858083f06110a70ec9",
+      "last_modified": "2025-04-21T21:09:36.086673",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/schema_profile_editor.py",
+      "size_bytes": 10474,
+      "size_formatted": "10,474 bytes",
+      "import_name": "watchdog_ai.ui.components.schema_profile_editor",
+      "sha1": "412556465c3c4a57e56d0de16079fb55f0fbdecb",
+      "last_modified": "2025-04-21T20:08:53.246049",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/components/sidebar.py",
+      "size_bytes": 3599,
+      "size_formatted": "3,599 bytes",
+      "import_name": "watchdog_ai.ui.components.sidebar",
+      "sha1": "d8307ee7925cb27b4d05fff0856ac62b4ee40071",
+      "last_modified": "2025-04-21T20:08:53.229217",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/__init__.py",
+      "size_bytes": 76,
+      "size_formatted": "76 bytes",
+      "import_name": "watchdog_ai.ui.pages.__init__",
+      "sha1": "d459f0a460dbebe06eddfa5230b85e2cd6de7343",
+      "last_modified": "2025-04-21T20:08:53.334482",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/admin_preferences.py",
+      "size_bytes": 18245,
+      "size_formatted": "18,245 bytes",
+      "import_name": "watchdog_ai.ui.pages.admin_preferences",
+      "sha1": "d52b57107032fd3e166aa0bf535ad8a28aef5c8d",
+      "last_modified": "2025-04-21T20:08:53.376055",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/chat_tab.py",
+      "size_bytes": 201,
+      "size_formatted": "201 bytes",
+      "import_name": "watchdog_ai.ui.pages.chat_tab",
+      "sha1": "6158bf674f270a03dafe8c502e9cdf9b3db18ac1",
+      "last_modified": "2025-04-21T20:08:53.408302",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/data_insights_tab.py",
+      "size_bytes": 775,
+      "size_formatted": "775 bytes",
+      "import_name": "watchdog_ai.ui.pages.data_insights_tab",
+      "sha1": "ffe0e59fa813ca8399c49ae05167be2397aabf8b",
+      "last_modified": "2025-04-21T20:08:53.304661",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/delivery_analytics.py",
+      "size_bytes": 20465,
+      "size_formatted": "20,465 bytes",
+      "import_name": "watchdog_ai.ui.pages.delivery_analytics",
+      "sha1": "675c14f66da8e46e780bee994c359af68823cf6a",
+      "last_modified": "2025-04-21T20:08:53.338924",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/delivery_status.py",
+      "size_bytes": 9677,
+      "size_formatted": "9,677 bytes",
+      "import_name": "watchdog_ai.ui.pages.delivery_status",
+      "sha1": "d03d1ef2e0f357b452e47893a53eb658961b37ab",
+      "last_modified": "2025-04-21T20:08:53.359432",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/insight_feed_page.py",
+      "size_bytes": 19022,
+      "size_formatted": "19,022 bytes",
+      "import_name": "watchdog_ai.ui.pages.insight_feed_page",
+      "sha1": "ed9aadde37956a2f033be6f465780e4a39032a81",
+      "last_modified": "2025-04-21T20:08:53.333010",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/kpi_dashboard.py",
+      "size_bytes": 159,
+      "size_formatted": "159 bytes",
+      "import_name": "watchdog_ai.ui.pages.kpi_dashboard",
+      "sha1": "3909cc21691f91a3ed95593ff6bbdd6fb54039fa",
+      "last_modified": "2025-04-21T20:08:53.375535",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/lead_source_roi_dashboard.py",
+      "size_bytes": 12685,
+      "size_formatted": "12,685 bytes",
+      "import_name": "watchdog_ai.ui.pages.lead_source_roi_dashboard",
+      "sha1": "51e17ffd2121186c21d154193d9332a2ffba5581",
+      "last_modified": "2025-04-21T20:08:53.346045",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/main_app.py",
+      "size_bytes": 6914,
+      "size_formatted": "6,914 bytes",
+      "import_name": "watchdog_ai.ui.pages.main_app",
+      "sha1": "028b283f81f76f1367d0ea3828f31dc026930f45",
+      "last_modified": "2025-04-21T21:11:28.156365",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/notification_settings.py",
+      "size_bytes": 22825,
+      "size_formatted": "22,825 bytes",
+      "import_name": "watchdog_ai.ui.pages.notification_settings",
+      "sha1": "d00dc76daf30461d4ee1f7e665f265699489d098",
+      "last_modified": "2025-04-21T20:08:53.375221",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/pages/schema_profile_editor.py",
+      "size_bytes": 14481,
+      "size_formatted": "14,481 bytes",
+      "import_name": "watchdog_ai.ui.pages.schema_profile_editor",
+      "sha1": "20bf86311a742823c4a0516e8212e72bbd70dfd6",
+      "last_modified": "2025-04-21T20:08:53.345227",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/utils.py",
+      "size_bytes": 1053,
+      "size_formatted": "1,053 bytes",
+      "import_name": "watchdog_ai.ui.utils",
+      "sha1": "958b62fcadd714b598dff59697ccc6c33dc5126f",
+      "last_modified": "2025-04-21T20:08:53.278543",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/ui/utils/ui_theme.py",
+      "size_bytes": 13387,
+      "size_formatted": "13,387 bytes",
+      "import_name": "watchdog_ai.ui.utils.ui_theme",
+      "sha1": "5a5ca241bb8cd8c8431942c6f8c5363891a8e5f8",
+      "last_modified": "2025-04-21T21:02:20.357434",
+      "is_package": false
+    },
+    {
+      "path": "src/watchdog_ai/utils/__init__.py",
+      "size_bytes": 3281,
+      "size_formatted": "3,281 bytes",
+      "import_name": "watchdog_ai.utils.__init__",
+      "sha1": "95d6f2d1f8dce429e3638659f48111a8ed9ecae2",
+      "last_modified": "2025-04-21T20:08:53.524014",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/adaptive_schema.py",
+      "size_bytes": 14412,
+      "size_formatted": "14,412 bytes",
+      "import_name": "watchdog_ai.utils.adaptive_schema",
+      "sha1": "bcc18fac6a1712f11f60a6dfb5ca87045a786bac",
+      "last_modified": "2025-04-21T20:08:53.590675",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/columns.py",
+      "size_bytes": 2250,
+      "size_formatted": "2,250 bytes",
+      "import_name": "watchdog_ai.utils.columns",
+      "sha1": "b88949f437fcbfc0105658882d9103bda831a2d8",
+      "last_modified": "2025-04-21T20:08:53.593597",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/data_lineage.py",
+      "size_bytes": 9284,
+      "size_formatted": "9,284 bytes",
+      "import_name": "watchdog_ai.utils.data_lineage",
+      "sha1": "112c581ebbfa9cd1a193d65a5e3995ecf23f9dcd",
+      "last_modified": "2025-04-21T20:08:53.667344",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/data_normalization.py",
+      "size_bytes": 43325,
+      "size_formatted": "43,325 bytes",
+      "import_name": "watchdog_ai.utils.data_normalization",
+      "sha1": "7ba681f74a5c122b424ca4e6614537ef5f0a43c3",
+      "last_modified": "2025-04-21T20:08:53.501360",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/data_parser.py",
+      "size_bytes": 14230,
+      "size_formatted": "14,230 bytes",
+      "import_name": "watchdog_ai.utils.data_parser",
+      "sha1": "76551c80862a8fc9a770182fbccca1124d39d4d6",
+      "last_modified": "2025-04-21T20:08:53.553295",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/dataframe_utils.py",
+      "size_bytes": 12548,
+      "size_formatted": "12,548 bytes",
+      "import_name": "watchdog_ai.utils.dataframe_utils",
+      "sha1": "f84c98057a3aad8bed81f74732d3396129a70151",
+      "last_modified": "2025-04-21T20:08:53.643736",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/enhanced_column_mapper.py",
+      "size_bytes": 25777,
+      "size_formatted": "25,777 bytes",
+      "import_name": "watchdog_ai.utils.enhanced_column_mapper",
+      "sha1": "1568921afaaac4877a501c41f24c9ce5de48dd2f",
+      "last_modified": "2025-04-21T20:08:53.587418",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/errors.py",
+      "size_bytes": 143,
+      "size_formatted": "143 bytes",
+      "import_name": "watchdog_ai.utils.errors",
+      "sha1": "3224307f153ebd7530a12f1ce2d733e5b97c7143",
+      "last_modified": "2025-04-21T20:08:53.642752",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/incremental_updater.py",
+      "size_bytes": 14217,
+      "size_formatted": "14,217 bytes",
+      "import_name": "watchdog_ai.utils.incremental_updater",
+      "sha1": "8cda0a7e972a60193b7a6ad289fe4d6611c3bc23",
+      "last_modified": "2025-04-21T20:08:53.596781",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/ingestion_orchestrator.py",
+      "size_bytes": 17287,
+      "size_formatted": "17,287 bytes",
+      "import_name": "watchdog_ai.utils.ingestion_orchestrator",
+      "sha1": "1d3eb0e11889e24e090b0baa711c43d6d38b6ece",
+      "last_modified": "2025-04-21T20:08:53.687375",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/llm_column_mapper.py",
+      "size_bytes": 10572,
+      "size_formatted": "10,572 bytes",
+      "import_name": "watchdog_ai.utils.llm_column_mapper",
+      "sha1": "a20597a98949df0708468c8d069cfb5c61189df1",
+      "last_modified": "2025-04-21T20:08:53.643183",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/pdf_extractor.py",
+      "size_bytes": 23351,
+      "size_formatted": "23,351 bytes",
+      "import_name": "watchdog_ai.utils.pdf_extractor",
+      "sha1": "ab9899f6c4c31c7ebdfeb6321673de640d657076",
+      "last_modified": "2025-04-21T20:08:53.632749",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/schema_detector.py",
+      "size_bytes": 13732,
+      "size_formatted": "13,732 bytes",
+      "import_name": "watchdog_ai.utils.schema_detector",
+      "sha1": "4e7daa1b013707cd4e5ef012afe952aefffcf367",
+      "last_modified": "2025-04-21T20:08:53.461249",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/schema_profile_editor.py",
+      "size_bytes": 11690,
+      "size_formatted": "11,690 bytes",
+      "import_name": "watchdog_ai.utils.schema_profile_editor",
+      "sha1": "235c20d778d42244767b6c4b3f450831dc4b703a",
+      "last_modified": "2025-04-21T20:08:53.592008",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/upload_tracker.py",
+      "size_bytes": 19046,
+      "size_formatted": "19,046 bytes",
+      "import_name": "watchdog_ai.utils.upload_tracker",
+      "sha1": "75045db8413ab59bb3c190461452eec12c72ca17",
+      "last_modified": "2025-04-21T20:08:53.467292",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_ai/utils/validation.py",
+      "size_bytes": 12365,
+      "size_formatted": "12,365 bytes",
+      "import_name": "watchdog_ai.utils.validation",
+      "sha1": "3df4b66dfb5ccbea47381b5d024e45b1d842974e",
+      "last_modified": "2025-04-21T20:08:53.691368",
+      "is_package": true
+    },
+    {
+      "path": "src/watchdog_types.py",
+      "size_bytes": 657,
+      "size_formatted": "657 bytes",
+      "import_name": "watchdog_types",
+      "sha1": "e30fb58f647c233b30e2f7d620eddaaab29de309",
+      "last_modified": "2025-04-21T20:08:54.824987",
+      "is_package": true
+    },
+    {
+      "path": "tests/__init__.py",
+      "size_bytes": 113,
+      "size_formatted": "113 bytes",
+      "import_name": "tests.__init__",
+      "sha1": "7622279c7f58a06054f6750cf1e6ab8dc9b53846",
+      "last_modified": "2025-04-19T15:55:16.886017",
+      "is_package": true
+    },
+    {
+      "path": "tests/conftest.py",
+      "size_bytes": 13939,
+      "size_formatted": "13,939 bytes",
+      "import_name": "tests.conftest",
+      "sha1": "2feae2e899a1f8829105b495659b23ad4ce045b2",
+      "last_modified": "2025-04-21T20:14:37.054052",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/__init__.py",
+      "size_bytes": 48,
+      "size_formatted": "48 bytes",
+      "import_name": "tests.e2e.__init__",
+      "sha1": "33417176ac109599075c28b5b283cbb8ed75fe38",
+      "last_modified": "2025-04-21T14:03:25.973096",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/conftest.py",
+      "size_bytes": 1155,
+      "size_formatted": "1,155 bytes",
+      "import_name": "tests.e2e.conftest",
+      "sha1": "2a7045062cd1346e76ee1a3420814768aaee12f8",
+      "last_modified": "2025-04-19T12:33:57.181375",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/fixtures.py",
+      "size_bytes": 313,
+      "size_formatted": "313 bytes",
+      "import_name": "tests.e2e.fixtures",
+      "sha1": "de055513b78b0ea0a972dd17c41ec7931c97db0d",
+      "last_modified": "2025-04-21T19:19:03.978660",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_chat_analysis.py",
+      "size_bytes": 259,
+      "size_formatted": "259 bytes",
+      "import_name": "tests.e2e.test_chat_analysis",
+      "sha1": "4bc0e3a4310514f3424cee7ff077469318152243",
+      "last_modified": "2025-04-21T19:19:47.441286",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_crm_templates.py",
+      "size_bytes": 5225,
+      "size_formatted": "5,225 bytes",
+      "import_name": "tests.e2e.test_crm_templates",
+      "sha1": "ac6e9da8940a6b8846d9bd94fd13a6fa983a4c89",
+      "last_modified": "2025-04-21T14:20:43.632565",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_csv_pdf_ingestion.py",
+      "size_bytes": 8148,
+      "size_formatted": "8,148 bytes",
+      "import_name": "tests.e2e.test_csv_pdf_ingestion",
+      "sha1": "2d00263789bcbd4d740a6ac376d1753704ec4d60",
+      "last_modified": "2025-04-21T09:59:59.944298",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_data_upload_llm_mapping.py",
+      "size_bytes": 21068,
+      "size_formatted": "21,068 bytes",
+      "import_name": "tests.e2e.test_data_upload_llm_mapping",
+      "sha1": "22660f623704c6ab5c33cddc95873dc7ed200778",
+      "last_modified": "2025-04-19T11:48:21.190865",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_insight_audit_logging.py",
+      "size_bytes": 2174,
+      "size_formatted": "2,174 bytes",
+      "import_name": "tests.e2e.test_insight_audit_logging",
+      "sha1": "7d0734f0e541cc4c5c2c759f64e5a1a5ba86544c",
+      "last_modified": "2025-04-19T12:33:57.181806",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_insight_pipeline.py",
+      "size_bytes": 252,
+      "size_formatted": "252 bytes",
+      "import_name": "tests.e2e.test_insight_pipeline",
+      "sha1": "b8f5acb75c81596b7be4ac2c710110ee9f759614",
+      "last_modified": "2025-04-21T19:19:47.442257",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_kpi_dashboard.py",
+      "size_bytes": 299,
+      "size_formatted": "299 bytes",
+      "import_name": "tests.e2e.test_kpi_dashboard",
+      "sha1": "a85b502f8f393f658c5f468a9dad9697b16f1129",
+      "last_modified": "2025-04-21T19:19:47.443238",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_navigation_tabs.py",
+      "size_bytes": 293,
+      "size_formatted": "293 bytes",
+      "import_name": "tests.e2e.test_navigation_tabs",
+      "sha1": "4d73def2545031c28b4cb06e9c7a88a8dda4b1ed",
+      "last_modified": "2025-04-21T19:19:47.444057",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_normalization_flow.py",
+      "size_bytes": 1363,
+      "size_formatted": "1,363 bytes",
+      "import_name": "tests.e2e.test_normalization_flow",
+      "sha1": "6a7416c0ca9ba2ba041008880fbbb5892088b0d9",
+      "last_modified": "2025-04-19T12:33:57.183245",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_nova_act_integration.py",
+      "size_bytes": 6654,
+      "size_formatted": "6,654 bytes",
+      "import_name": "tests.e2e.test_nova_act_integration",
+      "sha1": "9a265f9e61b5265d443c5605e7098f4ae79077d6",
+      "last_modified": "2025-04-21T19:19:47.439528",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_novact_fetch.py",
+      "size_bytes": 6163,
+      "size_formatted": "6,163 bytes",
+      "import_name": "tests.e2e.test_novact_fetch",
+      "sha1": "29dbd87a1f172b3e34dc5e65ab03259b5408459f",
+      "last_modified": "2025-04-19T12:33:57.183671",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_session_persistence.py",
+      "size_bytes": 738,
+      "size_formatted": "738 bytes",
+      "import_name": "tests.e2e.test_session_persistence",
+      "sha1": "4bf672d404bec39c1a20cab09679f5c4664e53e8",
+      "last_modified": "2025-04-19T12:33:57.184186",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_story_flow.py",
+      "size_bytes": 6111,
+      "size_formatted": "6,111 bytes",
+      "import_name": "tests.e2e.test_story_flow",
+      "sha1": "471a7d3847492f3773a4a0a1788f5f43ea9dd38a",
+      "last_modified": "2025-04-19T12:33:57.184636",
+      "is_package": true
+    },
+    {
+      "path": "tests/e2e/test_tuned_story_flow.py",
+      "size_bytes": 6050,
+      "size_formatted": "6,050 bytes",
+      "import_name": "tests.e2e.test_tuned_story_flow",
+      "sha1": "c711aae74a6853e57169c2ce84041681d10beaf4",
+      "last_modified": "2025-04-19T12:33:57.184943",
+      "is_package": true
+    },
+    {
+      "path": "tests/fixtures/mock_nova_act_sales.py",
+      "size_bytes": 1853,
+      "size_formatted": "1,853 bytes",
+      "import_name": "tests.fixtures.mock_nova_act_sales",
+      "sha1": "fda49115ed2a1add2d6f405935f86ba4b8031379",
+      "last_modified": "2025-04-21T13:47:23.783824",
+      "is_package": false
+    },
+    {
+      "path": "tests/integration/__init__.py",
+      "size_bytes": 50,
+      "size_formatted": "50 bytes",
+      "import_name": "tests.integration.__init__",
+      "sha1": "ce07416445ee4510f4838ffdc47874ab98e5df27",
+      "last_modified": "2025-04-19T12:33:57.185477",
+      "is_package": true
+    },
+    {
+      "path": "tests/integration/smoke_test.py",
+      "size_bytes": 8643,
+      "size_formatted": "8,643 bytes",
+      "import_name": "tests.integration.smoke_test",
+      "sha1": "2609df060cc1a8a2f3ccd22c29f0d7883f77cfbc",
+      "last_modified": "2025-04-19T12:33:57.137149",
+      "is_package": true
+    },
+    {
+      "path": "tests/integration/test_async_processing.py",
+      "size_bytes": 5447,
+      "size_formatted": "5,447 bytes",
+      "import_name": "tests.integration.test_async_processing",
+      "sha1": "0cd63e46ba8791302018f309f1a63ef93f904db5",
+      "last_modified": "2025-04-19T12:33:57.185927",
+      "is_package": true
+    },
+    {
+      "path": "tests/integration/test_lead_flow_integration.py",
+      "size_bytes": 8342,
+      "size_formatted": "8,342 bytes",
+      "import_name": "tests.integration.test_lead_flow_integration",
+      "sha1": "8f9c8113aa39cb30ca6549ddb98e1a734a7bf58f",
+      "last_modified": "2025-04-21T11:50:45.261281",
+      "is_package": true
+    },
+    {
+      "path": "tests/integration/test_nova_act_integration.py",
+      "size_bytes": 5367,
+      "size_formatted": "5,367 bytes",
+      "import_name": "tests.integration.test_nova_act_integration",
+      "sha1": "77feb67357bee1dc892a986efb5ec375c9431c6f",
+      "last_modified": "2025-04-21T18:54:17.722449",
+      "is_package": true
+    },
+    {
+      "path": "tests/nova_act/conftest.py",
+      "size_bytes": 3332,
+      "size_formatted": "3,332 bytes",
+      "import_name": "tests.nova_act.conftest",
+      "sha1": "9c87502591d6f816128efb2e41991acd04a3e57d",
+      "last_modified": "2025-04-16T21:20:20.239511",
+      "is_package": false
+    },
+    {
+      "path": "tests/nova_act/test_collectors/__init__.py",
+      "size_bytes": 45,
+      "size_formatted": "45 bytes",
+      "import_name": "tests.nova_act.test_collectors.__init__",
+      "sha1": "3e088cc92d4fcb6dc49bce402de0dbc2a9370c1c",
+      "last_modified": "2025-04-16T21:20:20.239773",
+      "is_package": true
+    },
+    {
+      "path": "tests/nova_act/test_collectors/test_dealersocket.py",
+      "size_bytes": 6801,
+      "size_formatted": "6,801 bytes",
+      "import_name": "tests.nova_act.test_collectors.test_dealersocket",
+      "sha1": "c5f6b6dc8620d17c4ce25f7b192fe1da1dc25e26",
+      "last_modified": "2025-04-16T21:22:46.698959",
+      "is_package": true
+    },
+    {
+      "path": "tests/nova_act/test_collectors/test_vinsolutions.py",
+      "size_bytes": 5672,
+      "size_formatted": "5,672 bytes",
+      "import_name": "tests.nova_act.test_collectors.test_vinsolutions",
+      "sha1": "24655a67da963af007c380a9dcdd6c193795df29",
+      "last_modified": "2025-04-16T21:20:20.239948",
+      "is_package": true
+    },
+    {
+      "path": "tests/nova_act/test_connector.py",
+      "size_bytes": 9528,
+      "size_formatted": "9,528 bytes",
+      "import_name": "tests.nova_act.test_connector",
+      "sha1": "3d838211d67a0325efce25a4017f8a8d2946689f",
+      "last_modified": "2025-04-21T18:56:12.025098",
+      "is_package": false
+    },
+    {
+      "path": "tests/nova_act/test_integration.py",
+      "size_bytes": 11767,
+      "size_formatted": "11,767 bytes",
+      "import_name": "tests.nova_act.test_integration",
+      "sha1": "ae063c4312b1c4a78df81a180480b0907ff7252c",
+      "last_modified": "2025-04-16T21:39:08.060944",
+      "is_package": false
+    },
+    {
+      "path": "tests/nova_act/test_performance.py",
+      "size_bytes": 6710,
+      "size_formatted": "6,710 bytes",
+      "import_name": "tests.nova_act.test_performance",
+      "sha1": "e6b65e6af2304c3e4605d8824a4c3b08ce769f35",
+      "last_modified": "2025-04-16T21:22:46.699371",
+      "is_package": false
+    },
+    {
+      "path": "tests/nova_act_test.py",
+      "size_bytes": 11498,
+      "size_formatted": "11,498 bytes",
+      "import_name": "tests.nova_act_test",
+      "sha1": "8f63783e2e9869cbdb6917b8bd62bd64770e405c",
+      "last_modified": "2025-04-16T21:58:56.271781",
+      "is_package": true
+    },
+    {
+      "path": "tests/run_tests.py",
+      "size_bytes": 1096,
+      "size_formatted": "1,096 bytes",
+      "import_name": "tests.run_tests",
+      "sha1": "d03e2a48ae888abfff63577bc67b5a1e841c3c00",
+      "last_modified": "2025-04-16T21:59:10.098046",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_adaptive_schema.py",
+      "size_bytes": 6675,
+      "size_formatted": "6,675 bytes",
+      "import_name": "tests.test_adaptive_schema",
+      "sha1": "37270b910b4d158d4ea6fd732912829185d8bc6d",
+      "last_modified": "2025-04-20T10:59:24.488895",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_app.py",
+      "size_bytes": 5343,
+      "size_formatted": "5,343 bytes",
+      "import_name": "tests.test_app",
+      "sha1": "05af97c6441dfdbd5cfa0ceec6515fd2c6d3b163",
+      "last_modified": "2025-04-21T19:13:28.792493",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_benchmarking.py",
+      "size_bytes": 6566,
+      "size_formatted": "6,566 bytes",
+      "import_name": "tests.test_benchmarking",
+      "sha1": "8bbc9bbb5a6c7dcd10f71f7a9f8f28bdf291e715",
+      "last_modified": "2025-04-21T11:42:19.592153",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_business_queries.py",
+      "size_bytes": 8359,
+      "size_formatted": "8,359 bytes",
+      "import_name": "tests.test_business_queries",
+      "sha1": "b48713498254d3643c88a46d379bd7af946b82d7",
+      "last_modified": "2025-04-16T11:22:53.794383",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_conversation_integration.py",
+      "size_bytes": 4598,
+      "size_formatted": "4,598 bytes",
+      "import_name": "tests.test_conversation_integration",
+      "sha1": "2101be329f62fbb3b14d239fce67d442b6414a50",
+      "last_modified": "2025-04-15T11:22:42.191565",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_data_cleaner.py",
+      "size_bytes": 13374,
+      "size_formatted": "13,374 bytes",
+      "import_name": "tests.test_data_cleaner",
+      "sha1": "32f232df67b81126ceace0d9c6c748a549ebe09f",
+      "last_modified": "2025-04-14T22:11:39.780419",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_data_io.py",
+      "size_bytes": 5631,
+      "size_formatted": "5,631 bytes",
+      "import_name": "tests.test_data_io",
+      "sha1": "52d1a4897de3f593dd9a4125123e2e697ca05779",
+      "last_modified": "2025-04-19T12:33:57.186267",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_data_lineage.py",
+      "size_bytes": 6250,
+      "size_formatted": "6,250 bytes",
+      "import_name": "tests.test_data_lineage",
+      "sha1": "6560b4de17c3375e1dd1dbad79c1705e6ecbeee0",
+      "last_modified": "2025-04-20T13:48:13.035638",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_data_parser.py",
+      "size_bytes": 10249,
+      "size_formatted": "10,249 bytes",
+      "import_name": "tests.test_data_parser",
+      "sha1": "4803f267e8e3f59e086b3f09ce749379431a6c97",
+      "last_modified": "2025-04-14T22:12:19.497929",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_data_upload.py",
+      "size_bytes": 943,
+      "size_formatted": "943 bytes",
+      "import_name": "tests.test_data_upload",
+      "sha1": "fa9c98694ce56894e96dd4310664c3b6897168e3",
+      "last_modified": "2025-04-21T15:47:02.388537",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_data_validation.py",
+      "size_bytes": 9620,
+      "size_formatted": "9,620 bytes",
+      "import_name": "tests.test_data_validation",
+      "sha1": "15e718f1ac70943a3e0cd75d111e33ca473ba5af",
+      "last_modified": "2025-04-21T09:36:40.143315",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_days_to_close_fix.py",
+      "size_bytes": 2763,
+      "size_formatted": "2,763 bytes",
+      "import_name": "tests.test_days_to_close_fix",
+      "sha1": "6b360788399bb84f5c4794687c6a92fe6ad5fe40",
+      "last_modified": "2025-04-21T13:02:56.224964",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_debug_dashboard.py",
+      "size_bytes": 6101,
+      "size_formatted": "6,101 bytes",
+      "import_name": "tests.test_debug_dashboard",
+      "sha1": "58d7a380f80b577887e93919059798fe31a2bd1b",
+      "last_modified": "2025-04-20T15:00:06.756386",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_debug_dashboard_enhanced.py",
+      "size_bytes": 4522,
+      "size_formatted": "4,522 bytes",
+      "import_name": "tests.test_debug_dashboard_enhanced",
+      "sha1": "7ceb7e5a05abb511c5b5c5254476e8fb8a72583c",
+      "last_modified": "2025-04-20T14:38:01.681164",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_digest_bot.py",
+      "size_bytes": 9811,
+      "size_formatted": "9,811 bytes",
+      "import_name": "tests.test_digest_bot",
+      "sha1": "caa32c29d7a0e1f3d6d0033f3844c1652b5e680d",
+      "last_modified": "2025-04-15T11:23:41.441802",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_digest_system.py",
+      "size_bytes": 10224,
+      "size_formatted": "10,224 bytes",
+      "import_name": "tests.test_digest_system",
+      "sha1": "fded8fb744747c33db90cecd8004c764632bff16",
+      "last_modified": "2025-04-20T10:59:55.773786",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_direct_query_processing.py",
+      "size_bytes": 35928,
+      "size_formatted": "35,928 bytes",
+      "import_name": "tests.test_direct_query_processing",
+      "sha1": "fea8ad9f3101138a8006405a1c6a785fb656ee91",
+      "last_modified": "2025-04-21T20:59:28.254987",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_encryption.py",
+      "size_bytes": 4235,
+      "size_formatted": "4,235 bytes",
+      "import_name": "tests.test_encryption",
+      "sha1": "9a61decd9448ae06994f7024f6e627692b271e34",
+      "last_modified": "2025-04-19T12:33:57.186622",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_errors.py",
+      "size_bytes": 4391,
+      "size_formatted": "4,391 bytes",
+      "import_name": "tests.test_errors",
+      "sha1": "e51d4379ae8aa04708a8439cb7f56ab40467e554",
+      "last_modified": "2025-04-16T21:04:48.488576",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_event_system.py",
+      "size_bytes": 5893,
+      "size_formatted": "5,893 bytes",
+      "import_name": "tests.test_event_system",
+      "sha1": "6369e9b9c0d45bdb5cbe26e8a257d997c064971b",
+      "last_modified": "2025-04-21T09:54:51.889971",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_feedback_engine.py",
+      "size_bytes": 16746,
+      "size_formatted": "16,746 bytes",
+      "import_name": "tests.test_feedback_engine",
+      "sha1": "4edb91cfcef9612e502f5f3f4b56a898a9cab58d",
+      "last_modified": "2025-04-20T14:13:45.730126",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insight_card.py",
+      "size_bytes": 11470,
+      "size_formatted": "11,470 bytes",
+      "import_name": "tests.test_insight_card",
+      "sha1": "c323edab62bed26072ce2262a995df2aa7fe5557",
+      "last_modified": "2025-04-15T11:23:01.070804",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insight_conversation.py",
+      "size_bytes": 4740,
+      "size_formatted": "4,740 bytes",
+      "import_name": "tests.test_insight_conversation",
+      "sha1": "9b53416881795591d2d3a837a0134da8a8875983",
+      "last_modified": "2025-04-15T11:22:31.480413",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insight_delivery.py",
+      "size_bytes": 6797,
+      "size_formatted": "6,797 bytes",
+      "import_name": "tests.test_insight_delivery",
+      "sha1": "9805a554a8badd53c51946eff8ca7809eea385e8",
+      "last_modified": "2025-04-21T09:47:27.658049",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insight_flow.py",
+      "size_bytes": 6541,
+      "size_formatted": "6,541 bytes",
+      "import_name": "tests.test_insight_flow",
+      "sha1": "299a2e851d1b038291cdbfdbcd4abb857590d75c",
+      "last_modified": "2025-04-15T11:23:10.875802",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insight_templates.py",
+      "size_bytes": 5652,
+      "size_formatted": "5,652 bytes",
+      "import_name": "tests.test_insight_templates",
+      "sha1": "2056ba3830c0770196d6d5d9e920fb307f3999db",
+      "last_modified": "2025-04-15T19:39:55.820377",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insight_validator.py",
+      "size_bytes": 19888,
+      "size_formatted": "19,888 bytes",
+      "import_name": "tests.test_insight_validator",
+      "sha1": "fedfd1035e823d0f05fdde8ab8ff1642ee8207f4",
+      "last_modified": "2025-04-15T11:24:14.157394",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights.py",
+      "size_bytes": 6401,
+      "size_formatted": "6,401 bytes",
+      "import_name": "tests.test_insights",
+      "sha1": "23366247c501e77811c34073265dd37ba6df0b36",
+      "last_modified": "2025-04-21T19:13:28.790784",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/__init__.py",
+      "size_bytes": 35,
+      "size_formatted": "35 bytes",
+      "import_name": "tests.test_insights.__init__",
+      "sha1": "dfe73270186e5b7af93a98e8cea855d26e1b7621",
+      "last_modified": "2025-04-19T12:33:57.187476",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_baselines.py",
+      "size_bytes": 4094,
+      "size_formatted": "4,094 bytes",
+      "import_name": "tests.test_insights.test_baselines",
+      "sha1": "7319eeb9122fa18f0878881d4400cc68245f45bb",
+      "last_modified": "2025-04-19T12:33:57.187726",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_core_insights.py",
+      "size_bytes": 14062,
+      "size_formatted": "14,062 bytes",
+      "import_name": "tests.test_insights.test_core_insights",
+      "sha1": "555895eee1d82ec3f5d4184821a2668ff53a2835",
+      "last_modified": "2025-04-19T12:33:57.188012",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_data_quality.py",
+      "size_bytes": 4562,
+      "size_formatted": "4,562 bytes",
+      "import_name": "tests.test_insights.test_data_quality",
+      "sha1": "10febc459dfe8534987ab66339c0d0294082026d",
+      "last_modified": "2025-04-20T16:14:02.977770",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_direct_analysis.py",
+      "size_bytes": 2262,
+      "size_formatted": "2,262 bytes",
+      "import_name": "tests.test_insights.test_direct_analysis",
+      "sha1": "d7dbdf9f668b2c267418d6c9a5fddd2a4e7be122",
+      "last_modified": "2025-04-17T12:00:03.977451",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_engine.py",
+      "size_bytes": 5536,
+      "size_formatted": "5,536 bytes",
+      "import_name": "tests.test_insights.test_engine",
+      "sha1": "56e342cfd5859f2d46b4dbd5249648561a4a1016",
+      "last_modified": "2025-04-19T12:33:57.188391",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_entity_metrics.py",
+      "size_bytes": 4968,
+      "size_formatted": "4,968 bytes",
+      "import_name": "tests.test_insights.test_entity_metrics",
+      "sha1": "388777658a1bb3a6fb5095b2c87a01218728ce1d",
+      "last_modified": "2025-04-21T12:43:06.986687",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_executive_insights.py",
+      "size_bytes": 14374,
+      "size_formatted": "14,374 bytes",
+      "import_name": "tests.test_insights.test_executive_insights",
+      "sha1": "6872c7f10a86e6ba865bd1aea9e822cd31858121",
+      "last_modified": "2025-04-19T12:33:57.188895",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_feedback.py",
+      "size_bytes": 5668,
+      "size_formatted": "5,668 bytes",
+      "import_name": "tests.test_insights.test_feedback",
+      "sha1": "ec5def015cb9c8d246afb7eaf59e70548e911476",
+      "last_modified": "2025-04-19T12:33:57.189162",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights/test_summarizer.py",
+      "size_bytes": 5874,
+      "size_formatted": "5,874 bytes",
+      "import_name": "tests.test_insights.test_summarizer",
+      "sha1": "1792531a59506f5740bd12521ec193b118bf8c53",
+      "last_modified": "2025-04-19T12:33:57.189430",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_insights_baseline.py",
+      "size_bytes": 3944,
+      "size_formatted": "3,944 bytes",
+      "import_name": "tests.test_insights_baseline",
+      "sha1": "2ce13bb3158c80c8dc6f4049072d510d07713c9a",
+      "last_modified": "2025-04-17T12:16:37.505815",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_intent_manager.py",
+      "size_bytes": 5874,
+      "size_formatted": "5,874 bytes",
+      "import_name": "tests.test_intent_manager",
+      "sha1": "f126e4e2f58bf4c32b9e5dc8ea1c1b806929a255",
+      "last_modified": "2025-04-17T12:29:48.721123",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_llm_column_mapper.py",
+      "size_bytes": 6219,
+      "size_formatted": "6,219 bytes",
+      "import_name": "tests.test_llm_column_mapper",
+      "sha1": "26fa903c3e3acbf308860a1ac158d5fef5e3e85b",
+      "last_modified": "2025-04-21T11:04:29.417620",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_llm_engine.py",
+      "size_bytes": 4963,
+      "size_formatted": "4,963 bytes",
+      "import_name": "tests.test_llm_engine",
+      "sha1": "9c0a575f217d2a0acc1c989d9dc5ccec2959d0f1",
+      "last_modified": "2025-04-21T15:47:02.391112",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_llm_parser.py",
+      "size_bytes": 3716,
+      "size_formatted": "3,716 bytes",
+      "import_name": "tests.test_llm_parser",
+      "sha1": "b1ec04c6b2e048569cd26d5cc7317d62bdca8c59",
+      "last_modified": "2025-04-19T16:08:05.027636",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_metadata.py",
+      "size_bytes": 8836,
+      "size_formatted": "8,836 bytes",
+      "import_name": "tests.test_metadata",
+      "sha1": "d54191096e2a285ac7797853832cd452782aa546",
+      "last_modified": "2025-04-14T22:08:21.796382",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_metrics_logger.py",
+      "size_bytes": 4290,
+      "size_formatted": "4,290 bytes",
+      "import_name": "tests.test_metrics_logger",
+      "sha1": "092f97f031bdfe9ffd4d8e5f2823141bdccb4300",
+      "last_modified": "2025-04-20T14:38:01.677665",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_notification_dashboard.py",
+      "size_bytes": 4766,
+      "size_formatted": "4,766 bytes",
+      "import_name": "tests.test_notification_dashboard",
+      "sha1": "393405a682415e3b59a8f0dfbee485894f6fb36d",
+      "last_modified": "2025-04-21T09:53:09.198603",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_prompt_bank.py",
+      "size_bytes": 5336,
+      "size_formatted": "5,336 bytes",
+      "import_name": "tests.test_prompt_bank",
+      "sha1": "9f76db5a346c62110f5447f12f01df7915d497c7",
+      "last_modified": "2025-04-15T20:22:27.644192",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_query_processing.py",
+      "size_bytes": 13749,
+      "size_formatted": "13,749 bytes",
+      "import_name": "tests.test_query_processing",
+      "sha1": "d0129107078d1cfedb8e2dd8f110a64d9048b27c",
+      "last_modified": "2025-04-21T20:51:33.456945",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_schema.py",
+      "size_bytes": 4054,
+      "size_formatted": "4,054 bytes",
+      "import_name": "tests.test_schema",
+      "sha1": "e894812188ecf8d279d6d618d74dc7c4c44bddf8",
+      "last_modified": "2025-04-17T13:03:21.003979",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_schema_profile_editor.py",
+      "size_bytes": 5356,
+      "size_formatted": "5,356 bytes",
+      "import_name": "tests.test_schema_profile_editor",
+      "sha1": "34eaed11fc1401358cc43863867bc2818937a8fa",
+      "last_modified": "2025-04-21T11:04:29.417178",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_schema_profile_manager.py",
+      "size_bytes": 7940,
+      "size_formatted": "7,940 bytes",
+      "import_name": "tests.test_schema_profile_manager",
+      "sha1": "e55507fd5863767894bce25b6ea5b301f6e5c332",
+      "last_modified": "2025-04-21T10:03:36.564230",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_schema_registry.py",
+      "size_bytes": 4501,
+      "size_formatted": "4,501 bytes",
+      "import_name": "tests.test_schema_registry",
+      "sha1": "09af66c0777f61afae9609870af9dc3e64fa75d7",
+      "last_modified": "2025-04-21T11:41:43.319144",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_schema_validation.py",
+      "size_bytes": 5110,
+      "size_formatted": "5,110 bytes",
+      "import_name": "tests.test_schema_validation",
+      "sha1": "c416187b14c3ce3b49cef593cecb1d81d1cf224e",
+      "last_modified": "2025-04-20T10:13:36.431901",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_semantic_layer.py",
+      "size_bytes": 3987,
+      "size_formatted": "3,987 bytes",
+      "import_name": "tests.test_semantic_layer",
+      "sha1": "1bf76b1ec88c4cdeeaf7b4e5d2caaee2ba497600",
+      "last_modified": "2025-04-20T17:07:55.009260",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_sentry_integration.py",
+      "size_bytes": 4118,
+      "size_formatted": "4,118 bytes",
+      "import_name": "tests.test_sentry_integration",
+      "sha1": "50c4fd9fb0e9697b709975667012bc5fb1393a05",
+      "last_modified": "2025-04-19T12:33:57.190224",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_session_state_management.py",
+      "size_bytes": 8983,
+      "size_formatted": "8,983 bytes",
+      "import_name": "tests.test_session_state_management",
+      "sha1": "b872de9a64d43ff3a477955a395a92786dd136e1",
+      "last_modified": "2025-04-16T10:10:46.777377",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_simple_insight.py",
+      "size_bytes": 6970,
+      "size_formatted": "6,970 bytes",
+      "import_name": "tests.test_simple_insight",
+      "sha1": "9af9cc6029a92ef7cfba4cd5a688d8c3b4cad15c",
+      "last_modified": "2025-04-17T13:04:31.785508",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_specific_metric_lookup.py",
+      "size_bytes": 3428,
+      "size_formatted": "3,428 bytes",
+      "import_name": "tests.test_specific_metric_lookup",
+      "sha1": "992f17ff720eb608c0643f50347d77b5a95dd96b",
+      "last_modified": "2025-04-21T13:00:41.782323",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_term_normalizer.py",
+      "size_bytes": 4388,
+      "size_formatted": "4,388 bytes",
+      "import_name": "tests.test_term_normalizer",
+      "sha1": "92fc7b2679c4414f9bbc36da82641414e89219d3",
+      "last_modified": "2025-04-19T12:33:57.190693",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_trend_analysis.py",
+      "size_bytes": 4635,
+      "size_formatted": "4,635 bytes",
+      "import_name": "tests.test_trend_analysis",
+      "sha1": "96decf579cb24e400570f4d6ba4ece5b1120992e",
+      "last_modified": "2025-04-19T12:33:57.215393",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_type_inference.py",
+      "size_bytes": 8159,
+      "size_formatted": "8,159 bytes",
+      "import_name": "tests.test_type_inference",
+      "sha1": "f2a3422d05ecfa514baf3a38d52a46f150dbf43e",
+      "last_modified": "2025-04-14T22:07:49.587800",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_ui_components.py",
+      "size_bytes": 4666,
+      "size_formatted": "4,666 bytes",
+      "import_name": "tests.test_ui_components",
+      "sha1": "91b9c475cd5bd2ccbeb122cead8b10b12657b926",
+      "last_modified": "2025-04-17T12:08:27.831181",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_validation.py",
+      "size_bytes": 6397,
+      "size_formatted": "6,397 bytes",
+      "import_name": "tests.test_validation",
+      "sha1": "8a856e03eb18b2914edd2c8c45d1968e8e0a7e2d",
+      "last_modified": "2025-04-17T09:59:59.871865",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_validator_service.py",
+      "size_bytes": 3589,
+      "size_formatted": "3,589 bytes",
+      "import_name": "tests.test_validator_service",
+      "sha1": "57a6df1c845acaf4f5974aed006b2e0bb335f2d0",
+      "last_modified": "2025-04-15T11:23:59.212660",
+      "is_package": true
+    },
+    {
+      "path": "tests/test_validators.py",
+      "size_bytes": 14754,
+      "size_formatted": "14,754 bytes",
+      "import_name": "tests.test_validators",
+      "sha1": "96d38fa7ee3912a9d15128cec87eeef850f7f267",
+      "last_modified": "2025-04-17T09:57:23.475038",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/__init__.py",
+      "size_bytes": 27,
+      "size_formatted": "27 bytes",
+      "import_name": "tests.ui.__init__",
+      "sha1": "f660b68df5c10754f01995454553fa4a3f165556",
+      "last_modified": "2025-04-21T15:47:02.391694",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/base_test.py",
+      "size_bytes": 2886,
+      "size_formatted": "2,886 bytes",
+      "import_name": "tests.ui.base_test",
+      "sha1": "b25094baead85784eff12d9a52c38dc953c0fd35",
+      "last_modified": "2025-04-21T15:45:52.802951",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/test_feedback_ui.py",
+      "size_bytes": 4494,
+      "size_formatted": "4,494 bytes",
+      "import_name": "tests.ui.test_feedback_ui",
+      "sha1": "06c37128280cb01fa587a6e2bf8b59c030f5909e",
+      "last_modified": "2025-04-19T12:33:57.215989",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/test_main_app_e2e.py",
+      "size_bytes": 14719,
+      "size_formatted": "14,719 bytes",
+      "import_name": "tests.ui.test_main_app_e2e",
+      "sha1": "2fbc15d8060ca96ce3185d3dd13f16ea05daf3aa",
+      "last_modified": "2025-04-21T14:40:34.999868",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/test_mapping_feedback.py",
+      "size_bytes": 4788,
+      "size_formatted": "4,788 bytes",
+      "import_name": "tests.ui.test_mapping_feedback",
+      "sha1": "d73b32a5e9fd09f68516de06481d5cd298282d9e",
+      "last_modified": "2025-04-20T13:53:14.644232",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/test_sales_report_renderer.py",
+      "size_bytes": 9200,
+      "size_formatted": "9,200 bytes",
+      "import_name": "tests.ui.test_sales_report_renderer",
+      "sha1": "2893bb396c81d4fe0c17a6de9b001033359a904b",
+      "last_modified": "2025-04-21T14:46:54.493063",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/test_session_persistence.py",
+      "size_bytes": 3803,
+      "size_formatted": "3,803 bytes",
+      "import_name": "tests.ui.test_session_persistence",
+      "sha1": "32080a3e48d28122d63ca267b2c2e813bf0181e0",
+      "last_modified": "2025-04-19T22:11:41.716975",
+      "is_package": true
+    },
+    {
+      "path": "tests/ui/test_visual_regression.py",
+      "size_bytes": 4132,
+      "size_formatted": "4,132 bytes",
+      "import_name": "tests.ui.test_visual_regression",
+      "sha1": "867557441f11dc28aee2538e565f567ef3d5b467",
+      "last_modified": "2025-04-21T18:58:15.536879",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/__init__.py",
+      "size_bytes": 26,
+      "size_formatted": "26 bytes",
+      "import_name": "tests.unit.__init__",
+      "sha1": "dcc6b7b09d7466bb9a298fa23b8f31f6720b13c9",
+      "last_modified": "2025-04-19T12:33:57.217133",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/scheduler/__init__.py",
+      "size_bytes": 44,
+      "size_formatted": "44 bytes",
+      "import_name": "tests.unit.scheduler.__init__",
+      "sha1": "e2a94cfaa2aa4e6f3a008948db92f7787c9881e7",
+      "last_modified": "2025-04-19T12:33:57.218189",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/scheduler/test_base_scheduler.py",
+      "size_bytes": 12617,
+      "size_formatted": "12,617 bytes",
+      "import_name": "tests.unit.scheduler.test_base_scheduler",
+      "sha1": "a2c3845919e7a919232fe11705e3b526b613d3e0",
+      "last_modified": "2025-04-19T12:33:57.218896",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/scheduler/test_notification_service.py",
+      "size_bytes": 4241,
+      "size_formatted": "4,241 bytes",
+      "import_name": "tests.unit.scheduler.test_notification_service",
+      "sha1": "b03459b57ac07d50404d3e457af356d2d5df4ef5",
+      "last_modified": "2025-04-19T12:33:57.219733",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/scheduler/test_report_generators.py",
+      "size_bytes": 6507,
+      "size_formatted": "6,507 bytes",
+      "import_name": "tests.unit.scheduler.test_report_generators",
+      "sha1": "4e4e59203bc5097a9b3a50e6f8c43c8d913e9771",
+      "last_modified": "2025-04-19T12:33:57.223439",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/scheduler/test_report_scheduler.py",
+      "size_bytes": 13669,
+      "size_formatted": "13,669 bytes",
+      "import_name": "tests.unit.scheduler.test_report_scheduler",
+      "sha1": "faf4c5941e4c69de6d3b4b372d67c3238f724aec",
+      "last_modified": "2025-04-19T12:33:57.224766",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_adaptive.py",
+      "size_bytes": 7419,
+      "size_formatted": "7,419 bytes",
+      "import_name": "tests.unit.test_adaptive",
+      "sha1": "8d1fe8970522fec3c5cb00cc94269a3176b72627",
+      "last_modified": "2025-04-19T12:33:57.225376",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_agent_sandbox.py",
+      "size_bytes": 10471,
+      "size_formatted": "10,471 bytes",
+      "import_name": "tests.unit.test_agent_sandbox",
+      "sha1": "ea6860ae09e4d58ebda23b6251d7b0f040e20eac",
+      "last_modified": "2025-04-20T10:50:03.335140",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_agentops_integration.py",
+      "size_bytes": 5399,
+      "size_formatted": "5,399 bytes",
+      "import_name": "tests.unit.test_agentops_integration",
+      "sha1": "68b72569bf43de67e586121999f3e62505a55f11",
+      "last_modified": "2025-04-20T14:01:57.437135",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_agents.py",
+      "size_bytes": 350,
+      "size_formatted": "350 bytes",
+      "import_name": "tests.unit.test_agents",
+      "sha1": "fa19c884054766644c955e53b49a63c4d9555baa",
+      "last_modified": "2025-04-18T16:13:26.833287",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_alert_escalation.py",
+      "size_bytes": 11152,
+      "size_formatted": "11,152 bytes",
+      "import_name": "tests.unit.test_alert_escalation",
+      "sha1": "982cb4f00c7edd454ff60189b0a125f5efacdd59",
+      "last_modified": "2025-04-21T11:49:15.239349",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_audit_log.py",
+      "size_bytes": 2417,
+      "size_formatted": "2,417 bytes",
+      "import_name": "tests.unit.test_audit_log",
+      "sha1": "cc963ab9c1eb9a1675429f9d476c365075fb7e17",
+      "last_modified": "2025-04-19T12:33:57.226484",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_column_mapping_prompt.py",
+      "size_bytes": 2313,
+      "size_formatted": "2,313 bytes",
+      "import_name": "tests.unit.test_column_mapping_prompt",
+      "sha1": "b03bb4c6df597d2766fc4babe8042c20645f192b",
+      "last_modified": "2025-04-19T11:30:12.389233",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_customer_validator.py",
+      "size_bytes": 8061,
+      "size_formatted": "8,061 bytes",
+      "import_name": "tests.unit.test_customer_validator",
+      "sha1": "94de241bdd7232055b4b1ad847e506087ebc512d",
+      "last_modified": "2025-04-19T12:33:57.227337",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_dataset.py",
+      "size_bytes": 4329,
+      "size_formatted": "4,329 bytes",
+      "import_name": "tests.unit.test_dataset",
+      "sha1": "fdf03a4649ac81435d872adfa137d8db63bfdd69",
+      "last_modified": "2025-04-20T19:42:29.340326",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_enhanced_credentials.py",
+      "size_bytes": 10398,
+      "size_formatted": "10,398 bytes",
+      "import_name": "tests.unit.test_enhanced_credentials",
+      "sha1": "b04e914048cea8909d66623d1a9e57fda200bdc3",
+      "last_modified": "2025-04-20T11:09:43.115366",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_enhanced_scheduler.py",
+      "size_bytes": 10057,
+      "size_formatted": "10,057 bytes",
+      "import_name": "tests.unit.test_enhanced_scheduler",
+      "sha1": "9a269fc306e36c830f8a56193b47f43a47542a15",
+      "last_modified": "2025-04-20T11:09:06.677798",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_financial_validator.py",
+      "size_bytes": 6120,
+      "size_formatted": "6,120 bytes",
+      "import_name": "tests.unit.test_financial_validator",
+      "sha1": "3ec34e5203d2dd01ed0eb777f51312eb7e16a4bb",
+      "last_modified": "2025-04-19T12:33:57.227856",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_forecast.py",
+      "size_bytes": 7643,
+      "size_formatted": "7,643 bytes",
+      "import_name": "tests.unit.test_forecast",
+      "sha1": "3016825a4b1ab3ba5f0452f8d88ca785d563d3b8",
+      "last_modified": "2025-04-19T12:33:57.228269",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_imports.py",
+      "size_bytes": 1406,
+      "size_formatted": "1,406 bytes",
+      "import_name": "tests.unit.test_imports",
+      "sha1": "360cfce5fa962963cdff52351377c4f092776cd1",
+      "last_modified": "2025-04-15T10:19:21.480531",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_ingestion_orchestrator.py",
+      "size_bytes": 9585,
+      "size_formatted": "9,585 bytes",
+      "import_name": "tests.unit.test_ingestion_orchestrator",
+      "sha1": "7d40dcad087978035ef2c20a6f96394696783d0e",
+      "last_modified": "2025-04-21T09:57:55.361151",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_ingestion_pipeline.py",
+      "size_bytes": 11565,
+      "size_formatted": "11,565 bytes",
+      "import_name": "tests.unit.test_ingestion_pipeline",
+      "sha1": "5c01da10a8872a97d900f91a02df852b85edc231",
+      "last_modified": "2025-04-20T11:08:30.112439",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_insight_cache.py",
+      "size_bytes": 8131,
+      "size_formatted": "8,131 bytes",
+      "import_name": "tests.unit.test_insight_cache",
+      "sha1": "f4f6495a38c2ff7763dc93421aa34cf5c62c99dd",
+      "last_modified": "2025-04-19T12:33:57.229032",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_insight_components.py",
+      "size_bytes": 22685,
+      "size_formatted": "22,685 bytes",
+      "import_name": "tests.unit.test_insight_components",
+      "sha1": "e450fb8e7f9ab120512231b5d155e28d1677bda5",
+      "last_modified": "2025-04-20T20:22:02.064679",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_insight_execution_context.py",
+      "size_bytes": 6547,
+      "size_formatted": "6,547 bytes",
+      "import_name": "tests.unit.test_insight_execution_context",
+      "sha1": "ac914b52006fa87235d232dc918810daaf9aa225",
+      "last_modified": "2025-04-20T20:28:20.041800",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_insight_feed.py",
+      "size_bytes": 4820,
+      "size_formatted": "4,820 bytes",
+      "import_name": "tests.unit.test_insight_feed",
+      "sha1": "fb205e019de9c9552fb089a0f2c1ac9ecc996f6c",
+      "last_modified": "2025-04-21T11:46:33.801666",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_insight_pipeline.py",
+      "size_bytes": 6910,
+      "size_formatted": "6,910 bytes",
+      "import_name": "tests.unit.test_insight_pipeline",
+      "sha1": "c7a6577caf8e80f49151e9014497078348369686",
+      "last_modified": "2025-04-20T20:28:20.046464",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_insight_tagger.py",
+      "size_bytes": 18089,
+      "size_formatted": "18,089 bytes",
+      "import_name": "tests.unit.test_insight_tagger",
+      "sha1": "71092e77a3016427b20e8538af5f42c186d49da4",
+      "last_modified": "2025-04-21T11:33:28.439977",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_kpi_dashboard.py",
+      "size_bytes": 4579,
+      "size_formatted": "4,579 bytes",
+      "import_name": "tests.unit.test_kpi_dashboard",
+      "sha1": "da1d5fe694f4659cd13edd9e6957d934a046588b",
+      "last_modified": "2025-04-19T12:33:57.229978",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_kpi_dashboard_filters.py",
+      "size_bytes": 3279,
+      "size_formatted": "3,279 bytes",
+      "import_name": "tests.unit.test_kpi_dashboard_filters",
+      "sha1": "49fdc52f89cc8fd602c05c9afacc41868de06e44",
+      "last_modified": "2025-04-19T12:33:57.230565",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_kpi_export.py",
+      "size_bytes": 3446,
+      "size_formatted": "3,446 bytes",
+      "import_name": "tests.unit.test_kpi_export",
+      "sha1": "021a3170f07748761fe022c72775cff3ca725702",
+      "last_modified": "2025-04-19T12:33:57.231141",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_kpi_summary.py",
+      "size_bytes": 4357,
+      "size_formatted": "4,357 bytes",
+      "import_name": "tests.unit.test_kpi_summary",
+      "sha1": "88438b602270b49b86bfdd0459d212ccf4b58d8a",
+      "last_modified": "2025-04-19T12:33:57.232019",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_lead_flow_optimizer.py",
+      "size_bytes": 14454,
+      "size_formatted": "14,454 bytes",
+      "import_name": "tests.unit.test_lead_flow_optimizer",
+      "sha1": "90b858fc576db31ba35121eddd461ff91911dc29",
+      "last_modified": "2025-04-21T11:30:08.077066",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_lead_model.py",
+      "size_bytes": 6108,
+      "size_formatted": "6,108 bytes",
+      "import_name": "tests.unit.test_lead_model",
+      "sha1": "ffde1480f74fbaa6892ae4fac7ff454f63d18f0d",
+      "last_modified": "2025-04-21T11:48:43.112539",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_lead_source_roi.py",
+      "size_bytes": 13523,
+      "size_formatted": "13,523 bytes",
+      "import_name": "tests.unit.test_lead_source_roi",
+      "sha1": "4413758b3177759d0485191ca86a7e7f9072c589",
+      "last_modified": "2025-04-21T10:43:05.830630",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_llm.py",
+      "size_bytes": 1204,
+      "size_formatted": "1,204 bytes",
+      "import_name": "tests.unit.test_llm",
+      "sha1": "1473b61c616c7911656efa43c95f56a222543148",
+      "last_modified": "2025-04-15T12:49:26.290129",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_llm_engine.py",
+      "size_bytes": 11209,
+      "size_formatted": "11,209 bytes",
+      "import_name": "tests.unit.test_llm_engine",
+      "sha1": "4acc4a1bd4d2248938a74a25f70bc20845fff906",
+      "last_modified": "2025-04-21T15:47:02.392790",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_main_app.py",
+      "size_bytes": 10391,
+      "size_formatted": "10,391 bytes",
+      "import_name": "tests.unit.test_main_app",
+      "sha1": "5f4585b506923abf35f9306a9afd0d286366cb18",
+      "last_modified": "2025-04-21T13:35:52.269257",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_normalizer_cache.py",
+      "size_bytes": 7070,
+      "size_formatted": "7,070 bytes",
+      "import_name": "tests.unit.test_normalizer_cache",
+      "sha1": "9fc7989638972274ce9715aaad624b47d4285002",
+      "last_modified": "2025-04-19T12:33:57.232979",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_notification_service.py",
+      "size_bytes": 10936,
+      "size_formatted": "10,936 bytes",
+      "import_name": "tests.unit.test_notification_service",
+      "sha1": "31f12a51d841055ccfdf1e67193cddbfbcfee5b8",
+      "last_modified": "2025-04-21T09:43:01.100829",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_nova_act_integration.py",
+      "size_bytes": 10538,
+      "size_formatted": "10,538 bytes",
+      "import_name": "tests.unit.test_nova_act_integration",
+      "sha1": "932fd56b1a11bd1ce985fe09e8218d2275a2d5c3",
+      "last_modified": "2025-04-21T18:56:22.864323",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_nova_act_pooling.py",
+      "size_bytes": 2606,
+      "size_formatted": "2,606 bytes",
+      "import_name": "tests.unit.test_nova_act_pooling",
+      "sha1": "59916a4083814ab80b610a66f1b57110281f7d95",
+      "last_modified": "2025-04-19T12:33:57.233846",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_nova_act_retries.py",
+      "size_bytes": 1881,
+      "size_formatted": "1,881 bytes",
+      "import_name": "tests.unit.test_nova_act_retries",
+      "sha1": "bd4d5ee05bb13dac278b7ccc9537deecc57cafcc",
+      "last_modified": "2025-04-19T12:33:57.234278",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_novact_connector.py",
+      "size_bytes": 5757,
+      "size_formatted": "5,757 bytes",
+      "import_name": "tests.unit.test_novact_connector",
+      "sha1": "574fc9583d4f6e91b1e7e51d4ff006e7f50113fe",
+      "last_modified": "2025-04-19T12:33:57.234775",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_pdf_generator.py",
+      "size_bytes": 8409,
+      "size_formatted": "8,409 bytes",
+      "import_name": "tests.unit.test_pdf_generator",
+      "sha1": "1314639b0e894f10d1496f765c829830c1b029a6",
+      "last_modified": "2025-04-21T09:43:32.064527",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_prompt_tuner.py",
+      "size_bytes": 7574,
+      "size_formatted": "7,574 bytes",
+      "import_name": "tests.unit.test_prompt_tuner",
+      "sha1": "bc4ce8073db71f8949cb29ae8e23835b779b7a51",
+      "last_modified": "2025-04-19T12:33:57.235267",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_session.py",
+      "size_bytes": 3608,
+      "size_formatted": "3,608 bytes",
+      "import_name": "tests.unit.test_session",
+      "sha1": "e1598fcf3d1058b4a0d0f839eb06b3db06d773c0",
+      "last_modified": "2025-04-19T12:33:57.236100",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_session_ttl.py",
+      "size_bytes": 1521,
+      "size_formatted": "1,521 bytes",
+      "import_name": "tests.unit.test_session_ttl",
+      "sha1": "c3a872c85671bfac02eaddfb4f288e9085fc5f0d",
+      "last_modified": "2025-04-19T12:33:57.236575",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_story.py",
+      "size_bytes": 3350,
+      "size_formatted": "3,350 bytes",
+      "import_name": "tests.unit.test_story",
+      "sha1": "bb5e9baee2d74b52768edc4ee73fd9b22086f4a2",
+      "last_modified": "2025-04-19T12:33:57.236967",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_validator_registry.py",
+      "size_bytes": 7535,
+      "size_formatted": "7,535 bytes",
+      "import_name": "tests.unit.test_validator_registry",
+      "sha1": "668ed60c83088071398a6440b2dad3fb482bab8d",
+      "last_modified": "2025-04-21T20:20:32.030544",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_validator_service.py",
+      "size_bytes": 6128,
+      "size_formatted": "6,128 bytes",
+      "import_name": "tests.unit.test_validator_service",
+      "sha1": "5fcff8aa62ebfc1a332dad3a6617b4d4c884179f",
+      "last_modified": "2025-04-19T12:33:57.237840",
+      "is_package": true
+    },
+    {
+      "path": "tests/unit/test_watchdog_questions.py",
+      "size_bytes": 10210,
+      "size_formatted": "10,210 bytes",
+      "import_name": "tests.unit.test_watchdog_questions",
+      "sha1": "843b042dce8dbbf146d0cc1fd325d937981ae0b1",
+      "last_modified": "2025-04-20T19:38:13.937072",
+      "is_package": true
+    }
+  ]
+}

@@ -1,254 +1,194 @@
- # Watchdog AI – Dealership Analytics
+# Watchdog AI
 
-A smart, AI-powered insights platform for automotive dealerships. Supports natural language queries, data validation, visual dashboards, and compliance-focused features like TTL enforcement.
+![Watchdog AI](assets/watchdog_logo.png)
 
-✅ GDPR/CCPA-ready  
-✅ Mobile-first  
-✅ Dockerized for easy deployment  
+## Overview
 
----
-
-![CI](https://github.com/yourusername/watchdog-ai/actions/workflows/ci.yml/badge.svg)
-
----
+Watchdog AI is an advanced analytics platform that helps automotive dealerships analyze sales data, identify trends, and generate actionable insights. The platform leverages AI/ML technologies to provide customized recommendations and visualizations that drive business performance.
 
 ## Features
 
-### 🔍 Smart Insights
-- Natural language queries about your dealership data
-- AI-powered analysis of sales, leads, and inventory
-- Interactive visualizations and downloadable reports
-- Lead Source Analysis
+- **Data Integration**: Connect with popular Dealer Management Systems (DMS) and CRM platforms
+- **Automated Analysis**: Process sales data and generate insights automatically 
+- **Interactive Dashboards**: Visualize key performance indicators and metrics
+- **Natural Language Queries**: Ask questions about your data in plain English
+- **Predictive Analytics**: Forecast sales trends and identify opportunities
+- **Validation Engine**: Ensure data quality and accuracy with automated validation
 
-### 💬 Guided Analysis
-Try asking questions like:
-- "What was our highest-value lead source last month?"
-- "Show me our top-performing vehicles by revenue"
-- "Compare website leads vs walk-in performance"
-
-### 📊 Data Validation
-- Automatic schema validation
-- Data quality scoring
-- Detailed validation reports
-- Support for CSV and Excel files
-
-### 📱 Mobile-First Design
-- Responsive layout for all devices
-- Touch-friendly interface
-- Optimized performance
-
----
-
-## 🚀 Getting Started (Local Dev)
-
-### Clone the repository:
-```bash
-git clone https://github.com/yourusername/watchdog-ai.git
-cd watchdog-ai
-```
-
-### Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-### Run the application:
-```bash
-cd src
-streamlit run app.py
-```
-Then open: [http://localhost:8501](http://localhost:8501)
-
----
-
-## 🔍 Data Requirements
-
-### Required Columns:
-The system supports multiple column name formats. The following are expected (canonical names):
-
-| Field          | Examples (case-insensitive)                                      |
-|----------------|------------------------------------------------------------------|
-| Sale Date      | SaleDate, sale_date, date, deal date                            |
-| Sale Price     | SalePrice, sale_price, price                                     |
-| VIN            | VIN, vehicle_vin, VehicleVIN                                     |
-| Total Gross    | TotalGross, gross, front_gross, backend gross                   |
-| Lead Source    | LeadSource, lead_source, source                                  |
-
-
-### Sample CSV Format
-```csv
-LeadSource,TotalGross,VIN,SaleDate,SalePrice
-Website,2500.00,1HGCM82633A123456,2024-01-01,25000.00
-CarGurus,3000.00,1HGCM82633A123457,2024-01-02,30000.00
-Walk-in,2800.00,1HGCM82633A123458,2024-01-03,28000.00
-```
-File: `examples/sample_data.csv`
-
----
-
-## 📈 Development
-
-### Architecture
-- **Streamlit** for UI
-- **Altair** for visualizations
-- **Pandas** for data processing
-- Modular & reusable component structure
-
-### Theming
-Customize styles via: `src/ui/theme.py`
-
----
-
-<<<<<<< HEAD
-## 🚀 Performance
-- Caching for data load & processing
-- Lazy loading of large datasets
-- Efficient chart rendering
-=======
-### Testing
-- Unit tests cover core logic for validation, normalization, and utilities.
-- E2E tests (`tests/e2e/`) cover key user flows, including:
-  - Data upload and validation.
-  - LLM-driven column mapping with user clarifications (`test_data_upload_llm_mapping.py`).
-  - Insight generation and chat analysis.
-
-### Column Mapping System
-The platform features an advanced LLM-driven column mapping system that:
-
-- Uses "Jeopardy-style" reasoning to semantically map dataset columns to a canonical schema
-- Handles ambiguous column names through interactive user clarifications
-- Supports Redis caching for improved performance and reduced LLM API costs
-- Identifies lead source value columns that appear as headers
-- Provides confidence scores for each mapping decision
-- Can optionally drop unmapped columns after confirmation (configurable)
-
-## Contributing
->>>>>>> feature/retention-ttl-focused
-
----
-
-## 🚧 CI & Validation
-- CI via GitHub Actions
-- Core test: `tests/unit/test_session_ttl.py`
-- Pydantic validation with warnings on deprecated style (see migration notes in code)
-
----
-
-## 🌍 Containerized Dev Workflow
-
-### Docker
-```bash
-docker build -t v3_watchdog .
-docker run -p 8501:8501 --env-file .env v3_watchdog
-```
-
-### Docker Compose
-```bash
-docker-compose up --build
-```
-Then visit: [http://localhost:8501](http://localhost:8501)
-
----
-
-## 💼 Contributing
-```bash
-# Fork + clone repo
-# Create branch:
-git checkout -b feature/your-feature-name
-
-# Make changes and commit
-git commit -m "Add your feature"
-
-# Push and open PR
-git push origin feature/your-feature-name
-```
-
----
-
-## 📚 License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
----
-
-## 📁 Project Structure
+## Repository Structure
 
 ```
-.
-├── src/
-│   ├── app.py               # Streamlit app
-│   ├── insights/            # Insight engine
-│   ├── validators/          # Schema validation
-│   ├── ui/                  # Theming + layout
-├── tests/
-│   └── unit/test_session_ttl.py   # TTL enforcement test
-├── examples/sample_data.csv
-├── assets/watchdog_logo.png
-└── .github/workflows/ci.yml
+watchdog_ai/
+├── assets/                 # Static assets and resources
+├── config/                 # Configuration files and settings
+│   ├── docker/             # Docker configuration
+│   ├── env/                # Environment configurations
+│   └── scripts/            # Utility scripts
+├── data/                   # Sample and test data
+├── docs/                   # Documentation files
+├── src/                    # Source code
+│   ├── validators/         # Data validation components
+│   ├── insights/           # Insight generation engine
+│   ├── analytics/          # Data analytics modules
+│   ├── ui/                 # User interface components
+│   └── utils/              # Utility functions
+├── tests/                  # Test suite
+│   ├── unit/               # Unit tests
+│   ├── integration/        # Integration tests
+│   ├── e2e/                # End-to-end tests
+│   ├── conftest.py         # Pytest configuration and fixtures
+│   └── test_base.py        # Base testing utilities
+└── ui/                     # Front-end application
 ```
 
----
+## Installation
 
-## 🌐 Branding
-- Logo: `assets/watchdog_logo.png`
-- Header layout: `st.columns` + `st.image`
+### Prerequisites
 
-## Recent Updates
+- Python 3.10+
+- Docker and Docker Compose (optional, for containerized deployment)
+- Virtual environment manager (venv or conda)
 
-### Column Mapping Enhancements
-- Implemented Redis caching for column mapping to improve performance and reduce API costs
-- Added configuration option to automatically drop unmapped columns
-- Enhanced user interaction for column mapping clarifications
-- Extended Redis connection handling with better error recovery
-- Added cache statistics tracking for monitoring cache hit/miss rates
+### Local Development Setup
 
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/watchdog_ai.git
+   cd watchdog_ai
+   ```
 
-## Containerized Dev Workflow
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-To build and run the application using Docker:
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1.  **Build the Docker image:**
-    ```bash
-    docker build -t v3_watchdog .
-    ```
+4. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-2.  **Run the container:**
-    ```bash
-    # Make sure you have a .env file in the root directory or pass variables with -e
-    docker run -p 8501:8501 --env-file .env v3_watchdog
-    ```
-    *   Replace `.env` with the path to your environment file if it's named differently or located elsewhere.
-    *   You can also pass environment variables directly using the `-e` flag (e.g., `-e SENTRY_DSN=your_dsn`).
+5. Run the application:
+   ```bash
+   ./run.sh
+   ```
 
-Alternatively, use Docker Compose for a simpler setup:
+### Docker Setup
 
-1.  **Build and run services:**
-    ```bash
-    # Ensure you have a .env file in the root directory for environment variables
-    docker-compose up --build
-    ```
-    This command reads the `docker-compose.yml` file, builds the services.
+1. Build and start the Docker containers:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. The application will be available at `http://localhost:8501`
 
 ## Configuration
 
-The application supports the following environment variables:
+Configuration is managed through environment variables that can be set in the `.env` file or through your system's environment variables.
 
+Key configuration options:
+
+- `WATCHDOG_ENV`: Set to 'development', 'testing', or 'production'
+- `OPENAI_API_KEY`: Your OpenAI API key for LLM functionality
+- `DATABASE_URL`: Database connection string
+- `LOG_LEVEL`: Logging level (DEBUG, INFO, WARNING, ERROR)
+- `ENABLE_MEMORY`: Enable or disable conversation memory (true/false)
+
+## Usage
+
+### Basic Usage
+
+1. Start the application using `./run.sh` or Docker
+2. Upload your sales data through the web interface
+3. Navigate to the dashboard to view insights
+4. Use the natural language query interface to ask specific questions
+
+### Example Queries
+
+- "Show me sales by lead source for the last quarter"
+- "What was our best-performing vehicle model last month?"
+- "Compare gross profit by salesperson year over year"
+- "Which lead sources have the highest conversion rate?"
+
+## Testing
+
+Watchdog AI uses pytest for testing. We've implemented a comprehensive testing infrastructure including fixtures, utilities, and configuration for efficient test development.
+
+### Test Structure
+
+- **Unit Tests**: Test individual components in isolation
+- **Integration Tests**: Test interactions between components
+- **End-to-End Tests**: Test complete user workflows
+
+### Running Tests
+
+Run all tests:
+```bash
+pytest
 ```
-OPENAI_API_KEY=your-openai-key-here
-USE_MOCK=true  # Set to false to use real LLM API
-LOG_LEVEL=INFO
-MAX_UPLOAD_SIZE_MB=100
 
-# Redis caching for column mapping
-REDIS_CACHE_ENABLED=true
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_DB=0
-COLUMN_MAPPING_CACHE_TTL=86400  # 24 hours
-COLUMN_MAPPING_CACHE_PREFIX=watchdog:column_mapping:
-
-# Column mapping settings
-DROP_UNMAPPED_COLUMNS=false  # Set to true to automatically drop unmapped columns
-
-# AgentOps monitoring (optional)
-AGENTOPS_API_KEY=your-agentops-key-here
+Run specific test categories:
+```bash
+pytest -m unit  # Run only unit tests
+pytest -m integration  # Run only integration tests
+pytest -m "not slow"  # Skip slow tests
 ```
+
+Run with coverage:
+```bash
+pytest --cov=src
+```
+
+### Testing Utilities
+
+We've implemented robust testing utilities in `tests/test_base.py` including:
+
+- DataFrame comparison methods with configurable tolerance
+- Test data generation utilities for realistic testing data
+- Common assertion helpers for simplifying test validation
+- Mocking utilities for external services and dependencies
+- Performance testing helpers to benchmark critical functions
+- File handling utilities for test data management
+
+### Test Fixtures
+
+Global test fixtures are defined in `tests/conftest.py`, providing:
+
+- Database connection mocking
+- Enhanced error tracking with detailed logging
+- Performance monitoring
+- Common test data generators
+- Validation utilities
+- External service mocks (OpenAI, Redis, MongoDB)
+
+## Contributing
+
+We welcome contributions to Watchdog AI! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests to ensure they pass
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+Please ensure your code adheres to our coding standards:
+- Run `ruff check` and `mypy` before submitting
+- Include tests for new functionality
+- Update documentation as needed
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support, contact support@watchdogai.com or open an issue on this repository.
+

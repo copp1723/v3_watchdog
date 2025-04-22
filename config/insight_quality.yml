@@ -1,0 +1,31 @@
+# Data Quality Thresholds
+thresholds:
+  missing_data:
+    warning: 10.0  # Percentage that triggers warning
+    error: 20.0    # Percentage that triggers error
+  sample_size:
+    minimum: 30    # Minimum sample size for reliable insights
+  outliers:
+    max_percent: 5.0  # Maximum percentage of outliers allowed
+
+# Quality Badge Configuration  
+badges:
+  high:
+    icon: "✅"
+    color: "#2e7d32"
+  medium:
+    icon: "⚠️"
+    color: "#f9a825"
+  low:
+    icon: "🔴"
+    color: "#c62828"
+
+# Recommendation Templates
+recommendations:
+  missing_data:
+    warning: "Consider collecting more complete data for {column} to improve insight accuracy."
+    error: "High percentage of missing data in {column} may significantly impact results."
+  sample_size:
+    warning: "Limited sample size ({size} records) may affect confidence in results."
+  outliers:
+    warning: "Check for data entry errors in {column} due to unusual values."
