@@ -1,54 +1,6 @@
 """
 Secure configuration management for Watchdog AI.
 Handles environment variables, secrets, and configuration validation.
-
-DEPRECATED: This module is deprecated and will be removed in v4.0.0.
-            Please use 'watchdog_ai.core.config' instead.
-"""
-
-import os
-import sys
-import warnings
-from typing import Any, Dict, Optional
-from pathlib import Path
-
-warnings.warn(
-    "The 'utils.config' module is deprecated and will be removed in v4.0.0. "
-    "Please use 'watchdog_ai.core.config' instead.",
-    DeprecationWarning,
-    stacklevel=2
-)
-
-# Import from new location to maintain backward compatibility
-try:
-    from watchdog_ai.core.config.secure import (
-        ConfigurationError, 
-        SecureConfig,
-        config as _config
-    )
-    from watchdog_ai.core.config.logging import get_logger
-except ImportError:
-    # Fall back to original implementation if imports fail (during migration)
-    raise ImportError(
-        "Could not import from the new 'watchdog_ai.core.config' package. "
-        "The configuration system is currently being refactored. "
-        "Please check your import paths or contact the development team."
-    )
-
-# Re-export for backward compatibility
-config = _config
-
-# For backward compatibility, we keep all exports
-__all__ = [
-    'SecureConfig',
-    'ConfigurationError',
-    'config',
-    'get_logger'
-]
-
-"""
-Secure configuration management for Watchdog AI.
-Handles environment variables, secrets, and configuration validation.
 """
 
 import os
@@ -61,9 +13,10 @@ import hmac
 import base64
 from cryptography.fernet import Fernet
 import logging
+import warnings
 
-from .errors import ConfigurationError
-from .log_utils_config import get_logger
+# Import from new path structure
+from watchdog_ai.core.config.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -72,6 +25,21 @@ MIN_CONFIDENCE_TO_AUTOMAP = 0.7
 
 # Whether to automatically drop unmapped columns after clarification
 DROP_UNMAPPED_COLUMNS = False  # Default to off
+
+class ConfigurationError(Exception):
+    """Exception raised for configuration errors."""
+    
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+        """
+        Initialize configuration error.
+        
+        Args:
+            message: Error message
+            details: Optional details about the error
+        """
+        self.message = message
+        self.details = details or {}
+        super().__init__(message)
 
 class SecureConfig:
     """Manages secure configuration and secrets."""
@@ -334,3 +302,4 @@ class SecureConfig:
 
 # Global configuration instance
 config = SecureConfig()
+
